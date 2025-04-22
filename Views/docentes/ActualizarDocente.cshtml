@@ -1,0 +1,46 @@
+﻿@model BirdSing.Models.ModelosViews.UsuarioDocenteViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Actualizar Docente</h2>
+
+<form asp-action="ActualizarDocente" method="post">
+    <h3>Datos del Usuario</h3>
+    <div>
+        <label asp-for="Usuario.NombreUsuario"></label>
+        <input asp-for="Usuario.NombreUsuario" />
+        <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.ApellidoPaterno"></label>
+        <input asp-for="Usuario.ApellidoPaterno" />
+        <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.ApellidoMaterno"></label>
+        <input asp-for="Usuario.ApellidoMaterno" />
+        <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.Email"></label>
+        <input asp-for="Usuario.Email" />
+        <span asp-validation-for="Usuario.Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.IdRol"></label>
+        <select asp-for="Usuario.IdRol" asp-items="ViewBag.Roles"></select>
+        <span asp-validation-for="Usuario.IdRol" class="text-danger"></span>
+    </div>
+
+    <h3>Datos del Docente</h3>
+    <div>
+        <label asp-for="Docente.MatriculaSEP"></label>
+        <input asp-for="Docente.MatriculaSEP" />
+        <span asp-validation-for="Docente.MatriculaSEP" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Actualizar</button>
+    </div>
+</form>

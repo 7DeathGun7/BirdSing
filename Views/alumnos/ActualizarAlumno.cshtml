@@ -1,0 +1,48 @@
+﻿@model BirdSing.Models.Alumno
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Actualizar Alumno</h2>
+
+<form asp-action="ActualizarAlumno" method="post">
+    <div>
+        <label asp-for="NombreAlumno"></label>
+        <input asp-for="NombreAlumno" />
+        <span asp-validation-for="NombreAlumno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="ApellidoPaterno"></label>
+        <input asp-for="ApellidoPaterno" />
+        <span asp-validation-for="ApellidoPaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="ApellidoMaterno"></label>
+        <input asp-for="ApellidoMaterno" />
+        <span asp-validation-for="ApellidoMaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="FechaNacimiento"></label>
+        <input asp-for="FechaNacimiento" type="date" />
+        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Curp"></label>
+        <input asp-for="Curp" />
+        <span asp-validation-for="Curp" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="IdGrado"></label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="IdGrupo"></label>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos"></select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Actualizar</button>
+    </div>
+</form>

@@ -1,0 +1,23 @@
+﻿@model BirdSing.Models.Grupo
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Actualizar Grupo</h2>
+
+<form asp-action="ActualizarGrupo" method="post">
+    <div>
+        <label asp-for="IdGrado"></label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Grupos"></label>
+        <input asp-for="Grupos" />
+        <span asp-validation-for="Grupos" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Actualizar</button>
+    </div>
+</form>

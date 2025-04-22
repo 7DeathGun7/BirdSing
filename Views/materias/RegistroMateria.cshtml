@@ -1,0 +1,23 @@
+﻿@model BirdSing.Models.Materia
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Registrar Materia</h2>
+
+<form asp-action="RegistroMateria" method="post">
+    <div>
+        <label asp-for="IdGrado"></label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="NombreMateria"></label>
+        <input asp-for="NombreMateria" />
+        <span asp-validation-for="NombreMateria" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Registrar</button>
+    </div>
+</form>

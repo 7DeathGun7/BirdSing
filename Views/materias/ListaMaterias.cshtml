@@ -1,0 +1,31 @@
+﻿@model IEnumerable<BirdSing.Models.Materia>
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Lista de Materias</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Grado</th>
+            <th>Materia</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var materia in Model)
+        {
+            <tr>
+                <td>@materia.Grado.Grados</td>
+                <td>@materia.NombreMateria</td>
+                <td>
+                    <a asp-action="ActualizarMateria" asp-route-id="@materia.IdMateria">Actualizar</a>
+                    <a asp-action="EliminarMateria" asp-route-id="@materia.IdMateria" onclick="return confirm('¿Estás seguro de que deseas eliminar esta materia?');">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="RegistroMateria">Registrar Nueva Materia</a>

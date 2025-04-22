@@ -1,0 +1,31 @@
+﻿@model IEnumerable<BirdSing.Models.Grupo>
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Lista de Grupos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Grado</th>
+            <th>Grupo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grupo in Model)
+        {
+            <tr>
+                <td>@grupo.Grado.Grados</td>
+                <td>@grupo.Grupos</td>
+                <td>
+                    <a asp-action="ActualizarGrupo" asp-route-id="@grupo.IdGrupo">Actualizar</a>
+                    <a asp-action="EliminarGrupo" asp-route-id="@grupo.IdGrupo" onclick="return confirm('¿Estás seguro de que deseas eliminar este grupo?');">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="RegistroGrupo">Registrar Nuevo Grupo</a>

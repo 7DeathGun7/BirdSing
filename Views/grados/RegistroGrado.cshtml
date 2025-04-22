@@ -1,0 +1,18 @@
+﻿@model BirdSing.Models.Grado
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Registrar Grado</h2>
+
+<form asp-action="RegistroGrado" method="post">
+    <div>
+        <label asp-for="Grados"></label>
+        <input asp-for="Grados" />
+        <span asp-validation-for="Grados" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Registrar</button>
+    </div>
+</form>

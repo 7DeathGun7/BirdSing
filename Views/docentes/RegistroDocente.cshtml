@@ -1,0 +1,51 @@
+﻿@model BirdSing.Models.ModelosViews.UsuarioDocenteViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Registrar Docente</h2>
+
+<form asp-action="RegistroDocente" method="post">
+    <h3>Datos del Usuario</h3>
+    <div>
+        <label asp-for="Usuario.NombreUsuario"></label>
+        <input asp-for="Usuario.NombreUsuario" />
+        <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.ApellidoPaterno"></label>
+        <input asp-for="Usuario.ApellidoPaterno" />
+        <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.ApellidoMaterno"></label>
+        <input asp-for="Usuario.ApellidoMaterno" />
+        <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.Email"></label>
+        <input asp-for="Usuario.Email" />
+        <span asp-validation-for="Usuario.Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.Password"></label>
+        <input asp-for="Usuario.Password" type="password" />
+        <span asp-validation-for="Usuario.Password" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Usuario.IdRol"></label>
+        <select asp-for="Usuario.IdRol" asp-items="ViewBag.Roles"></select>
+        <span asp-validation-for="Usuario.IdRol" class="text-danger"></span>
+    </div>
+
+    <h3>Datos del Docente</h3>
+    <div>
+        <label asp-for="Docente.MatriculaSEP"></label>
+        <input asp-for="Docente.MatriculaSEP" />
+        <span asp-validation-for="Docente.MatriculaSEP" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit">Registrar</button>
+    </div>
+</form>

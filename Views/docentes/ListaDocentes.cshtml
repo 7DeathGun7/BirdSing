@@ -1,0 +1,36 @@
+﻿@model IEnumerable<BirdSing.Models.Docente>
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Lista de Docentes</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre del Usuario</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Email</th>
+            <th>Matrícula SEP</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var docente in Model)
+        {
+            <tr>
+                <td>@docente.Usuario.NombreUsuario</td>
+                <td>@docente.Usuario.ApellidoPaterno</td>
+                <td>@docente.Usuario.ApellidoMaterno</td>
+                <td>@docente.Usuario.Email</td>
+                <td>@docente.MatriculaSEP</td>
+                <td>
+                    <a asp-action="ActualizarDocente" asp-route-id="@docente.IdDocente">Actualizar</a>
+                    <a asp-action="EliminarDocente" asp-route-id="@docente.IdDocente" onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?');">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
