@@ -4,85 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrador</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-        }
-
-        .container {
-            display: flex;
-            width: 100%;
-        }
-
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            transition: width 0.3s;
-        }
-
-            .sidebar h2 {
-                text-align: center;
-            }
-
-            .sidebar ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            .sidebar li {
-                margin: 10px 0;
-            }
-
-            .sidebar a {
-                color: white;
-                text-decoration: none;
-                display: block;
-                padding: 10px;
-                border-radius: 5px;
-            }
-
-                .sidebar a:hover {
-                    background-color: #555;
-                }
-
-        .dropdown-content {
-            display: none;
-            padding-left: 20px;
-        }
-
-            .dropdown-content a {
-                padding: 5px 0;
-                color: white;
-                text-decoration: none;
-                display: block;
-            }
-
-                .dropdown-content a:hover {
-                    background-color: #555;
-                }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .logout {
-            color: red !important;
-        }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/LayoutADMIN.css">
 </head>
 <body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
     <div class="container">
-        <aside class="sidebar">
+        <!-- Sidebar -->
+        <div class="sidebar visible" id="sidebar">
+
             <h2>Menú</h2>
             <ul>
                 <li><a asp-controller="PanelAdmin" asp-action="Index">Inicio</a></li>
@@ -94,6 +24,7 @@
                         <li><a asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
                     </ul>
                 </li>
+
                 <!-- Sección de Docentes -->
                 <li class="dropdown">
                     <a href="#">Docentes</a>
@@ -153,11 +84,14 @@
                 <!-- Cerrar sesión -->
                 <li><a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a></li>
             </ul>
-        </aside>
+        </div>
 
         <main class="content">
             @RenderBody()
         </main>
     </div>
+
+        <script src="~/js/JavaADMIN.js"></script>
+
 </body>
 </html>
