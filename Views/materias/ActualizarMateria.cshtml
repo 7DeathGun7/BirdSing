@@ -1,23 +1,34 @@
 ﻿@model BirdSing.Models.Materia
-
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Actualizar Materia";
 }
 
-<h2>Actualizar Materia</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="ActualizarMateria" method="post">
-    <div>
-        <label asp-for="IdGrado"></label>
-        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+<form asp-action="ActualizarMateria" method="post" class="mt-4 needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <!-- Campo oculto con el Id para que el binder lo reciba -->
+    <input asp-for="IdMateria" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="IdGrado" class="form-label">Grado</label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select"></select>
         <span asp-validation-for="IdGrado" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="NombreMateria"></label>
-        <input asp-for="NombreMateria" />
+
+    <div class="mb-3">
+        <label asp-for="NombreMateria" class="form-label">Nombre de la Materia</label>
+        <input asp-for="NombreMateria" class="form-control" />
         <span asp-validation-for="NombreMateria" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Actualizar</button>
-    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="ListaMaterias" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

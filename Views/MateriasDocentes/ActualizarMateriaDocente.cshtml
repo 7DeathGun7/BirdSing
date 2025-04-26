@@ -1,0 +1,32 @@
+﻿@model BirdSing.Models.ModelosViews.UpdateMateriaDocenteViewModel
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Editar Asignación";
+}
+<h2>@ViewData["Title"]</h2>
+<form asp-action="ActualizarMateriaDocente"
+      asp-route-idDocente="@Model.OldIdDocente"
+      asp-route-idMateria="@Model.OldIdMateria"
+      method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input asp-for="OldIdDocente" type="hidden" />
+    <input asp-for="OldIdMateria" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="IdDocente" class="form-label"></label>
+        <select asp-for="IdDocente" asp-items="ViewBag.Docentes" class="form-select"></select>
+        <span asp-validation-for="IdDocente" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="IdMateria" class="form-label"></label>
+        <select asp-for="IdMateria" asp-items="ViewBag.Materias" class="form-select"></select>
+        <span asp-validation-for="IdMateria" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="ListaMateriasDocentes" class="btn btn-secondary">Cancelar</a>
+</form>
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+ }

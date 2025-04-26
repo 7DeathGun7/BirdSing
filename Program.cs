@@ -4,40 +4,60 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar la conexión a la base de datos
+// 1. Configurar DbContext con SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configurar autenticación con cookies
+// 2. Configurar Authentication + Cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Redirigir a Login si no está autenticado
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Redirigir a error de acceso si no tiene permisos
+        options.Cookie.Name = "BirdSingAuth";
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(4);
+        options.SlidingExpiration = true;
+
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// Configurar controladores con vistas
+// 3. (Opcional) Configurar Authorization policies por nombre de rol
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Administrador"));
+    options.AddPolicy("DocenteOnly", policy => policy.RequireRole("Docente"));
+    options.AddPolicy("TutorOnly", policy => policy.RequireRole("Tutor"));
+});
+
+// 4. Agregar MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Ejecutar DbInitializer para agregar los datos iniciales
+// 5. Migraciones y seed al arranque
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    DbInitializer.Initialize(context);  // Aquí se ejecuta el inicializador
+    var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    ctx.Database.Migrate();             // Aplica migraciones pendientes
+    DbInitializer.Initialize(ctx);      // Siembra roles y usuario Admin
 }
 
-// Configurar el middleware
+// 6. Middleware de manejo de errores y seguridad
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-// Agregar autenticación y autorización antes de las rutas
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Definir las rutas
+// 7. Ruta por defecto
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

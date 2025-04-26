@@ -1,100 +1,123 @@
-﻿using BirdSing.Models;
+﻿using System.Linq;
 using BirdSing.Data;
+using BirdSing.Models;
+using BirdSing.Models.ModelosViews;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BirdSing.Controllers
 {
-    [Authorize(Roles = "1")] // Solo permite el acceso a administradores
+    [Authorize(Roles = "1")]  // Solo administradores
     public class GruposController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public GruposController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // GET: Grupos/ListaGrupos
         public IActionResult ListaGrupos()
         {
-            var grupos = _context.Grupos.Include(g => g.Grado).ToList();
+            var grupos = _context.Grupos
+                .Include(g => g.Grado)
+                .ToList();
             return View(grupos);
         }
 
+        // GET: Grupos/RegistroGrupo
+        [HttpGet]
         public IActionResult RegistroGrupo()
         {
-            var grados = _context.Grados.ToList();
-            ViewBag.Grados = grados.Select(g => new SelectListItem
-            {
-                Value = g.IdGrado.ToString(),
-                Text = g.Grados
-            }).ToList();
-            return View(new Grupo());
+            CargarGradosEnViewBag();
+            return View(new GradoGrupoViewModel());
         }
 
+        // POST: Grupos/RegistroGrupo
         [HttpPost]
-        public IActionResult RegistroGrupo(Grupo model)
+        [ValidateAntiForgeryToken]
+        public IActionResult RegistroGrupo(GradoGrupoViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Grupos.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction("ListaGrupos");
+                CargarGradosEnViewBag();
+                return View(vm);
             }
-            var grados = _context.Grados.ToList();
-            ViewBag.Grados = grados.Select(g => new SelectListItem
+
+            var grupo = new Grupo
             {
-                Value = g.IdGrado.ToString(),
-                Text = g.Grados
-            }).ToList();
-            return View(model);
+                IdGrado = vm.IdGrado,
+                Grupos = vm.NombreGrupo
+            };
+
+            _context.Grupos.Add(grupo);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaGrupos));
         }
 
+        // GET: Grupos/ActualizarGrupo/5
+        [HttpGet]
         public IActionResult ActualizarGrupo(int id)
         {
-            var grupo = _context.Grupos.Include(g => g.Grado).FirstOrDefault(g => g.IdGrupo == id);
-            if (grupo == null)
+            var entidad = _context.Grupos.Find(id);
+            if (entidad == null) return NotFound();
+
+            var vm = new GradoGrupoViewModel
             {
-                return NotFound();
-            }
-            var grados = _context.Grados.ToList();
-            ViewBag.Grados = grados.Select(g => new SelectListItem
-            {
-                Value = g.IdGrado.ToString(),
-                Text = g.Grados
-            }).ToList();
-            return View(grupo);
+                IdGrupo = entidad.IdGrupo,
+                IdGrado = entidad.IdGrado,
+                NombreGrupo = entidad.Grupos!
+            };
+
+            CargarGradosEnViewBag();
+            return View(vm);
         }
 
+        // POST: Grupos/ActualizarGrupo
         [HttpPost]
-        public IActionResult ActualizarGrupo(Grupo model)
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualizarGrupo(GradoGrupoViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Grupos.Update(model);
-                _context.SaveChanges();
-                return RedirectToAction("ListaGrupos");
+                CargarGradosEnViewBag();
+                return View(vm);
             }
-            var grados = _context.Grados.ToList();
-            ViewBag.Grados = grados.Select(g => new SelectListItem
-            {
-                Value = g.IdGrado.ToString(),
-                Text = g.Grados
-            }).ToList();
-            return View(model);
+
+            var entidad = _context.Grupos.Find(vm.IdGrupo);
+            if (entidad == null) return NotFound();
+
+            entidad.IdGrado = vm.IdGrado;
+            entidad.Grupos = vm.NombreGrupo;
+
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaGrupos));
         }
 
+        // GET: Grupos/EliminarGrupo/5
         public IActionResult EliminarGrupo(int id)
         {
-            var grupo = _context.Grupos.Find(id);
-            if (grupo != null)
+            var entidad = _context.Grupos.Find(id);
+            if (entidad != null)
             {
-                _context.Grupos.Remove(grupo);
+                _context.Grupos.Remove(entidad);
                 _context.SaveChanges();
             }
-            return RedirectToAction("ListaGrupos");
+            return RedirectToAction(nameof(ListaGrupos));
+        }
+
+        // Helper privado para poblar el dropdown de grados
+        private void CargarGradosEnViewBag()
+        {
+            ViewBag.Grados = _context.Grados
+                .Select(g => new SelectListItem
+                {
+                    Value = g.IdGrado.ToString(),
+                    Text = g.Grados
+                })
+                .ToList();
         }
     }
 }

@@ -1,124 +1,123 @@
-﻿using BirdSing.Models;
+﻿using System.Linq;
 using BirdSing.Data;
+using BirdSing.Models;
+using BirdSing.Models.ModelosViews;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BirdSing.Controllers
 {
-    [Authorize(Roles = "1")] // Solo permite el acceso a administradores
+    [Authorize(Roles = "1")]
     public class MateriasDocentesController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public MateriasDocentesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public MateriasDocentesController(ApplicationDbContext ctx) => _context = ctx;
 
         public IActionResult ListaMateriasDocentes()
         {
-            var materiasDocentes = _context.MateriasDocentes.Include(md => md.Docente).Include(md => md.Materia).ToList();
-            return View(materiasDocentes);
+            var lista = _context.MateriasDocentes
+                .Include(md => md.Docente).ThenInclude(d => d.Usuario)
+                .Include(md => md.Materia)
+                .ToList();
+            return View(lista);
         }
 
+        [HttpGet]
         public IActionResult RegistroMateriaDocente()
         {
-            var docentes = _context.Docentes.ToList();
-            ViewBag.Docentes = docentes.Select(d => new SelectListItem
-            {
-                Value = d.IdDocente.ToString(),
-                Text = d.Usuario.NombreUsuario
-            }).ToList();
-            var materias = _context.Materias.ToList();
-            ViewBag.Materias = materias.Select(m => new SelectListItem
-            {
-                Value = m.IdMateria.ToString(),
-                Text = m.NombreMateria
-            }).ToList();
-            return View(new MateriaDocente());
+            CargarDocentesYMaterias();
+            return View(new CreateMateriaDocenteViewModel());
         }
 
-        [HttpPost]
-        public IActionResult RegistroMateriaDocente(MateriaDocente model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult RegistroMateriaDocente(CreateMateriaDocenteViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.MateriasDocentes.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction("ListaMateriasDocentes");
+                CargarDocentesYMaterias();
+                return View(vm);
             }
-            var docentes = _context.Docentes.ToList();
-            ViewBag.Docentes = docentes.Select(d => new SelectListItem
+            _context.MateriasDocentes.Add(new MateriaDocente
             {
-                Value = d.IdDocente.ToString(),
-                Text = d.Usuario.NombreUsuario
-            }).ToList();
-            var materias = _context.Materias.ToList();
-            ViewBag.Materias = materias.Select(m => new SelectListItem
-            {
-                Value = m.IdMateria.ToString(),
-                Text = m.NombreMateria
-            }).ToList();
-            return View(model);
+                IdDocente = vm.IdDocente,
+                IdMateria = vm.IdMateria
+            });
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaMateriasDocentes));
         }
 
-        public IActionResult ActualizarMateriaDocente(int id)
+        [HttpGet]
+        public IActionResult ActualizarMateriaDocente(int idDocente, int idMateria)
         {
-            var materiaDocente = _context.MateriasDocentes.Include(md => md.Docente).Include(md => md.Materia).FirstOrDefault(md => md.Id == id);
-            if (materiaDocente == null)
+            var entidad = _context.MateriasDocentes
+                .Include(md => md.Docente).ThenInclude(d => d.Usuario)
+                .Include(md => md.Materia)
+                .FirstOrDefault(md => md.IdDocente == idDocente && md.IdMateria == idMateria);
+            if (entidad == null) return NotFound();
+
+            CargarDocentesYMaterias();
+            return View(new UpdateMateriaDocenteViewModel
             {
-                return NotFound();
+                OldIdDocente = entidad.IdDocente,
+                OldIdMateria = entidad.IdMateria,
+                IdDocente = entidad.IdDocente,
+                IdMateria = entidad.IdMateria
+            });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult ActualizarMateriaDocente(UpdateMateriaDocenteViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                CargarDocentesYMaterias();
+                return View(vm);
             }
-            var docentes = _context.Docentes.ToList();
-            ViewBag.Docentes = docentes.Select(d => new SelectListItem
+
+            // elimina antigua
+            var old = _context.MateriasDocentes.Find(vm.OldIdDocente, vm.OldIdMateria);
+            if (old != null) _context.MateriasDocentes.Remove(old);
+
+            // crea nueva
+            _context.MateriasDocentes.Add(new MateriaDocente
             {
-                Value = d.IdDocente.ToString(),
-                Text = d.Usuario.NombreUsuario
-            }).ToList();
-            var materias = _context.Materias.ToList();
-            ViewBag.Materias = materias.Select(m => new SelectListItem
-            {
-                Value = m.IdMateria.ToString(),
-                Text = m.NombreMateria
-            }).ToList();
-            return View(materiaDocente);
+                IdDocente = vm.IdDocente,
+                IdMateria = vm.IdMateria
+            });
+
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaMateriasDocentes));
         }
 
-        [HttpPost]
-        public IActionResult ActualizarMateriaDocente(MateriaDocente model)
+        public IActionResult EliminarMateriaDocente(int idDocente, int idMateria)
         {
-            if (ModelState.IsValid)
+            var e = _context.MateriasDocentes.Find(idDocente, idMateria);
+            if (e != null)
             {
-                _context.MateriasDocentes.Update(model);
-                _context.SaveChanges();
-                return RedirectToAction("ListaMateriasDocentes");
-            }
-            var docentes = _context.Docentes.ToList();
-            ViewBag.Docentes = docentes.Select(d => new SelectListItem
-            {
-                Value = d.IdDocente.ToString(),
-                Text = d.Usuario.NombreUsuario
-            }).ToList();
-            var materias = _context.Materias.ToList();
-            ViewBag.Materias = materias.Select(m => new SelectListItem
-            {
-                Value = m.IdMateria.ToString(),
-                Text = m.NombreMateria
-            }).ToList();
-            return View(model);
-        }
-
-        public IActionResult EliminarMateriaDocente(int id)
-        {
-            var materiaDocente = _context.MateriasDocentes.Find(id);
-            if (materiaDocente != null)
-            {
-                _context.MateriasDocentes.Remove(materiaDocente);
+                _context.MateriasDocentes.Remove(e);
                 _context.SaveChanges();
             }
-            return RedirectToAction("ListaMateriasDocentes");
+            return RedirectToAction(nameof(ListaMateriasDocentes));
+        }
+
+        private void CargarDocentesYMaterias()
+        {
+            ViewBag.Docentes = _context.Docentes
+                .Include(d => d.Usuario)
+                .Select(d => new SelectListItem
+                {
+                    Value = d.IdDocente.ToString(),
+                    Text = d.Usuario!.NombreUsuario
+                }).ToList();
+
+            ViewBag.Materias = _context.Materias
+                .Select(m => new SelectListItem
+                {
+                    Value = m.IdMateria.ToString(),
+                    Text = m.NombreMateria
+                }).ToList();
         }
     }
 }

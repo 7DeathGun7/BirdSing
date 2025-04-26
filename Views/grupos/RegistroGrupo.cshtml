@@ -1,23 +1,32 @@
-﻿@model BirdSing.Models.Grupo
+﻿@model BirdSing.Models.ModelosViews.GradoGrupoViewModel
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Registrar Grupo";
 }
 
-<h2>Registrar Grupo</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="RegistroGrupo" method="post">
-    <div>
-        <label asp-for="IdGrado"></label>
-        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+<form asp-action="RegistroGrupo" method="post" class="mt-4 needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="IdGrado" class="form-label"></label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select"></select>
         <span asp-validation-for="IdGrado" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Grupos"></label>
-        <input asp-for="Grupos" />
-        <span asp-validation-for="Grupos" class="text-danger"></span>
+
+    <div class="mb-3">
+        <label asp-for="NombreGrupo" class="form-label"></label>
+        <input asp-for="NombreGrupo" class="form-control" />
+        <span asp-validation-for="NombreGrupo" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Registrar</button>
-    </div>
+
+    <button type="submit" class="btn btn-success">Registrar</button>
+    <a asp-action="ListaGrupos" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
