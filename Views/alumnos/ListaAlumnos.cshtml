@@ -2,12 +2,13 @@
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Lista de Alumnos";
 }
 
-<h2>Lista de Alumnos</h2>
+<h2>@ViewData["Title"]</h2>
 
-<table class="table">
-    <thead>
+<table class="table table-striped mt-4">
+    <thead class="table-dark">
         <tr>
             <th>Nombre</th>
             <th>Apellido Paterno</th>
@@ -24,14 +25,23 @@
                 <td>@alumno.NombreAlumno</td>
                 <td>@alumno.ApellidoPaterno</td>
                 <td>@alumno.ApellidoMaterno</td>
-                <td>@alumno.Grado.Grados</td>
-                <td>@alumno.Grupo.Grupos</td>
+                <td>@alumno.Grado?.Grados</td>
+                <td>@alumno.Grupo?.Grupos</td>
                 <td>
-                    <a asp-action="ActualizarAlumno" asp-route-id="@alumno.MatriculaAlumno">Actualizar</a>
-                    <a asp-action="EliminarAlumno" asp-route-id="@alumno.MatriculaAlumno" onclick="return confirm('¿Estás seguro de que deseas eliminar este alumno?');">Eliminar</a>
+                    <a asp-action="ActualizarAlumno" asp-route-id="@alumno.MatriculaAlumno" class="btn btn-sm btn-primary">
+                        Actualizar
+                    </a>
+                    <a asp-action="EliminarAlumno" asp-route-id="@alumno.MatriculaAlumno"
+                       class="btn btn-sm btn-danger ms-1"
+                       onclick="return confirm('¿Estás seguro de que deseas eliminar este alumno?');">
+                        Eliminar
+                    </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<a asp-action="RegistroAlumno">Registrar Nuevo Alumno</a>
+
+<p class="mt-3">
+    <a asp-action="RegistroAlumno" class="btn btn-success">Registrar Nuevo Alumno</a>
+</p>
