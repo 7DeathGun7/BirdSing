@@ -4,6 +4,7 @@ using BirdSing.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250428155005_AddGradoGruposNav")]
+    partial class AddGradoGruposNav
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,12 +204,7 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
-                    b.Property<int?>("GrupoIdGrupo")
-                        .HasColumnType("int");
-
                     b.HasKey("IdDocente", "IdGrado", "IdGrupo");
-
-                    b.HasIndex("GrupoIdGrupo");
 
                     b.HasIndex("IdGrado");
 
@@ -241,6 +239,7 @@ namespace BirdSing.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupo"));
 
                     b.Property<string>("Grupos")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -511,10 +510,6 @@ namespace BirdSing.Migrations
 
             modelBuilder.Entity("BirdSing.Models.DocenteGrupo", b =>
                 {
-                    b.HasOne("BirdSing.Models.Grupo", null)
-                        .WithMany("DocentesGrupos")
-                        .HasForeignKey("GrupoIdGrupo");
-
                     b.HasOne("BirdSing.Models.Docente", "Docente")
                         .WithMany("GrupoAsignados")
                         .HasForeignKey("IdDocente")
@@ -646,8 +641,6 @@ namespace BirdSing.Migrations
             modelBuilder.Entity("BirdSing.Models.Grupo", b =>
                 {
                     b.Navigation("Alumnos");
-
-                    b.Navigation("DocentesGrupos");
 
                     b.Navigation("GrupoMaterias");
                 });

@@ -1,8 +1,13 @@
-﻿
-@{
-    ViewData["Title"] = "Panel de Docente";
+﻿@{
+  Layout = "_LayoutDocente";
+  ViewData["Title"] = "Bienvenido Docente";
 }
 
-<h1>Bienvenido Docente</h1>
-<a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Cerrar sesión</a>
-
+<h1>@ViewData["Title"]</h1>
+<p class="lead">
+  Desde aquí puedes:
+</p>
+<ul>
+  <li><a asp-action="CrearAvisos">Crear nuevos avisos</a></li>
+  <li><a asp-action="ListaAlumnosMaterias">Ver mis alumnos y materias</a></li>
+</ul>

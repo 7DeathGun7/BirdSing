@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BirdSing</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    <!-- Select2 CSS (opcional, para dropdowns buscables) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-          rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         body {
@@ -28,10 +26,12 @@
             background-color: #333;
             color: white;
             padding: 20px;
+            transition: width 0.3s;
         }
 
             .sidebar h2 {
                 text-align: center;
+                margin-bottom: 1rem;
             }
 
             .sidebar ul {
@@ -40,15 +40,15 @@
             }
 
             .sidebar li {
-                margin: 10px 0;
+                margin: 0.5rem 0;
             }
 
             .sidebar a {
                 color: white;
                 text-decoration: none;
                 display: block;
-                padding: 10px;
-                border-radius: 5px;
+                padding: 0.5rem;
+                border-radius: 4px;
             }
 
                 .sidebar a:hover {
@@ -57,7 +57,7 @@
 
         .dropdown-content {
             display: none;
-            padding-left: 20px;
+            padding-left: 1rem;
         }
 
         .dropdown:hover .dropdown-content {
@@ -70,7 +70,7 @@
 
         .content {
             flex: 1;
-            padding: 20px;
+            padding: 2rem;
         }
     </style>
 </head>
@@ -113,6 +113,11 @@
                     </ul>
                 </li>
 
+                <!-- Nueva sección: Grado y Grupo por Docente -->
+                <li>
+                    <a asp-controller="DocentesGrupos" asp-action="Lista">Grado y Grupo por Docente</a>
+                </li>
+
                 <li class="dropdown">
                     <a href="#">Materias</a>
                     <ul class="dropdown-content">
@@ -129,11 +134,20 @@
                     </ul>
                 </li>
 
+                <!-- Nueva sección: Materias por Grado/Grupo -->
+                <li class="dropdown">
+                    <a href="#">Materias por Grado/Grupo</a>
+                    <ul class="dropdown-content">
+                        <li><a asp-controller="GrupoMaterias" asp-action="ListaGrupoMaterias">Ver asignaciones</a></li>
+                        <li><a asp-controller="GrupoMaterias" asp-action="RegistroGrupoMateria">Nueva asignación</a></li>
+                    </ul>
+                </li>
+
                 <li class="dropdown">
                     <a href="#">Alumnos</a>
                     <ul class="dropdown-content">
                         <li><a asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>
-                        <li><a asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Nuevo Alumno</a></li>
+                        <li><a asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
                     </ul>
                 </li>
 
@@ -156,16 +170,14 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Select2 JS (opcional, para dropdowns buscables) -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-          $('.js-searchable').select2({
-            width: '100%',
-            placeholder: 'Seleccione…',
-            allowClear: true
-          });
+            $('.js-searchable').select2({
+                width: '100%',
+                placeholder: 'Seleccione…',
+                allowClear: true
+            });
         });
     </script>
 

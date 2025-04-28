@@ -96,20 +96,48 @@ namespace BirdSing.Controllers
             return RedirectToAction(nameof(ListaGrupos));
         }
 
-        // GET: Grupos/EliminarGrupo/5
         public IActionResult EliminarGrupo(int id)
         {
-            var entidad = _context.Grupos.Find(id);
-            if (entidad != null)
+            // 1) Cargo el grupo junto con todas sus tablas hijas
+            var grupo = _context.Grupos
+                .Include(g => g.GrupoMaterias)
+                .Include(g => g.DocentesGrupos)
+                .Include(g => g.Alumnos)
+                    .ThenInclude(a => a.AlumnosTutores) // si manejas Alumno-Tutor
+                .FirstOrDefault(g => g.IdGrupo == id);
+
+            if (grupo == null)
+                return NotFound();
+
+            // 2) Borro primero las relaciones en tablas intermedias
+            if (grupo.GrupoMaterias.Any())
+                _context.GrupoMaterias.RemoveRange(grupo.GrupoMaterias);
+
+            if (grupo.DocentesGrupos.Any())
+                _context.DocentesGrupos.RemoveRange(grupo.DocentesGrupos);
+
+            // 3) Si tienes Alumnos en este grupo, y quieres borrarlos:
+            if (grupo.Alumnos.Any())
             {
-                _context.Grupos.Remove(entidad);
-                _context.SaveChanges();
+                // Si además existe AlumnoTutor, lo quitamos antes
+                foreach (var alumno in grupo.Alumnos)
+                {
+                    if (alumno.AlumnosTutores.Any())
+                        _context.AlumnosTutores.RemoveRange(alumno.AlumnosTutores);
+                }
+                _context.Alumnos.RemoveRange(grupo.Alumnos);
             }
+
+            // 4) Finalmente quito el propio Grupo
+            _context.Grupos.Remove(grupo);
+            _context.SaveChanges();
+
             return RedirectToAction(nameof(ListaGrupos));
         }
+    
 
-        // Helper privado para poblar el dropdown de grados
-        private void CargarGradosEnViewBag()
+// Helper privado para poblar el dropdown de grados
+private void CargarGradosEnViewBag()
         {
             ViewBag.Grados = _context.Grados
                 .Select(g => new SelectListItem

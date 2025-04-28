@@ -1,4 +1,66 @@
-﻿@page
-@model BirdSing.Views.PanelDocente.CrearAvisosModel
+﻿@model BirdSing.Models.Aviso
 @{
+    Layout = "_LayoutDocente";
+    ViewData["Title"] = "Crear Aviso";
+}
+
+<h2>Crear Aviso</h2>
+
+<form asp-action="CrearAviso" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <div class="mb-3">
+        <label class="form-label">Modo de envío:</label><br />
+        <input type="radio" name="modoEnvio" value="Grupal" checked /> Grupal
+        &nbsp;
+        <input type="radio" name="modoEnvio" value="Individual" /> Individual
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label">Grado – Grupo</label>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select">
+            <option value="">-- Selecciona --</option>
+        </select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <!-- Sólo en modo INDIVIDUAL mostramos la lista de alumnos -->
+    <div id="divAlumno" class="mb-3">
+        <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
+        <select asp-for="MatriculaAlumno" asp-items="ViewBag.Alumnos" class="form-select">
+            <option value="">-- Selecciona alumno --</option>
+        </select>
+        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label">Título</label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Mensaje" class="form-label">Mensaje</label>
+        <textarea asp-for="Mensaje" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Mensaje" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar Aviso</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Mostrar/ocultar el select de Alumnos según modo
+        function toggleAlumno() {
+            const modo = document.querySelector('input[name="modoEnvio"]:checked').value;
+            document.getElementById('divAlumno').style.display = (modo === 'Individual') ? 'block' : 'none';
+        }
+
+        document.querySelectorAll('input[name="modoEnvio"]')
+                .forEach(r => r.addEventListener('change', toggleAlumno));
+        window.addEventListener('load', toggleAlumno);
+    </script>
 }

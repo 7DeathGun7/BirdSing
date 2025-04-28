@@ -12,6 +12,8 @@ namespace BirdSing.Models
         [ForeignKey("Grado")]
         public int IdGrado { get; set; }
         public Grado? Grado { get; set; }
+        public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();
+
 
         [Required]
         [StringLength(100)]

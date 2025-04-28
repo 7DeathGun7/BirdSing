@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BirdSing.Models
 {
@@ -10,20 +9,16 @@ namespace BirdSing.Models
         [Key]
         public int IdGrupo { get; set; }
 
-        [Required]
-        [Display(Name = "Grado")]
         [ForeignKey("Grado")]
         public int IdGrado { get; set; }
-
         public Grado? Grado { get; set; }
 
-        [Required]
         [StringLength(50)]
-        [Display(Name = "Nombre del Grupo")]
-        public string Grupos { get; set; } = string.Empty;
+        public string? Grupos { get; set; }
 
-        // Para que no intente validar o enlazar la colección de Alumnos
-        [ValidateNever]
+        // <- Agrega estas colecciones para facilitar Includes
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
+        public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();
+        public ICollection<DocenteGrupo> DocentesGrupos { get; set; } = new List<DocenteGrupo>();
     }
 }
