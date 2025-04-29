@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BirdSing.Models;
 
 namespace BirdSing.Models
 {
@@ -8,6 +9,11 @@ namespace BirdSing.Models
     {
         [Key]
         public int MatriculaAlumno { get; set; }
+
+        // -> NUEVO: FK a Usuario
+        [ForeignKey("Usuario")]
+        public int? IdUsuario { get; set; }
+        public Usuario? Usuario { get; set; } = null!;
 
         [Required]
         [StringLength(100)]
@@ -37,5 +43,4 @@ namespace BirdSing.Models
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
     }
-
 }

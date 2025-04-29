@@ -1,6 +1,6 @@
-﻿// Controllers/PanelDocenteController.cs
-using BirdSing.Data;
+﻿using BirdSing.Data;
 using BirdSing.Models;
+using BirdSing.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,9 +16,8 @@ namespace BirdSing.Controllers
     {
         private readonly ApplicationDbContext _context;
         public PanelDocenteController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _context = context;
+
 
         // GET: /PanelDocente/Index
         public IActionResult Index()
@@ -150,64 +149,104 @@ namespace BirdSing.Controllers
             return View(avisos);
         }
 
-        // GET: /PanelDocente/MisAlumnos
-        public IActionResult MisAlumnos(int? idGrado, int? idGrupo, int? idMateria)
+        public IActionResult MisAlumnos(int? gradoId, int? grupoId, int? materiaId)
         {
-            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = _context.Docentes.FirstOrDefault(d => d.IdUsuario == idUsuario);
-            if (docente == null) return Forbid();
-            var docenteId = docente.IdDocente;
+            var docenteId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            // 1) Asignaciones Docente→Grupo
-            var asignaciones = _context.DocentesGrupos
-                .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
+            var vm = new MisAlumnosViewModel
+            {
+                GradoId = gradoId,
+                GrupoId = grupoId,
+                MateriaId = materiaId
+            };
+
+            // 1) Grados
+            vm.Grados = _context.DocentesGrupos
                 .Where(dg => dg.IdDocente == docenteId)
-                .ToList();
-
-            // 2) Dropdown de grados
-            ViewBag.Grados = asignaciones
-                .GroupBy(dg => dg.IdGrado)
+                .Select(dg => dg.Grupo!.Grado!)
+                .Distinct()
                 .Select(g => new SelectListItem
                 {
-                    Value = g.Key.ToString(),
-                    Text = g.First().Grupo!.Grado!.Grados.ToString()
+                    Value = g.IdGrado.ToString(),
+                    Text = g.Grados
                 })
+                .OrderBy(x => x.Text)
                 .ToList();
+            vm.Grados.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 3) Dropdown de grupos
-            ViewBag.Grupos = asignaciones
-                .Where(dg => !idGrado.HasValue || dg.IdGrado == idGrado.Value)
-                .Select(dg => new SelectListItem
+            // 2) Grupos (opcionalmente filtrados por grado)
+            var gruposQ = _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == docenteId);
+            if (gradoId.HasValue)
+                gruposQ = gruposQ.Where(dg => dg.IdGrado == gradoId.Value);
+
+            vm.Grupos = gruposQ
+                .Select(dg => dg.Grupo!)
+                .Distinct()
+                .Select(g => new SelectListItem
                 {
-                    Value = dg.IdGrupo.ToString(),
-                    Text = dg.Grupo!.Grupos
+                    Value = g.IdGrupo.ToString(),
+                    Text = g.Grupos
                 })
+                .OrderBy(x => x.Text)
                 .ToList();
+            vm.Grupos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 4) Dropdown de materias
-            ViewBag.Materias = _context.MateriasDocentes
-                .Include(md => md.Materia)
-                .Where(md => md.IdDocente == docenteId)
-                .Select(md => new SelectListItem
+            // 3) Materias (opcionalmente filtradas por grupo)
+            var matQ = _context.MateriasDocentes
+                .Where(md => md.IdDocente == docenteId);
+            if (grupoId.HasValue)
+            {
+                var grupoMaterias = _context.GrupoMaterias
+                    .Where(gm => gm.IdGrupo == grupoId.Value)
+                    .Select(gm => gm.IdMateria);
+                matQ = matQ.Where(md => grupoMaterias.Contains(md.IdMateria));
+            }
+            vm.Materias = matQ
+                .Select(md => md.Materia!)
+                .Distinct()
+                .Select(m => new SelectListItem
                 {
-                    Value = md.IdMateria.ToString(),
-                    Text = md.Materia!.NombreMateria
+                    Value = m.IdMateria.ToString(),
+                    Text = m.NombreMateria
                 })
+                .OrderBy(x => x.Text)
                 .ToList();
+            vm.Materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
 
-            // 5) Query base de alumnos
-            var alumnosQuery = _context.Alumnos
+            // 4) Consulta alumnos según filtros
+            var dgBase = _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == docenteId);
+
+            if (gradoId.HasValue)
+                dgBase = dgBase.Where(dg => dg.IdGrado == gradoId.Value);
+            if (grupoId.HasValue)
+                dgBase = dgBase.Where(dg => dg.IdGrupo == grupoId.Value);
+
+            var alumnos = dgBase
+                .SelectMany(dg => dg.Grupo!.Alumnos!)
+                .Include(a => a.Usuario)
                 .Include(a => a.Grupo).ThenInclude(g => g.Grado)
-                .Where(a => a.Grupo!.DocentesGrupos
-                              .Any(dg => dg.IdDocente == docenteId));
+                .ToList();
 
-            // 6) Aplicar filtros
-            if (idGrado.HasValue) alumnosQuery = alumnosQuery.Where(a => a.IdGrado == idGrado.Value);
-            if (idGrupo.HasValue) alumnosQuery = alumnosQuery.Where(a => a.IdGrupo == idGrupo.Value);
-            // Nota: Para filtrar por materia necesitarías relacionar Alumnos→Materias
+            if (materiaId.HasValue)
+            {
+                // sólo los alumnos inscritos en esa materia
+                var alumnosEnMat = _context.GrupoMaterias
+                    .Where(gm => gm.IdMateria == materiaId.Value
+                              && (!grupoId.HasValue || gm.IdGrupo == grupoId.Value))
+                    .SelectMany(gm => gm.Grupo!.Alumnos!)
+                    .Select(a => a.MatriculaAlumno)
+                    .Distinct()
+                    .ToHashSet();
 
-            var alumnos = alumnosQuery.ToList();
-            return View(alumnos);
+                alumnos = alumnos
+                    .Where(a => alumnosEnMat.Contains(a.MatriculaAlumno))
+                    .ToList();
+            }
+
+            vm.Alumnos = alumnos;
+            return View(vm);
         }
     }
 }

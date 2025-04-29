@@ -1,33 +1,13 @@
-﻿@model IEnumerable<BirdSing.Models.Alumno>
+﻿@model BirdSing.Models.ViewModels.MisAlumnosViewModel
 @{
     Layout = "_LayoutDocente";
     ViewData["Title"] = "Mis Alumnos";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>Mis Alumnos</h2>
 
-<form method="get" class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label class="form-label">Grado</label>
-        <select name="idGrado" asp-items="ViewBag.Grados" class="form-select"
-                onchange="this.form.submit()">
-            <option value="">-- Todos --</option>
-        </select>
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Grupo</label>
-        <select name="idGrupo" asp-items="ViewBag.Grupos" class="form-select"
-                onchange="this.form.submit()">
-            <option value="">-- Todos --</option>
-        </select>
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Materia</label>
-        <select name="idMateria" asp-items="ViewBag.Materias" class="form-select"
-                onchange="this.form.submit()">
-            <option value="">-- Todas --</option>
-        </select>
-    </div>
+<form asp-action="MisAlumnos" method="get" class="row g-3 mb-4">
+    <!-- dropdowns... -->
 </form>
 
 <table class="table table-striped">
@@ -41,14 +21,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var a in Model)
+        @foreach (var a in Model.Alumnos)
         {
             <tr>
-                <td>@a.NombreAlumno</td>
-                <td>@a.ApellidoPaterno</td>
-                <td>@a.ApellidoMaterno</td>
-                <td>@a.Grado!.Grados</td>
-                <td>@a.Grupo!.Grupos</td>
+                <td>@a.Usuario!.NombreUsuario</td>
+                <td>@a.Usuario.ApellidoPaterno</td>
+                <td>@a.Usuario.ApellidoMaterno</td>
+                <td>@a.Grupo?.Grado?.Grados</td>
+                <td>@a.Grupo?.Grupos</td>
             </tr>
         }
     </tbody>

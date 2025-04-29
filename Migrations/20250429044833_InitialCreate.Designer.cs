@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250428150327_FixGrupoMateriaCascade")]
-    partial class FixGrupoMateriaCascade
+    [Migration("20250429044833_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,9 @@ namespace BirdSing.Migrations
                     b.Property<int>("IdGrupo")
                         .HasColumnType("int");
 
+                    b.Property<int?>("IdUsuario")
+                        .HasColumnType("int");
+
                     b.Property<string>("NombreAlumno")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -66,6 +69,8 @@ namespace BirdSing.Migrations
                     b.HasIndex("IdGrado");
 
                     b.HasIndex("IdGrupo");
+
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Alumnos");
                 });
@@ -100,12 +105,6 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AlumnoMatriculaAlumno")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DocenteIdDocente")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -124,9 +123,6 @@ namespace BirdSing.Migrations
                     b.Property<bool>("Leido")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MateriaIdMateria")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MatriculaAlumno")
                         .HasColumnType("int");
 
@@ -142,14 +138,7 @@ namespace BirdSing.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("TutorIdTutor")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AlumnoMatriculaAlumno");
-
-                    b.HasIndex("DocenteIdDocente");
 
                     b.HasIndex("IdDocente");
 
@@ -159,11 +148,7 @@ namespace BirdSing.Migrations
 
                     b.HasIndex("IdTutor");
 
-                    b.HasIndex("MateriaIdMateria");
-
                     b.HasIndex("MatriculaAlumno");
-
-                    b.HasIndex("TutorIdTutor");
 
                     b.ToTable("Avisos");
                 });
@@ -204,7 +189,12 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
+                    b.Property<int?>("GrupoIdGrupo")
+                        .HasColumnType("int");
+
                     b.HasKey("IdDocente", "IdGrado", "IdGrupo");
+
+                    b.HasIndex("GrupoIdGrupo");
 
                     b.HasIndex("IdGrado");
 
@@ -239,7 +229,6 @@ namespace BirdSing.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupo"));
 
                     b.Property<string>("Grupos")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -406,7 +395,7 @@ namespace BirdSing.Migrations
                     b.HasOne("BirdSing.Models.Grado", "Grado")
                         .WithMany()
                         .HasForeignKey("IdGrado")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Grupo", "Grupo")
@@ -415,9 +404,16 @@ namespace BirdSing.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BirdSing.Models.Usuario", "Usuario")
+                        .WithMany("Alumnos")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Grado");
 
                     b.Navigation("Grupo");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("BirdSing.Models.AlumnoTutor", b =>
@@ -441,50 +437,34 @@ namespace BirdSing.Migrations
 
             modelBuilder.Entity("BirdSing.Models.Aviso", b =>
                 {
-                    b.HasOne("BirdSing.Models.Alumno", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("AlumnoMatriculaAlumno");
-
-                    b.HasOne("BirdSing.Models.Docente", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("DocenteIdDocente");
-
                     b.HasOne("BirdSing.Models.Docente", "Docente")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("IdDocente")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Grupo", "Grupo")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("IdGrupo")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Materia", "Materia")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("IdMateria")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Tutor", "Tutor")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("IdTutor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BirdSing.Models.Materia", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("MateriaIdMateria");
-
                     b.HasOne("BirdSing.Models.Alumno", "Alumno")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("MatriculaAlumno")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("BirdSing.Models.Tutor", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("TutorIdTutor");
 
                     b.Navigation("Alumno");
 
@@ -510,6 +490,10 @@ namespace BirdSing.Migrations
 
             modelBuilder.Entity("BirdSing.Models.DocenteGrupo", b =>
                 {
+                    b.HasOne("BirdSing.Models.Grupo", null)
+                        .WithMany("DocentesGrupos")
+                        .HasForeignKey("GrupoIdGrupo");
+
                     b.HasOne("BirdSing.Models.Docente", "Docente")
                         .WithMany("GrupoAsignados")
                         .HasForeignKey("IdDocente")
@@ -538,7 +522,7 @@ namespace BirdSing.Migrations
             modelBuilder.Entity("BirdSing.Models.Grupo", b =>
                 {
                     b.HasOne("BirdSing.Models.Grado", "Grado")
-                        .WithMany()
+                        .WithMany("Grupos")
                         .HasForeignKey("IdGrado")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -557,7 +541,7 @@ namespace BirdSing.Migrations
                     b.HasOne("BirdSing.Models.Materia", "Materia")
                         .WithMany("GrupoMaterias")
                         .HasForeignKey("IdMateria")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Grupo");
@@ -633,9 +617,18 @@ namespace BirdSing.Migrations
                     b.Navigation("MateriasDocentes");
                 });
 
+            modelBuilder.Entity("BirdSing.Models.Grado", b =>
+                {
+                    b.Navigation("Grupos");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Grupo", b =>
                 {
                     b.Navigation("Alumnos");
+
+                    b.Navigation("Avisos");
+
+                    b.Navigation("DocentesGrupos");
 
                     b.Navigation("GrupoMaterias");
                 });
@@ -654,6 +647,11 @@ namespace BirdSing.Migrations
                     b.Navigation("AlumnosTutores");
 
                     b.Navigation("Avisos");
+                });
+
+            modelBuilder.Entity("BirdSing.Models.Usuario", b =>
+                {
+                    b.Navigation("Alumnos");
                 });
 #pragma warning restore 612, 618
         }
