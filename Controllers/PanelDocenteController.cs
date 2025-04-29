@@ -11,44 +11,61 @@ using System.Security.Claims;
 
 namespace BirdSing.Controllers
 {
-    [Authorize(Roles = "2")]    // 2 = Docente
+    [Authorize(Roles = "2")] // 2 = Docente
     public class PanelDocenteController : Controller
     {
         private readonly ApplicationDbContext _context;
         public PanelDocenteController(ApplicationDbContext context)
             => _context = context;
 
-
         // GET: /PanelDocente/Index
         public IActionResult Index()
         {
+            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var docente = _context.Docentes
+                .Include(d => d.Usuario) // Incluye la información del usuario relacionado
+                .FirstOrDefault(d => d.IdUsuario == idUsuario);
+
+            if (docente != null && docente.Usuario != null)
+            {
+                ViewBag.NombreDocente = docente.Usuario.NombreUsuario + " " + docente.Usuario.ApellidoPaterno; // Combina nombre y apellido
+            }
+            else
+            {
+                ViewBag.NombreDocente = "Docente Desconocido"; // En caso de no encontrar el nombre
+            }
+
             return View();
         }
 
-        // GET: /PanelDocente/CrearAvisos
         [HttpGet]
-        public IActionResult CrearAvisos(string modoEnvio, int? idGrupo)
+        public IActionResult CrearAvisos(string modoEnvio = "Grupal", int? idGrupo = null)
         {
-            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = _context.Docentes.FirstOrDefault(d => d.IdUsuario == idUsuario);
-            if (docente == null) return Forbid();
-            var docenteId = docente.IdDocente;
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var docente = _context.Docentes.Single(d => d.IdUsuario == userId);
 
-            // Dropdown de grupos
-            ViewBag.Grupos = _context.DocentesGrupos
+            // prepara el VM
+            var vm = new CrearAvisoViewModel
+            {
+                ModoEnvio = modoEnvio,
+                IdGrupo = idGrupo
+            };
+
+            // 1) Grupos
+            vm.Grupos = _context.DocentesGrupos
                 .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
-                .Where(dg => dg.IdDocente == docenteId)
+                .Where(dg => dg.IdDocente == docente.IdDocente)
                 .Select(dg => new SelectListItem
                 {
                     Value = dg.IdGrupo.ToString(),
-                    Text = $"{dg.Grupo!.Grado!.Grados} - {dg.Grupo.Grupos}"
+                    Text = $"{dg.Grupo!.Grado!.Grados} – {dg.Grupo.Grupos}"
                 })
                 .ToList();
 
-            // Dropdown de materias
-            ViewBag.MateriasDocente = _context.MateriasDocentes
+            // 2) Materias
+            vm.Materias = _context.MateriasDocentes
                 .Include(md => md.Materia)
-                .Where(md => md.IdDocente == docenteId)
+                .Where(md => md.IdDocente == docente.IdDocente)
                 .Select(md => new SelectListItem
                 {
                     Value = md.IdMateria.ToString(),
@@ -56,13 +73,10 @@ namespace BirdSing.Controllers
                 })
                 .ToList();
 
-            ViewBag.ModoEnvio = modoEnvio;
-            ViewBag.IdGrupo = idGrupo;
-
-            // Si es individual, cargamos los alumnos del grupo
+            // 3) Si piden envío Individual y ya hay grupo, cargamos Alumnos
             if (modoEnvio == "Individual" && idGrupo.HasValue)
             {
-                ViewBag.Alumnos = _context.Alumnos
+                vm.Alumnos = _context.Alumnos
                     .Where(a => a.IdGrupo == idGrupo.Value)
                     .Select(a => new SelectListItem
                     {
@@ -72,65 +86,35 @@ namespace BirdSing.Controllers
                     .ToList();
             }
 
-            return View(new Aviso());
+            return View(vm);
         }
 
         // POST: /PanelDocente/CrearAvisos
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CrearAvisos(Aviso model, string modoEnvio)
+        public IActionResult CrearAvisos(CrearAvisoViewModel vm)
         {
-            // Recargamos dropdowns igual que en GET
-            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = _context.Docentes.FirstOrDefault(d => d.IdUsuario == idUsuario);
-            if (docente == null) return Forbid();
-            var docenteId = docente.IdDocente;
-
-            ViewBag.Grupos = _context.DocentesGrupos
-                .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
-                .Where(dg => dg.IdDocente == docenteId)
-                .Select(dg => new SelectListItem
-                {
-                    Value = dg.IdGrupo.ToString(),
-                    Text = $"{dg.Grupo!.Grado!.Grados} - {dg.Grupo.Grupos}"
-                })
-                .ToList();
-
-            ViewBag.MateriasDocente = _context.MateriasDocentes
-                .Include(md => md.Materia)
-                .Where(md => md.IdDocente == docenteId)
-                .Select(md => new SelectListItem
-                {
-                    Value = md.IdMateria.ToString(),
-                    Text = md.Materia!.NombreMateria
-                })
-                .ToList();
-
-            if (modoEnvio == "Individual" && model.IdGrupo > 0)
-            {
-                ViewBag.Alumnos = _context.Alumnos
-                    .Where(a => a.IdGrupo == model.IdGrupo)
-                    .Select(a => new SelectListItem
-                    {
-                        Value = a.MatriculaAlumno.ToString(),
-                        Text = $"{a.NombreAlumno} {a.ApellidoPaterno}"
-                    })
-                    .ToList();
-            }
-
             if (!ModelState.IsValid)
-                return View(model);
-
-            // Asignamos valores fijos
-            model.IdDocente = docenteId;
-            model.Fecha = DateTime.Now;
-            model.TipoAviso = modoEnvio;
-            if (modoEnvio == "Grupal")
             {
-                model.IdMateria = 0;
-                model.MatriculaAlumno = null;
+                // recarga Grupos/Materias/Alumnos idéntico al GET
+                return View(vm);
             }
 
-            _context.Avisos.Add(model);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var docente = _context.Docentes.Single(d => d.IdUsuario == userId);
+
+            var avis = new Aviso
+            {
+                IdDocente = docente.IdDocente,
+                IdGrupo = vm.IdGrupo!.Value,
+                MatriculaAlumno = vm.ModoEnvio == "Individual" ? vm.MatriculaAlumno : null,
+                TipoAviso = vm.ModoEnvio,
+                Titulo = vm.Titulo,
+                Mensaje = vm.Mensaje,
+                Fecha = DateTime.Now,
+                Leido = false,
+                // IdMateria lo pones igual que antes...
+            };
+            _context.Avisos.Add(avis);
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
@@ -151,8 +135,17 @@ namespace BirdSing.Controllers
 
         public IActionResult MisAlumnos(int? gradoId, int? grupoId, int? materiaId)
         {
-            var docenteId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            // —————————————————————————————————————————————————————————
+            // 1) Sacamos el IdUsuario del claim y buscamos al Docente
+            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var docente = _context.Docentes
+                           .FirstOrDefault(d => d.IdUsuario == idUsuario);
+            if (docente == null)
+                return Forbid();
+            var docenteId = docente.IdDocente;
+            // —————————————————————————————————————————————————————————
 
+            // Inicializar ViewModel con los filtros que vienen por query string
             var vm = new MisAlumnosViewModel
             {
                 GradoId = gradoId,
@@ -160,7 +153,7 @@ namespace BirdSing.Controllers
                 MateriaId = materiaId
             };
 
-            // 1) Grados
+            // 1) Grados que imparte el docente
             vm.Grados = _context.DocentesGrupos
                 .Where(dg => dg.IdDocente == docenteId)
                 .Select(dg => dg.Grupo!.Grado!)
@@ -174,7 +167,7 @@ namespace BirdSing.Controllers
                 .ToList();
             vm.Grados.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 2) Grupos (opcionalmente filtrados por grado)
+            // 2) Grupos (filtrados opcionalmente por grado)
             var gruposQ = _context.DocentesGrupos
                 .Where(dg => dg.IdDocente == docenteId);
             if (gradoId.HasValue)
@@ -192,16 +185,17 @@ namespace BirdSing.Controllers
                 .ToList();
             vm.Grupos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 3) Materias (opcionalmente filtradas por grupo)
+            // 3) Materias (filtradas por grupo, si hay)
             var matQ = _context.MateriasDocentes
                 .Where(md => md.IdDocente == docenteId);
             if (grupoId.HasValue)
             {
-                var grupoMaterias = _context.GrupoMaterias
+                var matIds = _context.GrupoMaterias
                     .Where(gm => gm.IdGrupo == grupoId.Value)
                     .Select(gm => gm.IdMateria);
-                matQ = matQ.Where(md => grupoMaterias.Contains(md.IdMateria));
+                matQ = matQ.Where(md => matIds.Contains(md.IdMateria));
             }
+
             vm.Materias = matQ
                 .Select(md => md.Materia!)
                 .Distinct()
@@ -214,24 +208,18 @@ namespace BirdSing.Controllers
                 .ToList();
             vm.Materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
 
-            // 4) Consulta alumnos según filtros
-            var dgBase = _context.DocentesGrupos
-                .Where(dg => dg.IdDocente == docenteId);
-
-            if (gradoId.HasValue)
-                dgBase = dgBase.Where(dg => dg.IdGrado == gradoId.Value);
-            if (grupoId.HasValue)
-                dgBase = dgBase.Where(dg => dg.IdGrupo == grupoId.Value);
-
-            var alumnos = dgBase
+            // 4) Consulta de alumnos según filtros
+            var alumnosQ = _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == docenteId
+                          && (!gradoId.HasValue || dg.IdGrado == gradoId.Value)
+                          && (!grupoId.HasValue || dg.IdGrupo == grupoId.Value))
                 .SelectMany(dg => dg.Grupo!.Alumnos!)
                 .Include(a => a.Usuario)
                 .Include(a => a.Grupo).ThenInclude(g => g.Grado)
-                .ToList();
+                .AsQueryable();
 
             if (materiaId.HasValue)
             {
-                // sólo los alumnos inscritos en esa materia
                 var alumnosEnMat = _context.GrupoMaterias
                     .Where(gm => gm.IdMateria == materiaId.Value
                               && (!grupoId.HasValue || gm.IdGrupo == grupoId.Value))
@@ -240,14 +228,14 @@ namespace BirdSing.Controllers
                     .Distinct()
                     .ToHashSet();
 
-                alumnos = alumnos
-                    .Where(a => alumnosEnMat.Contains(a.MatriculaAlumno))
-                    .ToList();
+                alumnosQ = alumnosQ
+                    .Where(a => alumnosEnMat.Contains(a.MatriculaAlumno));
             }
 
-            vm.Alumnos = alumnos;
+            vm.Alumnos = alumnosQ.ToList();
             return View(vm);
         }
+
     }
 }
 

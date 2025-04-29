@@ -1,4 +1,4 @@
-﻿@model BirdSing.Models.Aviso
+﻿@model BirdSing.Models.ViewModels.CrearAvisoViewModel
 @{
     Layout = "_LayoutDocente";
     ViewData["Title"] = "Crear Aviso";
@@ -6,44 +6,59 @@
 
 <h2>Crear Aviso</h2>
 
-<form asp-action="CrearAviso" method="post" class="mt-4">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
-
-    <div class="mb-3">
-        <label class="form-label">Modo de envío:</label><br />
-        <input type="radio" name="modoEnvio" value="Grupal" checked /> Grupal
-        &nbsp;
-        <input type="radio" name="modoEnvio" value="Individual" /> Individual
+<!-- 1) este form sirve para GET y recargar cuando cambie grupo o modo -->
+<form asp-action="CrearAvisos" method="get" class="mb-4">
+    <div class="form-check form-check-inline">
+        <input asp-for="ModoEnvio" class="form-check-input"
+               type="radio" value="Grupal"
+               onchange="this.form.submit()" />
+        <label class="form-check-label">Grupal</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input asp-for="ModoEnvio" class="form-check-input"
+               type="radio" value="Individual"
+               onchange="this.form.submit()" />
+        <label class="form-check-label">Individual</label>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="IdGrupo" class="form-label">Grado – Grupo</label>
-        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select">
+    <div class="mt-3">
+        <label asp-for="IdGrupo"></label>
+        <select asp-for="IdGrupo" asp-items="Model.Grupos"
+                class="form-select"
+                onchange="this.form.submit()">
             <option value="">-- Selecciona --</option>
         </select>
-        <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
 
-    <!-- Sólo en modo INDIVIDUAL mostramos la lista de alumnos -->
-    <div id="divAlumno" class="mb-3">
-        <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
-        <select asp-for="MatriculaAlumno" asp-items="ViewBag.Alumnos" class="form-select">
-            <option value="">-- Selecciona alumno --</option>
-        </select>
-        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
-    </div>
+    @* Solo si es Individual mostramos alumnos *@
+    @if (Model.ModoEnvio == "Individual")
+    {
+        <div class="mt-3">
+            <label asp-for="MatriculaAlumno"></label>
+            <select asp-for="MatriculaAlumno" asp-items="Model.Alumnos"
+                    class="form-select">
+                <option value="">-- Selecciona alumno --</option>
+            </select>
+        </div>
+    }
+</form>
+
+<!-- 2) este form real POST para crear el aviso -->
+<form asp-action="CrearAvisos" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ModoEnvio" />
+    <input type="hidden" asp-for="IdGrupo" />
+    <input type="hidden" asp-for="MatriculaAlumno" />
 
     <div class="mb-3">
-        <label asp-for="Titulo" class="form-label">Título</label>
+        <label asp-for="Titulo"></label>
         <input asp-for="Titulo" class="form-control" />
         <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Mensaje" class="form-label">Mensaje</label>
-        <textarea asp-for="Mensaje" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Mensaje" class="text-danger"></span>
+        <label asp-for="Mensaje"></label>
+        <textarea asp-for="Mensaje" class="form-control"></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Enviar Aviso</button>
@@ -52,15 +67,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Mostrar/ocultar el select de Alumnos según modo
-        function toggleAlumno() {
-            const modo = document.querySelector('input[name="modoEnvio"]:checked').value;
-            document.getElementById('divAlumno').style.display = (modo === 'Individual') ? 'block' : 'none';
-        }
-
-        document.querySelectorAll('input[name="modoEnvio"]')
-                .forEach(r => r.addEventListener('change', toggleAlumno));
-        window.addEventListener('load', toggleAlumno);
-    </script>
 }
