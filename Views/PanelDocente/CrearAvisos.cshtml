@@ -1,4 +1,5 @@
 ﻿@model BirdSing.Models.ViewModels.CrearAvisoViewModel
+
 @{
     Layout = "_LayoutDocente";
     ViewData["Title"] = "Crear Aviso";
@@ -6,59 +7,69 @@
 
 <h2>Crear Aviso</h2>
 
-<!-- 1) este form sirve para GET y recargar cuando cambie grupo o modo -->
-<form asp-action="CrearAvisos" method="get" class="mb-4">
-    <div class="form-check form-check-inline">
-        <input asp-for="ModoEnvio" class="form-check-input"
-               type="radio" value="Grupal"
-               onchange="this.form.submit()" />
-        <label class="form-check-label">Grupal</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input asp-for="ModoEnvio" class="form-check-input"
-               type="radio" value="Individual"
-               onchange="this.form.submit()" />
-        <label class="form-check-label">Individual</label>
+<form asp-action="CrearAvisos" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <!-- 1) Modo de envío -->
+    <div class="mb-3">
+        <label class="form-label">Modo de envío:</label><br />
+        <input asp-for="ModoEnvio" type="radio" value="Grupal" onchange="toggleIndividual()" /> Grupal
+        &nbsp;
+        <input asp-for="ModoEnvio" type="radio" value="Individual" onchange="toggleIndividual()" /> Individual
+        <span asp-validation-for="ModoEnvio" class="text-danger"></span>
     </div>
 
-    <div class="mt-3">
-        <label asp-for="IdGrupo"></label>
+    <!-- 2) Grado – Grupo -->
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label"></label>
         <select asp-for="IdGrupo" asp-items="Model.Grupos"
                 class="form-select"
-                onchange="this.form.submit()">
+                id="selectGrupo">
             <option value="">-- Selecciona --</option>
         </select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
 
-    @* Solo si es Individual mostramos alumnos *@
-    @if (Model.ModoEnvio == "Individual")
-    {
-        <div class="mt-3">
-            <label asp-for="MatriculaAlumno"></label>
-            <select asp-for="MatriculaAlumno" asp-items="Model.Alumnos"
-                    class="form-select">
-                <option value="">-- Selecciona alumno --</option>
-            </select>
+    <!-- 3) Combobox Alumno (solo en Individual) -->
+    <div id="divAlumno" class="mb-4" style="display:none">
+        <label class="form-label">Alumno</label>
+        <div class="dropdown">
+            <button class="btn btn-light w-100 text-start dropdown-toggle"
+                    type="button"
+                    id="btnDropdownAlumnos"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                -- Selecciona alumno --
+            </button>
+            <div class="dropdown-menu p-2 w-100" aria-labelledby="btnDropdownAlumnos">
+                <input type="text"
+                       id="inputFilterAlumnos"
+                       class="form-control mb-2"
+                       placeholder="Buscar..."
+                       oninput="filtrarAlumnosInside()" />
+
+                <div id="listAlumnosInside" style="max-height:200px; overflow:auto;">
+                    <!-- aquí se inyectan items -->
+                </div>
+            </div>
         </div>
-    }
-</form>
+        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+        <!-- campo oculto que realmente sube el Id -->
+        <input asp-for="MatriculaAlumno" type="hidden" id="MatriculaAlumno" />
+    </div>
 
-<!-- 2) este form real POST para crear el aviso -->
-<form asp-action="CrearAvisos" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="ModoEnvio" />
-    <input type="hidden" asp-for="IdGrupo" />
-    <input type="hidden" asp-for="MatriculaAlumno" />
-
+    <!-- 4) Título -->
     <div class="mb-3">
-        <label asp-for="Titulo"></label>
+        <label asp-for="Titulo" class="form-label"></label>
         <input asp-for="Titulo" class="form-control" />
         <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
 
+    <!-- 5) Mensaje -->
     <div class="mb-3">
-        <label asp-for="Mensaje"></label>
-        <textarea asp-for="Mensaje" class="form-control"></textarea>
+        <label asp-for="Mensaje" class="form-label"></label>
+        <textarea asp-for="Mensaje" class="form-control" rows="4"></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Enviar Aviso</button>
@@ -67,4 +78,57 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // 1) Muestra/oculta sección Alumno
+        function toggleIndividual() {
+            const modo = document.querySelector('input[name="ModoEnvio"]:checked')?.value;
+            document.getElementById('divAlumno').style.display = modo === 'Individual' ? 'block' : 'none';
+        }
+
+        // 2) Al cambiar Grupo: fetch alumnos y monta items en el dropdown
+        document.getElementById('selectGrupo').addEventListener('change', async function() {
+            const grupoId = this.value;
+            const cont = document.getElementById('listAlumnosInside');
+            cont.innerHTML = '';                 // limpia lista
+            document.getElementById('btnDropdownAlumnos').textContent =
+                '-- Selecciona alumno --';
+            document.getElementById('MatriculaAlumno').value = '';
+
+            if (!grupoId) return;
+
+            const resp = await fetch(`@Url.Action("GetAlumnos", "PanelDocente")?idGrupo=${grupoId}`);
+            const alumnos = await resp.json();
+
+            for (const a of alumnos) {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.textContent = a.nombre;
+                div.dataset.id      = a.matricula;
+                div.addEventListener('click', function() {
+                    // al clickar un alumno:
+                    document.getElementById('btnDropdownAlumnos').textContent = a.nombre;
+                    document.getElementById('MatriculaAlumno').value      = a.matricula;
+                    // cierra el dropdown automáticamente:
+                    bootstrap.Dropdown.getInstance(
+                      document.getElementById('btnDropdownAlumnos')
+                    ).hide();
+                });
+                cont.appendChild(div);
+            }
+        });
+
+        // 3) Filtrar dentro del listado
+        function filtrarAlumnosInside() {
+            const txt = document.getElementById('inputFilterAlumnos').value.toLowerCase();
+            document.querySelectorAll('#listAlumnosInside .dropdown-item')
+                .forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(txt)
+                                      ? '' : 'none';
+                });
+        }
+
+        // 4) Al cargar la página, setea visibilidad
+        window.addEventListener('load', toggleIndividual);
+    </script>
 }

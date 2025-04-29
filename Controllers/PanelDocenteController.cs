@@ -235,6 +235,21 @@ namespace BirdSing.Controllers
             vm.Alumnos = alumnosQ.ToList();
             return View(vm);
         }
+        [HttpGet]
+        // PanelDocenteController.cs
+        [HttpGet]
+        public IActionResult GetAlumnos(int idGrupo)
+        {
+            var lista = _context.Alumnos
+                .Where(a => a.IdGrupo == idGrupo)
+                .Select(a => new {
+                    Matricula = a.MatriculaAlumno,
+                    Nombre = a.NombreAlumno + " " + a.ApellidoPaterno + " " + a.ApellidoMaterno
+                })
+                .ToList();
+            return Json(lista);
+        }
+
 
     }
 }
