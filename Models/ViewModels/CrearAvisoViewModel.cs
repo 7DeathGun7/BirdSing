@@ -19,6 +19,10 @@ namespace BirdSing.Models.ViewModels
         [Required, StringLength(255)]
         public string Titulo { get; set; }
 
+        // <-- Esta propiedad faltaba
+        [Display(Name = "Materia")]
+        public int? MateriaId { get; set; }
+
         public string Mensaje { get; set; }
 
         // listas para los selects

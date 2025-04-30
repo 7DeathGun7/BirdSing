@@ -1,0 +1,61 @@
+﻿@model BirdSing.Models.ViewModels.MisAvisosViewModel
+@{
+    Layout = "_LayoutDocente";
+    ViewData["Title"] = "Mis Avisos";
+}
+
+<h2>Mis Avisos</h2>
+
+<form asp-action="MisAvisos" method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label asp-for="MateriaId" class="form-label"></label>
+        <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select">
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="AlumnoId" class="form-label"></label>
+        <select asp-for="AlumnoId" asp-items="Model.Alumnos" class="form-select">
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="FechaDesde" class="form-label"></label>
+        <input asp-for="FechaDesde" type="date" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="FechaHasta" class="form-label"></label>
+        <input asp-for="FechaHasta" type="date" class="form-control" />
+    </div>
+    <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Alumno</th>
+            <th>Materia</th>
+            <th>Grupo</th>
+            <th>Título</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.Avisos)
+        {
+            <tr>
+                <td>@a.Fecha.ToString("g")</td>
+                <td>
+                    @(a.Alumno?.Usuario != null
+                        ? a.Alumno.Usuario.NombreUsuario
+                        : a.Alumno?.NombreAlumno)
+                </td>
+                <td>@a.Materia?.NombreMateria</td>
+                <td>@($"{a.Grupo?.Grado?.Grados} – {a.Grupo?.Grupos}")</td>
+                <td>@a.Titulo</td>
+                <td>@a.TipoAviso</td>
+            </tr>
+        }
+    </tbody>
+</table>
