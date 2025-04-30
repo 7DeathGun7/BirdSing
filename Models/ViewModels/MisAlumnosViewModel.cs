@@ -6,17 +6,19 @@ namespace BirdSing.Models.ViewModels
 {
     public class MisAlumnosViewModel
     {
-        // Filtros
         public int? GradoId { get; set; }
         public int? GrupoId { get; set; }
         public int? MateriaId { get; set; }
+        public int? AlumnoId { get; set; }
 
-        // Listas para los dropdowns
         public List<SelectListItem> Grados { get; set; } = new();
         public List<SelectListItem> Grupos { get; set; } = new();
         public List<SelectListItem> Materias { get; set; } = new();
+        public List<SelectListItem> AlumnosList { get; set; } = new();
 
-        // Resultado
+        // Esta lista es la que usas para poblar la tabla
         public List<Alumno> Alumnos { get; set; } = new();
     }
+
 }
+

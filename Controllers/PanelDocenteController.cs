@@ -46,10 +46,10 @@ namespace BirdSing.Controllers
 
         // GET: /PanelDocente/CrearAvisos
         [HttpGet]
-        public IActionResult CrearAvisos(string modoEnvio = "Grupal", int? idGrupo = null)
+        public async Task<IActionResult> CrearAvisos(string modoEnvio = "Grupal", int? idGrupo = null)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = _context.Docentes.Single(d => d.IdUsuario == userId);
+            var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
             var vm = new CrearAvisoViewModel
             {
@@ -58,7 +58,7 @@ namespace BirdSing.Controllers
             };
 
             // 1) Grupos del docente
-            vm.Grupos = _context.DocentesGrupos
+            vm.Grupos = await _context.DocentesGrupos
                 .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
                 .Where(dg => dg.IdDocente == docente.IdDocente)
                 .Select(dg => new SelectListItem
@@ -66,10 +66,10 @@ namespace BirdSing.Controllers
                     Value = dg.IdGrupo.ToString(),
                     Text = $"{dg.Grupo!.Grado!.Grados} – {dg.Grupo.Grupos}"
                 })
-                .ToList();
+                .ToListAsync();
 
             // 2) Materias que imparte
-            vm.Materias = _context.MateriasDocentes
+            vm.Materias = await _context.MateriasDocentes
                 .Include(md => md.Materia)
                 .Where(md => md.IdDocente == docente.IdDocente)
                 .Select(md => new SelectListItem
@@ -77,19 +77,19 @@ namespace BirdSing.Controllers
                     Value = md.IdMateria.ToString(),
                     Text = md.Materia!.NombreMateria
                 })
-                .ToList();
+                .ToListAsync();
 
-            // 3) Alumnos (solo si es envío Individual y ya vino IdGrupo)
+            // 3) Alumnos (solo si es Individual y ya vino IdGrupo)
             if (modoEnvio == "Individual" && idGrupo.HasValue)
             {
-                vm.Alumnos = _context.Alumnos
+                vm.Alumnos = await _context.Alumnos
                     .Where(a => a.IdGrupo == idGrupo.Value)
                     .Select(a => new SelectListItem
                     {
                         Value = a.MatriculaAlumno.ToString(),
                         Text = $"{a.NombreAlumno} {a.ApellidoPaterno} {a.ApellidoMaterno}"
                     })
-                    .ToList();
+                    .ToListAsync();
             }
 
             return View(vm);
@@ -99,23 +99,17 @@ namespace BirdSing.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearAvisos(CrearAvisoViewModel vm)
         {
-            // validación clásica de Razor
-            if (!ModelState.IsValid)
+            // 1) Validación de Razor + check extra de materia cuando es Individual
+            if (!ModelState.IsValid ||
+               (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue))
             {
+                if (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue)
+                    ModelState.AddModelError(nameof(vm.MateriaId), "Debes seleccionar una materia.");
                 await CargarSelects(vm);
                 return View(vm);
             }
 
-            // + esta validación extra para el caso individual
-            if (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue)
-            {
-                ModelState.AddModelError(nameof(vm.MateriaId), "Debes seleccionar una materia.");
-                await CargarSelects(vm);
-                return View(vm);
-            }
-
-
-            // 2) Cargar el alumno junto con sus tutores
+            // 2) Carga el alumno con sus tutores
             var alumno = await _context.Alumnos
                 .Include(a => a.Usuario)
                 .Include(a => a.AlumnosTutores)
@@ -129,21 +123,19 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
-            // 3) Obtener al docente actual
+            // 3) Obtén al docente actual
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = await _context.Docentes
-                .SingleAsync(d => d.IdUsuario == userId);
+            var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
-            // 4) Construir lista de Avisos: uno por cada tutor del alumno
+            // 4) Construye lista de Avisos (uno por tutor)
             var avisos = alumno.AlumnosTutores
                 .Select(at => new Aviso
                 {
                     IdDocente = docente.IdDocente,
                     IdGrupo = vm.IdGrupo!.Value,
-                    // GetValueOrDefault() evita la excepción Nullabe.Value
                     IdMateria = vm.ModoEnvio == "Individual"
-                                     ? vm.MateriaId.GetValueOrDefault()
-                                     : 0,
+                                        ? vm.MateriaId.GetValueOrDefault()
+                                        : 0,
                     MatriculaAlumno = vm.MatriculaAlumno,
                     IdTutor = at.IdTutor,
                     TipoAviso = vm.ModoEnvio,
@@ -154,11 +146,11 @@ namespace BirdSing.Controllers
                 })
                 .ToList();
 
-            // 5) Guardar en base de datos
+            // 5) Guarda todo
             _context.Avisos.AddRange(avisos);
             await _context.SaveChangesAsync();
 
-            // 6) Preparar la URL y el texto para WhatsApp
+            // 6) Prepara mensaje y URL
             var nombreAlumno = alumno.Usuario != null
                 ? $"{alumno.Usuario.NombreUsuario} {alumno.Usuario.ApellidoPaterno}"
                 : $"{alumno.NombreAlumno} {alumno.ApellidoPaterno}";
@@ -173,7 +165,7 @@ namespace BirdSing.Controllers
             var texto = $"Se asignó un nuevo aviso a {nombreAlumno}.\n" +
                         $"Ingresa al sistema para verlo:\n{urlAviso}";
 
-            // 7) Enviar WhatsApp a cada tutor
+            // 7) Envía WhatsApp a cada tutor
             foreach (var at in alumno.AlumnosTutores)
             {
                 var tel = at.Tutor.Telefono?.Trim();
@@ -184,14 +176,14 @@ namespace BirdSing.Controllers
                 }
             }
 
-            // 8) Mensaje de éxito y redirección
+            // 8) Éxito y redirección
             TempData["Success"] = "Aviso enviado correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
         /// <summary>
-        /// Rellena los dropdowns de Grupos, Materias y Alumnos
-        /// cuando el modelo no es válido y hay que volver a mostrar la vista.
+        /// Rellena dropdowns de Grupos, Materias y Alumnos para volver a mostrar la vista
+        /// cuando el modelo no es válido.
         /// </summary>
         private async Task CargarSelects(CrearAvisoViewModel vm)
         {
@@ -220,11 +212,11 @@ namespace BirdSing.Controllers
                 })
                 .ToListAsync();
 
-            // Alumnos (solo en individual)
+            // Alumnos (solo en Individual)
             if (vm.ModoEnvio == "Individual" && vm.IdGrupo.HasValue)
             {
                 vm.Alumnos = await _context.Alumnos
-                    .Where(a => a.IdGrupo == vm.IdGrupo)
+                    .Where(a => a.IdGrupo == vm.IdGrupo.Value)
                     .Select(a => new SelectListItem
                     {
                         Value = a.MatriculaAlumno.ToString(),
@@ -234,105 +226,112 @@ namespace BirdSing.Controllers
             }
         }
 
-        /// GET: /PanelDocente/MisAvisos
-        [HttpGet]
+        // GET: /PanelDocente/MisAvisos
         public async Task<IActionResult> MisAvisos(
             int? materiaId,
             int? alumnoId,
             DateTime? fechaDesde,
-            DateTime? fechaHasta)
+            DateTime? fechaHasta
+        )
         {
-            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = await _context.Docentes
-                                        .FirstOrDefaultAsync(d => d.IdUsuario == idUsuario);
-            if (docente == null) return Forbid();
-            var docenteId = docente.IdDocente;
+            var docenteId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            // 1) Cargar listas para dropdowns
+            // 1) Dropdown Materias
+            var materias = await _context.MateriasDocentes
+                .Include(md => md.Materia)
+                .Where(md => md.IdDocente == docenteId)
+                .Select(md => new SelectListItem
+                {
+                    Value = md.IdMateria.ToString(),
+                    Text = md.Materia!.NombreMateria
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+            materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
+
+            // 2) Dropdown Alumnos (misma técnica en memoria)
+            var grupoIds = await _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == docenteId)
+                .Select(dg => dg.IdGrupo)
+                .ToListAsync();
+
+            var alumnosConUsuario = await _context.Alumnos
+                .Include(a => a.Usuario)
+                .Include(a => a.Grupo)                // <— carga la entidad Grupo
+                   .ThenInclude(g => g.Grado)        // <— y de paso carga el Grado
+                .Where(a => grupoIds.Contains(a.IdGrupo))
+                .ToListAsync();
+
+            var alumnosList = alumnosConUsuario
+                .Select(a => new SelectListItem
+                {
+                    Value = a.MatriculaAlumno.ToString(),
+                    Text = a.Usuario != null
+                            ? $"{a.Usuario.NombreUsuario} {a.Usuario.ApellidoPaterno}"
+                            : $"{a.NombreAlumno} {a.ApellidoPaterno}"
+                })
+                .OrderBy(x => x.Text)
+                .ToList();
+            alumnosList.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
+
+            // 3) Consulta de avisos con filtros
+            var query = _context.Avisos
+                .Include(a => a.Alumno).ThenInclude(a => a.Usuario)
+                .Include(a => a.Materia)
+                .Where(a => a.IdDocente == docenteId)
+                .AsQueryable();
+
+            if (materiaId.HasValue) query = query.Where(a => a.IdMateria == materiaId.Value);
+            if (alumnoId.HasValue) query = query.Where(a => a.MatriculaAlumno == alumnoId.Value);
+            if (fechaDesde.HasValue) query = query.Where(a => a.Fecha >= fechaDesde.Value);
+            if (fechaHasta.HasValue) query = query.Where(a => a.Fecha <= fechaHasta.Value);
+
+            var avisos = await query
+                .OrderByDescending(a => a.Fecha)
+                .ToListAsync();
+
+            // 4) Pasa todo al ViewModel
             var vm = new MisAvisosViewModel
             {
+                Materias = materias,
+                AlumnosList = alumnosList,
+                Avisos = avisos,
                 MateriaId = materiaId,
                 AlumnoId = alumnoId,
                 FechaDesde = fechaDesde,
                 FechaHasta = fechaHasta
             };
 
-            // Materias del docente
-            vm.Materias = await _context.MateriasDocentes
-                .Where(md => md.IdDocente == docenteId)
-                .Select(md => md.Materia!)
-                .Distinct()
-                .Select(m => new SelectListItem
-                {
-                    Value = m.IdMateria.ToString(),
-                    Text = m.NombreMateria
-                })
-                .OrderBy(x => x.Text)
-                .ToListAsync();
-            vm.Materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
-
-            // Alumnos del docente (todos los grupos que imparte)
-            var grupoIds = await _context.DocentesGrupos
-                .Where(dg => dg.IdDocente == docenteId)
-                .Select(dg => dg.IdGrupo)
-                .ToListAsync();
-
-            vm.Alumnos = await _context.Alumnos
-                .Include(a => a.Usuario)
-                .Where(a => grupoIds.Contains(a.IdGrupo))
-                .Select(a => new SelectListItem
-                {
-                    Value = a.MatriculaAlumno.ToString(),
-                    Text = $"{a.Usuario!.NombreUsuario} {a.Usuario.ApellidoPaterno}"
-                })
-                .OrderBy(x => x.Text)
-                .ToListAsync();
-            vm.Alumnos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
-
-            // 2) Construir query de avisos
-            var q = _context.Avisos
-                .Include(a => a.Grupo).ThenInclude(g => g.Grado)
-                .Include(a => a.Materia)
-                .Include(a => a.Alumno).ThenInclude(al => al.Usuario)
-                .Where(a => a.IdDocente == docenteId)
-                .AsQueryable();
-
-            if (materiaId.HasValue)
-                q = q.Where(a => a.IdMateria == materiaId.Value);
-
-            if (alumnoId.HasValue)
-                q = q.Where(a => a.MatriculaAlumno == alumnoId.Value);
-
-            if (fechaDesde.HasValue)
-                q = q.Where(a => a.Fecha >= fechaDesde.Value.Date);
-
-            if (fechaHasta.HasValue)
-                q = q.Where(a => a.Fecha <= fechaHasta.Value.Date.AddDays(1).AddTicks(-1));
-
-            vm.Avisos = await q
-                .OrderByDescending(a => a.Fecha)
-                .ToListAsync();
-
             return View(vm);
         }
 
         // GET: /PanelDocente/MisAlumnos
-        public IActionResult MisAlumnos(int? gradoId, int? grupoId, int? materiaId)
+        public async Task<IActionResult> MisAlumnos(
+    int? gradoId,
+    int? grupoId,
+    int? materiaId,
+    int? alumnoId     // <-- nuevo parámetro para el filtro de alumno
+)
         {
+            // 1) Obtenemos al docente
             var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var docente = _context.Docentes.FirstOrDefault(d => d.IdUsuario == idUsuario);
-            if (docente == null) return Forbid();
+            var docente = await _context.Docentes
+                                  .FirstOrDefaultAsync(d => d.IdUsuario == idUsuario);
+            if (docente == null)
+                return Forbid();
             var docenteId = docente.IdDocente;
 
+            // 2) Preparamos el viewmodel
             var vm = new MisAlumnosViewModel
             {
                 GradoId = gradoId,
                 GrupoId = grupoId,
-                MateriaId = materiaId
+                MateriaId = materiaId,
+                AlumnoId = alumnoId
             };
 
-            // 1) Grados
-            vm.Grados = _context.DocentesGrupos
+            // 3) Dropdown Grados
+            vm.Grados = await _context.DocentesGrupos
                 .Where(dg => dg.IdDocente == docenteId)
                 .Select(dg => dg.Grupo!.Grado!)
                 .Distinct()
@@ -342,15 +341,15 @@ namespace BirdSing.Controllers
                     Text = g.Grados
                 })
                 .OrderBy(x => x.Text)
-                .ToList();
+                .ToListAsync();
             vm.Grados.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 2) Grupos
+            // 4) Dropdown Grupos (filtrado por grado opcional)
             var gruposQ = _context.DocentesGrupos.Where(dg => dg.IdDocente == docenteId);
             if (gradoId.HasValue)
                 gruposQ = gruposQ.Where(dg => dg.IdGrado == gradoId.Value);
 
-            vm.Grupos = gruposQ
+            vm.Grupos = await gruposQ
                 .Select(dg => dg.Grupo!)
                 .Distinct()
                 .Select(g => new SelectListItem
@@ -359,20 +358,21 @@ namespace BirdSing.Controllers
                     Text = g.Grupos
                 })
                 .OrderBy(x => x.Text)
-                .ToList();
+                .ToListAsync();
             vm.Grupos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            // 3) Materias
+            // 5) Dropdown Materias (filtrado por grupo opcional)
             var matQ = _context.MateriasDocentes.Where(md => md.IdDocente == docenteId);
             if (grupoId.HasValue)
             {
-                var matIds = _context.GrupoMaterias
+                var matIds = await _context.GrupoMaterias
                     .Where(gm => gm.IdGrupo == grupoId.Value)
-                    .Select(gm => gm.IdMateria);
+                    .Select(gm => gm.IdMateria)
+                    .ToListAsync();
                 matQ = matQ.Where(md => matIds.Contains(md.IdMateria));
             }
 
-            vm.Materias = matQ
+            vm.Materias = await matQ
                 .Select(md => md.Materia!)
                 .Distinct()
                 .Select(m => new SelectListItem
@@ -381,37 +381,58 @@ namespace BirdSing.Controllers
                     Text = m.NombreMateria
                 })
                 .OrderBy(x => x.Text)
-                .ToList();
+                .ToListAsync();
             vm.Materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
 
-            // 4) Alumnos
-            var alumnosQ = _context.DocentesGrupos
-                .Where(dg => dg.IdDocente == docenteId
-                          && (!gradoId.HasValue || dg.IdGrado == gradoId.Value)
-                          && (!grupoId.HasValue || dg.IdGrupo == grupoId.Value))
-                .SelectMany(dg => dg.Grupo!.Alumnos!)
-                .Include(a => a.Usuario)
-                .Include(a => a.Grupo).ThenInclude(g => g.Grado)
-                .AsQueryable();
+            // 6) Obtengo en memoria todos los alumnos de los grupos del docente
+            var grupoIds = await _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == docenteId)
+                .Select(dg => dg.IdGrupo)
+                .ToListAsync();
 
+            var alumnosConUsuario = await _context.Alumnos
+                .Include(a => a.Usuario)
+                .Include(a => a.Grupo)             // carga la entidad Grupo
+                   .ThenInclude(g => g.Grado)     // y su Grado
+                .Where(a => grupoIds.Contains(a.IdGrupo))
+                .ToListAsync();
+
+            // 7) Dropdown Alumnos
+            vm.AlumnosList = alumnosConUsuario
+                .Select(a => new SelectListItem
+                {
+                    Value = a.MatriculaAlumno.ToString(),
+                    Text = a.Usuario != null
+                            ? $"{a.Usuario.NombreUsuario} {a.Usuario.ApellidoPaterno}"
+                            : $"{a.NombreAlumno} {a.ApellidoPaterno}"
+                })
+                .OrderBy(x => x.Text)
+                .ToList();
+            vm.AlumnosList.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
+
+            // 8) Ahora filtro la propia lista de alumnos en memoria
+            var tablaQ = alumnosConUsuario.AsQueryable();
+            if (gradoId.HasValue) tablaQ = tablaQ.Where(a => a.Grupo!.IdGrado == gradoId.Value);
+            if (grupoId.HasValue) tablaQ = tablaQ.Where(a => a.IdGrupo == grupoId.Value);
             if (materiaId.HasValue)
             {
-                var alumnosEnMat = _context.GrupoMaterias
-                    .Where(gm => gm.IdMateria == materiaId.Value
-                              && (!grupoId.HasValue || gm.IdGrupo == grupoId.Value))
+                var matrEnMat = await _context.GrupoMaterias
+                    .Where(gm => gm.IdMateria == materiaId.Value)
                     .SelectMany(gm => gm.Grupo!.Alumnos!)
                     .Select(a => a.MatriculaAlumno)
-                    .Distinct()
-                    .ToHashSet();
-
-                alumnosQ = alumnosQ.Where(a => alumnosEnMat.Contains(a.MatriculaAlumno));
+                    .ToListAsync();
+                tablaQ = tablaQ.Where(a => matrEnMat.Contains(a.MatriculaAlumno));
             }
+            if (alumnoId.HasValue)
+                tablaQ = tablaQ.Where(a => a.MatriculaAlumno == alumnoId.Value);
 
-            vm.Alumnos = alumnosQ.ToList();
+            vm.Alumnos = tablaQ.ToList();
+
+            // 9) **MUY IMPORTANTE**: devolver la vista
             return View(vm);
         }
 
-        // GET para cargar alumnos vía AJAX
+        // GET: /PanelDocente/GetAlumnos?idGrupo=...
         [HttpGet]
         public IActionResult GetAlumnos(int idGrupo)
         {

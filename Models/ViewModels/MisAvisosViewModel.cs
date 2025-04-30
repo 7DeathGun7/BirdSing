@@ -27,5 +27,7 @@ namespace BirdSing.Models.ViewModels
 
         // Resultado
         public List<Aviso> Avisos { get; set; } = new();
+
+        public List<SelectListItem> AlumnosList { get; set; } = new();
     }
 }
