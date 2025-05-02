@@ -1,36 +1,52 @@
-﻿/* ===== Estilos para la tabla de docentes en el panel admin ===== */
-
+﻿/* ============================================
+   Estilos generales para la tabla de docentes
+   ============================================ */
 .tabla-docentes {
     width: 100%;
     border-collapse: collapse;
     margin: 2rem auto;
     background: #ffffff;
-    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
     font-family: Arial, sans-serif;
+    border: 1px solid black; /* Borde externo negro */
 }
 
+    /* ============================================
+   Encabezados y celdas con cuadrícula negra
+   ============================================ */
     .tabla-docentes th,
     .tabla-docentes td {
         padding: 1rem;
         text-align: left;
-        border-bottom: 1px solid #ecf0f1;
+        border: 1px solid black; /* Bordes internos negros */
     }
 
+    /* ============================================
+   Encabezado con fondo oscuro y texto blanco
+   ============================================ */
     .tabla-docentes thead {
         background-color: #2c3e50;
         color: white;
     }
 
-    .tabla-docentes tbody tr:hover {
-        background-color: #ecf0f1;
+    /* ============================================
+   Colores alternos en filas (tipo Excel)
+   ============================================ */
+    .tabla-docentes tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
     }
 
+    .tabla-docentes tbody tr:hover {
+        background-color: #dfe6e9;
+    }
+
+    /* ============================================
+   Enlaces dentro de la tabla
+   ============================================ */
     .tabla-docentes a {
         color: #3498db;
         text-decoration: none;
         margin-right: 0.8rem;
+        font-weight: bold;
         transition: color 0.2s ease-in-out;
     }
 
@@ -38,22 +54,44 @@
             color: #1d6fa5;
         }
 
-/* Ajustes generales para el contenido principal */
+/* ============================================
+   Contenedor de contenido general
+   ============================================ */
 .content {
-    margin-left: 250px;
-    padding: 2rem;
     background-color: #ecf0f1;
+    padding: 2rem;
     min-height: 100vh;
 }
 
-/* Responsive */
+/* ============================================
+   Responsividad para pantallas pequeñas
+   ============================================ */
 @media (max-width: 768px) {
-    .content {
-        margin-left: 0;
-        padding: 1rem;
+    .tabla-docentes {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 0;
+        box-shadow: none;
     }
 
-    .tabla-docentes {
-        font-size: 0.9rem;
-    }
+        .tabla-docentes thead,
+        .tabla-docentes tbody,
+        .tabla-docentes tr,
+        .tabla-docentes th,
+        .tabla-docentes td {
+            white-space: nowrap;
+        }
 }
+
+/* ============================================
+   // Encabezado fijo (opcional)
+   ============================================ */
+/*
+.tabla-docentes thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+*/

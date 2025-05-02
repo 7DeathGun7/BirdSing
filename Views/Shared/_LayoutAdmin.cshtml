@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrador</title>
+
     <link rel="stylesheet" href="~/css/LayoutADMIN.css">
+
 </head>
 <body>
-    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-
 
     <div class="container">
         <!-- Sidebar -->
@@ -87,6 +87,9 @@
                 <li><a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a></li>
             </ul>
         </div>
+
+        <button class="menu-toggle2" onclick="toggleSidebar()">☰</button>
+
         <main class="content">
             @RenderBody()
         </main>
@@ -96,7 +99,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/JavaADMIN.js"></script>
+    <script src="~/js/JavaADMIN.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>
