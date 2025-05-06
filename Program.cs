@@ -24,10 +24,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // 3) Configuración de Twilio
-builder.Services.Configure<TwilioSettings>(
-    builder.Configuration.GetSection("Twilio")
-);
-builder.Services.AddSingleton<ITwilioService, TwilioService>();
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+builder.Services.AddTransient<ITwilioService, TwilioService>();
 
 // 4) MVC
 builder.Services.AddControllersWithViews();

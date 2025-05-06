@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Twilio.Exceptions;
 
 namespace BirdSing.Controllers
 {
@@ -19,23 +21,26 @@ namespace BirdSing.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ITwilioService _twilio;
+        private readonly ILogger<PanelDocenteController> _logger;
 
         public PanelDocenteController(
             ApplicationDbContext context,
-            ITwilioService twilio
+            ITwilioService twilio,
+            ILogger<PanelDocenteController> logger
         )
         {
             _context = context;
             _twilio = twilio;
+            _logger = logger;
         }
 
         // GET: /PanelDocente/Index
         public IActionResult Index()
         {
-            var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = _context.Docentes
                 .Include(d => d.Usuario)
-                .FirstOrDefault(d => d.IdUsuario == idUsuario);
+                .FirstOrDefault(d => d.IdUsuario == userId);
 
             ViewBag.NombreDocente = docente?.Usuario != null
                 ? $"{docente.Usuario.NombreUsuario} {docente.Usuario.ApellidoPaterno}"
@@ -57,7 +62,7 @@ namespace BirdSing.Controllers
                 IdGrupo = idGrupo
             };
 
-            // 1) Grupos del docente
+            // 1) Grupos
             vm.Grupos = await _context.DocentesGrupos
                 .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
                 .Where(dg => dg.IdDocente == docente.IdDocente)
@@ -68,7 +73,7 @@ namespace BirdSing.Controllers
                 })
                 .ToListAsync();
 
-            // 2) Materias que imparte
+            // 2) Materias
             vm.Materias = await _context.MateriasDocentes
                 .Include(md => md.Materia)
                 .Where(md => md.IdDocente == docente.IdDocente)
@@ -79,7 +84,7 @@ namespace BirdSing.Controllers
                 })
                 .ToListAsync();
 
-            // 3) Alumnos (solo si es Individual y ya vino IdGrupo)
+            // 3) Alumnos (si modo=Individual y ya pasaron grupo)
             if (modoEnvio == "Individual" && idGrupo.HasValue)
             {
                 vm.Alumnos = await _context.Alumnos
@@ -95,11 +100,12 @@ namespace BirdSing.Controllers
             return View(vm);
         }
 
+
         // POST: /PanelDocente/CrearAvisos
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearAvisos(CrearAvisoViewModel vm)
         {
-            // 1) Validación de Razor + check extra de materia cuando es Individual
+            // 1) Validaciones
             if (!ModelState.IsValid ||
                (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue))
             {
@@ -109,11 +115,10 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
-            // 2) Carga el alumno con sus tutores
+            // 2) Carga alumno + tutores
             var alumno = await _context.Alumnos
                 .Include(a => a.Usuario)
-                .Include(a => a.AlumnosTutores)
-                    .ThenInclude(at => at.Tutor)
+                .Include(a => a.AlumnosTutores).ThenInclude(at => at.Tutor)
                 .FirstOrDefaultAsync(a => a.MatriculaAlumno == vm.MatriculaAlumno!.Value);
 
             if (alumno == null)
@@ -123,19 +128,19 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
-            // 3) Obtén al docente actual
+            // 3) Docente actual
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
-            // 4) Construye lista de Avisos (uno por tutor)
+            // 4) Construye lista de Avisos
             var avisos = alumno.AlumnosTutores
                 .Select(at => new Aviso
                 {
                     IdDocente = docente.IdDocente,
                     IdGrupo = vm.IdGrupo!.Value,
                     IdMateria = vm.ModoEnvio == "Individual"
-                                        ? vm.MateriaId.GetValueOrDefault()
-                                        : 0,
+                                      ? vm.MateriaId.GetValueOrDefault()
+                                      : 0,
                     MatriculaAlumno = vm.MatriculaAlumno,
                     IdTutor = at.IdTutor,
                     TipoAviso = vm.ModoEnvio,
@@ -146,11 +151,11 @@ namespace BirdSing.Controllers
                 })
                 .ToList();
 
-            // 5) Guarda todo
+            // 5) Guarda
             _context.Avisos.AddRange(avisos);
             await _context.SaveChangesAsync();
 
-            // 6) Prepara mensaje y URL
+            // 6) Prepara plantilla de WhatsApp
             var nombreAlumno = alumno.Usuario != null
                 ? $"{alumno.Usuario.NombreUsuario} {alumno.Usuario.ApellidoPaterno}"
                 : $"{alumno.NombreAlumno} {alumno.ApellidoPaterno}";
@@ -158,23 +163,40 @@ namespace BirdSing.Controllers
             var urlAviso = Url.Action(
                 nameof(MisAvisos),
                 "PanelDocente",
-                null,
-                Request.Scheme
+                values: null,
+                protocol: Request.Scheme
             );
-
-            var texto = $"Se asignó un nuevo aviso a {nombreAlumno}.\n" +
-                        $"Ingresa al sistema para verlo:\n{urlAviso}";
-
-            // 7) Envía WhatsApp a cada tutor
+            // 7) Envío a cada tutor con template y log de errores
             foreach (var at in alumno.AlumnosTutores)
             {
                 var tel = at.Tutor.Telefono?.Trim();
-                if (!string.IsNullOrEmpty(tel))
+                if (string.IsNullOrEmpty(tel)) continue;
+
+                var destino = $"whatsapp:+52{tel}";
+                // Lista de variables para {{1}} y {{2}} de tu plantilla
+                var vars = new List<string> { nombreAlumno, urlAviso };
+
+                try
                 {
-                    var destino = $"whatsapp:+52{tel}";
-                    await _twilio.SendWhatsappAsync(destino, texto);
+                    await _twilio.SendWhatsappAsync(destino, vars);
+                }
+                catch (ApiException ex)
+                {
+                    _logger.LogError("Twilio API error al enviar a {Destino}: {Code} — {Msg}",
+                                     destino, ex.Code, ex.Message);
+                }
+                catch (TwilioException ex)
+                {
+                    _logger.LogError("Twilio error al enviar a {Destino}: {Msg}",
+                                     destino, ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Error inesperado al enviar a {Destino}: {Msg}",
+                                     destino, ex.Message);
                 }
             }
+
 
             // 8) Éxito y redirección
             TempData["Success"] = "Aviso enviado correctamente.";
@@ -190,7 +212,6 @@ namespace BirdSing.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
-            // Grupos
             vm.Grupos = await _context.DocentesGrupos
                 .Include(dg => dg.Grupo).ThenInclude(g => g.Grado)
                 .Where(dg => dg.IdDocente == docente.IdDocente)
@@ -201,7 +222,6 @@ namespace BirdSing.Controllers
                 })
                 .ToListAsync();
 
-            // Materias
             vm.Materias = await _context.MateriasDocentes
                 .Include(md => md.Materia)
                 .Where(md => md.IdDocente == docente.IdDocente)
@@ -212,7 +232,6 @@ namespace BirdSing.Controllers
                 })
                 .ToListAsync();
 
-            // Alumnos (solo en Individual)
             if (vm.ModoEnvio == "Individual" && vm.IdGrupo.HasValue)
             {
                 vm.Alumnos = await _context.Alumnos
@@ -439,8 +458,8 @@ namespace BirdSing.Controllers
             var lista = _context.Alumnos
                 .Where(a => a.IdGrupo == idGrupo)
                 .Select(a => new {
-                    Matricula = a.MatriculaAlumno,
-                    Nombre = $"{a.NombreAlumno} {a.ApellidoPaterno} {a.ApellidoMaterno}"
+                    matricula = a.MatriculaAlumno,
+                    nombre = $"{a.NombreAlumno} {a.ApellidoPaterno} {a.ApellidoMaterno}"
                 })
                 .ToList();
             return Json(lista);

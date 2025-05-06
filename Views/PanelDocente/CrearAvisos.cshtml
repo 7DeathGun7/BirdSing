@@ -20,18 +20,27 @@
         <span asp-validation-for="ModoEnvio" class="text-danger"></span>
     </div>
 
-    <!-- 2) Grado – Grupo -->
+    <!-- 2) Grupo -->
     <div class="mb-3">
         <label asp-for="IdGrupo" class="form-label"></label>
         <select asp-for="IdGrupo" asp-items="Model.Grupos"
                 class="form-select"
                 id="selectGrupo">
-            <option value="">-- Selecciona --</option>
+            <option value="">-- Selecciona grupo --</option>
         </select>
         <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
 
-    <!-- 3) Combobox Alumno (solo en Individual) -->
+    <!-- 3) Materia (solo en Individual) -->
+    <div id="divMateria" class="mb-3" style="display:none">
+        <label asp-for="MateriaId" class="form-label"></label>
+        <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select">
+            <option value="">-- Selecciona materia --</option>
+        </select>
+        <span asp-validation-for="MateriaId" class="text-danger"></span>
+    </div>
+
+    <!-- 4) Combobox Alumno (solo en Individual) -->
     <div id="divAlumno" class="mb-4" style="display:none">
         <label class="form-label">Alumno</label>
         <div class="dropdown">
@@ -59,17 +68,18 @@
         <input asp-for="MatriculaAlumno" type="hidden" id="MatriculaAlumno" />
     </div>
 
-    <!-- 4) Título -->
+    <!-- 5) Título -->
     <div class="mb-3">
         <label asp-for="Titulo" class="form-label"></label>
         <input asp-for="Titulo" class="form-control" />
         <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
 
-    <!-- 5) Mensaje -->
+    <!-- 6) Mensaje -->
     <div class="mb-3">
         <label asp-for="Mensaje" class="form-label"></label>
         <textarea asp-for="Mensaje" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Mensaje" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Enviar Aviso</button>
@@ -80,22 +90,28 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // 1) Muestra/oculta sección Alumno
+        // 1) Muestra/oculta Materia y Alumno
         function toggleIndividual() {
             const modo = document.querySelector('input[name="ModoEnvio"]:checked')?.value;
-            document.getElementById('divAlumno').style.display = modo === 'Individual' ? 'block' : 'none';
+            const mostrar = modo === 'Individual';
+            document.getElementById('divMateria').style.display = mostrar ? 'block' : 'none';
+            document.getElementById('divAlumno').style.display  = mostrar ? 'block' : 'none';
         }
 
         // 2) Al cambiar Grupo: fetch alumnos y monta items en el dropdown
         document.getElementById('selectGrupo').addEventListener('change', async function() {
             const grupoId = this.value;
             const cont = document.getElementById('listAlumnosInside');
-            cont.innerHTML = '';                 // limpia lista
-            document.getElementById('btnDropdownAlumnos').textContent =
-                '-- Selecciona alumno --';
-            document.getElementById('MatriculaAlumno').value = '';
+            cont.innerHTML = '';
+            document.getElementById('btnDropdownAlumnos').textContent   = '-- Selecciona alumno --';
+            document.getElementById('MatriculaAlumno').value            = '';
+            document.getElementById('MateriaId').value                  = '';
 
             if (!grupoId) return;
+
+            // Trae también las materias del docente
+            // (opcional: si quieres filtrar materias por grupo, podrías llamar a otro endpoint)
+            // aquí asumimos que Model.Materias ya contiene sólo las del docente
 
             const resp = await fetch(`@Url.Action("GetAlumnos", "PanelDocente")?idGrupo=${grupoId}`);
             const alumnos = await resp.json();
@@ -104,12 +120,10 @@
                 const div = document.createElement('div');
                 div.className = 'dropdown-item';
                 div.textContent = a.nombre;
-                div.dataset.id      = a.matricula;
-                div.addEventListener('click', function() {
-                    // al clickar un alumno:
+                div.dataset.id = a.matricula;
+                div.addEventListener('click', () => {
                     document.getElementById('btnDropdownAlumnos').textContent = a.nombre;
                     document.getElementById('MatriculaAlumno').value      = a.matricula;
-                    // cierra el dropdown automáticamente:
                     bootstrap.Dropdown.getInstance(
                       document.getElementById('btnDropdownAlumnos')
                     ).hide();
@@ -128,7 +142,7 @@
                 });
         }
 
-        // 4) Al cargar la página, setea visibilidad
+        // 4) Al cargar la página, setea visibilidad por defecto
         window.addEventListener('load', toggleIndividual);
     </script>
 }
