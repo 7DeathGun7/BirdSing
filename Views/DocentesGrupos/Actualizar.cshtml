@@ -1,4 +1,5 @@
 ﻿@model BirdSing.Models.DocenteGrupo
+
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Editar Asignación Docente–Grado–Grupo";
@@ -8,9 +9,6 @@
 
 <form asp-action="Actualizar" method="post" class="mt-4">
     @Html.AntiForgeryToken()
-    <input asp-for="IdDocente" type="hidden" />
-    <input asp-for="IdGrado" type="hidden" />
-    <input asp-for="IdGrupo" type="hidden" />
 
     <div class="mb-3">
         <label asp-for="IdDocente" class="form-label">Docente</label>
@@ -20,13 +18,13 @@
 
     <div class="mb-3">
         <label asp-for="IdGrado" class="form-label">Grado</label>
-        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select"></select>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select" id="gradoSelect"></select>
         <span asp-validation-for="IdGrado" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="IdGrupo" class="form-label">Grupo</label>
-        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select"></select>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select" id="grupoSelect"></select>
         <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
 
@@ -36,4 +34,21 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("gradoSelect").addEventListener("change", function () {
+            const gradoId = this.value;
+            fetch(`/DocentesGrupos/ObtenerGruposPorGrado?gradoId=${gradoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const grupoSelect = document.getElementById("grupoSelect");
+                    grupoSelect.innerHTML = "";
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.value;
+                        option.text = item.text;
+                        grupoSelect.appendChild(option);
+                    });
+                });
+        });
+    </script>
 }

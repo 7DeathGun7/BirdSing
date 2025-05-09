@@ -48,13 +48,40 @@ namespace BirdSing.Controllers
         }
 
         // GET: /DocentesGrupos/Actualizar?IdDocente=1&IdGrado=2&IdGrupo=3
-        public IActionResult Actualizar(int idDocente, int idGrado, int idGrupo)
+        public async Task<IActionResult> Actualizar(int idDocente)
         {
-            var entidad = _context.DocentesGrupos.Find(idDocente, idGrado, idGrupo);
-            if (entidad == null) return NotFound();
-            CargarDropdowns();
-            return View(entidad);
+            var model = await _context.DocentesGrupos
+                .Include(dg => dg.Docente).ThenInclude(d => d.Usuario)
+                .FirstOrDefaultAsync(dg => dg.IdDocente == idDocente);
+
+            if (model == null) return NotFound();
+
+            // Docentes disponibles
+            var docentes = await _context.Docentes
+                .Include(d => d.Usuario)
+                .Select(d => new
+                {
+                    d.IdDocente,
+                    Nombre = d.Usuario.NombreUsuario + " " + d.Usuario.ApellidoPaterno
+                })
+                .ToListAsync();
+
+            // Cargar todos los grados
+            var grados = await _context.Grados.ToListAsync();
+
+            // Cargar grupos vinculados al grado actual
+            var gruposFiltrados = await _context.Grupos
+                .Where(g => g.IdGrado == model.IdGrado)
+                .ToListAsync();
+
+            ViewBag.Docentes = new SelectList(docentes, "IdDocente", "Nombre", model.IdDocente);
+            ViewBag.Grados = new SelectList(grados, "IdGrado", "Grados", model.IdGrado);
+            ViewBag.Grupos = new SelectList(gruposFiltrados, "IdGrupo", "Grupos", model.IdGrupo);
+
+            return View(model);
         }
+
+
 
         // POST: /DocentesGrupos/Actualizar
         [HttpPost, ValidateAntiForgeryToken]
@@ -74,6 +101,21 @@ namespace BirdSing.Controllers
             }
             CargarDropdowns();
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerGruposPorGrado(int gradoId)
+        {
+            var grupos = await _context.Grupos
+                .Where(g => g.IdGrado == gradoId)
+                .Select(g => new SelectListItem
+                {
+                    Value = g.IdGrupo.ToString(),
+                    Text = g.Grupos
+                })
+                .ToListAsync();
+
+            return Json(grupos);
         }
 
         // GET: /DocentesGrupos/Eliminar?IdDocente=1&IdGrado=2&IdGrupo=3
