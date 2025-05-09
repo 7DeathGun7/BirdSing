@@ -42,20 +42,17 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var a in Model.Avisos)
+        @foreach (var aviso in Model.Avisos)
         {
             <tr>
-                <td>@a.Fecha.ToString("g")</td>
-                <td>
-                    @(a.Alumno?.Usuario != null
-                        ? a.Alumno.Usuario.NombreUsuario
-                        : a.Alumno?.NombreAlumno)
-                </td>
-                <td>@a.Materia?.NombreMateria</td>
-                <td>@($"{a.Grupo?.Grado?.Grados} – {a.Grupo?.Grupos}")</td>
-                <td>@a.Titulo</td>
-                <td>@a.TipoAviso</td>
+                <td>@aviso.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@aviso.Alumno?.Usuario?.NombreUsuario @aviso.Alumno?.Usuario?.ApellidoPaterno</td>
+                <td>@aviso.Materia?.NombreMateria</td>
+                <td>@aviso.Grupo?.Grupos</td>
+                <td>@aviso.Titulo</td>
+                <td>@aviso.TipoAviso</td>
             </tr>
         }
+
     </tbody>
 </table>

@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using Newtonsoft.Json; 
+using BirdSing.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BirdSing.Models;
 
 namespace BirdSing.Services
 {
@@ -19,13 +19,13 @@ namespace BirdSing.Services
             TwilioClient.Init(_settings.AccountSid, _settings.AuthToken);
         }
 
-        public Task SendWhatsappAsync(string toWhatsapp, List<string> templateVariables)
+        public Task SendWhatsappAsync(string toWhatsapp, Dictionary<string, string> templateVariables)
         {
             var opts = new CreateMessageOptions(new PhoneNumber(toWhatsapp))
             {
-                From       = new PhoneNumber(_settings.FromWhatsapp),
+                From = new PhoneNumber(_settings.FromWhatsapp),
                 ContentSid = _settings.ContentSid,
-                ContentVariables  = JsonConvert.SerializeObject(templateVariables)
+                ContentVariables = JsonConvert.SerializeObject(templateVariables)
             };
             return MessageResource.CreateAsync(opts);
         }
