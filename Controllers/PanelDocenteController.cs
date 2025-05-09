@@ -247,10 +247,8 @@ namespace BirdSing.Controllers
 
         // GET: /PanelDocente/MisAvisos
         public async Task<IActionResult> MisAvisos(
-             int? materiaId,
-             int? alumnoId,
-             DateTime? fechaDesde,
-             DateTime? fechaHasta)
+    string? gradoGrupo, int? alumnoId,
+    DateTime? fechaDesde, DateTime? fechaHasta, string? nombreAlumno)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = await _context.Docentes
@@ -268,11 +266,25 @@ namespace BirdSing.Controllers
                 .Where(a => a.IdDocente == idDocente)
                 .AsQueryable();
 
-            if (materiaId.HasValue)
-                q = q.Where(a => a.IdMateria == materiaId.Value);
+            if (!string.IsNullOrEmpty(gradoGrupo))
+            {
+                var partes = gradoGrupo.Split('-');
+                int idGrado = int.Parse(partes[0]);
+                int idGrupo = int.Parse(partes[1]);
+                q = q.Where(a => a.Alumno!.IdGrado == idGrado && a.Alumno.IdGrupo == idGrupo);
+            }
 
             if (alumnoId.HasValue)
                 q = q.Where(a => a.MatriculaAlumno == alumnoId.Value);
+
+            if (!string.IsNullOrEmpty(nombreAlumno))
+            {
+                q = q.Where(a =>
+                    (a.Alumno!.Usuario != null
+                        ? (a.Alumno.Usuario.NombreUsuario + " " + a.Alumno.Usuario.ApellidoPaterno)
+                        : (a.Alumno.NombreAlumno + " " + a.Alumno.ApellidoPaterno)
+                    ).Contains(nombreAlumno));
+            }
 
             if (fechaDesde.HasValue)
                 q = q.Where(a => a.Fecha >= fechaDesde.Value);
@@ -282,39 +294,63 @@ namespace BirdSing.Controllers
 
             var avisos = await q.OrderByDescending(a => a.Fecha).ToListAsync();
 
-            // Listas para filtros
-            var materias = await _context.Materias
-                .Where(m => m.MateriasDocentes.Any(md => md.IdDocente == idDocente))
-                .Select(m => new SelectListItem
+            var gradosGrupos = await _context.DocentesGrupos
+                .Where(dg => dg.IdDocente == idDocente)
+                .Select(dg => new SelectListItem
                 {
-                    Value = m.IdMateria.ToString(),
-                    Text = m.NombreMateria
+                    Value = dg.IdGrado + "-" + dg.IdGrupo,
+                    Text = "Grado " + dg.Grado!.Grados + " - Grupo " + dg.Grupo!.Grupos
                 })
                 .ToListAsync();
 
-            materias.Insert(0, new SelectListItem { Value = "", Text = "-- Todas --" });
+            gradosGrupos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
-            var alumnos = await _context.Avisos
-                .Where(a => a.IdDocente == idDocente && a.Alumno != null)
+            List<Alumno> alumnosConUsuario;
+
+            if (!string.IsNullOrEmpty(gradoGrupo))
+            {
+                var partes = gradoGrupo.Split('-');
+                int idGrado = int.Parse(partes[0]);
+                int idGrupo = int.Parse(partes[1]);
+
+                alumnosConUsuario = await _context.Alumnos
+                    .Where(a => a.IdGrado == idGrado && a.IdGrupo == idGrupo)
+                    .Include(a => a.Usuario)
+                    .ToListAsync();
+            }
+            else
+            {
+                alumnosConUsuario = await _context.DocentesGrupos
+                    .Where(dg => dg.IdDocente == idDocente)
+                    .SelectMany(dg => _context.Alumnos
+                        .Where(a => a.IdGrupo == dg.IdGrupo && a.IdGrado == dg.IdGrado)
+                        .Include(a => a.Usuario))
+                    .Distinct()
+                    .ToListAsync();
+            }
+
+            var alumnos = alumnosConUsuario
                 .Select(a => new SelectListItem
                 {
-                    Value = a.Alumno!.MatriculaAlumno.ToString(),
-                    Text = a.Alumno!.Usuario!.NombreUsuario + " " + a.Alumno.Usuario.ApellidoPaterno
+                    Value = a.MatriculaAlumno.ToString(),
+                    Text = a.Usuario != null
+                        ? $"{a.Usuario.NombreUsuario} {a.Usuario.ApellidoPaterno}"
+                        : $"{a.NombreAlumno} {a.ApellidoPaterno}"
                 })
-                .Distinct()
-                .ToListAsync();
+                .ToList();
 
             alumnos.Insert(0, new SelectListItem { Value = "", Text = "-- Todos --" });
 
             var vm = new MisAvisosViewModel
             {
-                MateriaId = materiaId,
+                Avisos = avisos,
+                Alumnos = alumnos,
+                GradosGrupos = gradosGrupos,
+                GradoGrupoSeleccionado = gradoGrupo,
                 AlumnoId = alumnoId,
                 FechaDesde = fechaDesde,
                 FechaHasta = fechaHasta,
-                Avisos = avisos,
-                Materias = materias,
-                Alumnos = alumnos
+                NombreAlumno = nombreAlumno
             };
 
             return View(vm);
