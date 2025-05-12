@@ -138,6 +138,9 @@ namespace BirdSing.Controllers
 
             if (tutor != null)
             {
+                //Sección que intenta romper la relación con el alumno
+                _context.AlumnosTutores.RemoveRange(_context.AlumnosTutores.Where(at => at.IdTutor == tutor.IdTutor));
+                //Fin de la sección que intenta romper la relación con el alumno
                 _context.Tutores.Remove(tutor);
                 _context.Usuarios.Remove(tutor.Usuario);
                 _context.SaveChanges();
