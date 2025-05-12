@@ -1,0 +1,30 @@
+﻿@model BirdSing.Models.Tutor
+
+@{
+    Layout = "_LayoutTutor";
+    ViewData["Title"] = "Mi Información";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="card p-4 mt-4">
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" value="@Model.Usuario?.NombreUsuario" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Apellido Paterno</label>
+        <input class="form-control" value="@Model.Usuario?.ApellidoPaterno" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Correo</label>
+        <input class="form-control" value="@Model.Usuario?.Email" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input class="form-control" value="@Model.Telefono" disabled />
+    </div>
+
+    <a asp-action="CambiarContrasena" class="btn btn-warning mt-3">Cambiar contraseña</a>
+</div>
+

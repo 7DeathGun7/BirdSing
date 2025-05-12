@@ -118,6 +118,23 @@ namespace BirdSing.Controllers
 
             return View(vm);
         }
+        public async Task<IActionResult> Detalles(int id)
+        {
+            var aviso = await _context.Avisos
+                .Include(a => a.Materia)
+                .Include(a => a.Alumno).ThenInclude(a => a.Usuario)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (aviso == null) return NotFound();
+
+            if (!aviso.Leido)
+            {
+                aviso.Leido = true;
+                await _context.SaveChangesAsync();
+            }
+
+            return View(aviso);
+        }
 
         // GET: /PanelTutor/InformacionTutor
         public async Task<IActionResult> InformacionTutor()
@@ -125,12 +142,43 @@ namespace BirdSing.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var tutor = await _context.Tutores
                 .Include(t => t.Usuario)
-                .FirstOrDefaultAsync(t => t.Usuario!.IdUsuario == userId);
+                .FirstOrDefaultAsync(t => t.IdUsuario == userId);
 
-            if (tutor == null)
-                return Forbid();
+            if (tutor == null) return NotFound();
 
-            return View(tutor);
+            return View(tutor); // Buscará "InformacionTutor.cshtml"
         }
+        [HttpGet]
+        public IActionResult CambiarContrasena()
+        {
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarContrasena(CambiarContrasenaViewModel vm)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var usuario = await _context.Usuarios.FindAsync(userId);
+
+            if (usuario == null) return NotFound();
+
+            // Verifica contraseña actual
+            if (!BCrypt.Net.BCrypt.Verify(vm.ContrasenaActual, usuario.Password))
+            {
+                ModelState.AddModelError("ContrasenaActual", "La contraseña actual no es correcta.");
+                return View(vm);
+            }
+
+            // Cambia y guarda
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(vm.NuevaContrasena);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Contraseña actualizada correctamente.";
+            return RedirectToAction("InformacionTutor");
+        }
+
+
     }
 }

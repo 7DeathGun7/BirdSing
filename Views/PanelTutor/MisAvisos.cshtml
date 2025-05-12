@@ -51,7 +51,11 @@
                     }
                     @nombre
                 </td>
-                <td>@a.Titulo</td>
+                <td>
+                    <a asp-action="Detalles" asp-route-id="@a.Id">
+                        @a.Titulo
+                    </a>
+                </td>
                 <td>@a.Mensaje</td>
                 <td>
                     @if (a.Leido)
@@ -67,3 +71,4 @@
         }
     </tbody>
 </table>
+
