@@ -1,0 +1,82 @@
+﻿/* ===== Estilos para el formulario de Registrar Docente ===== */
+
+.formulario-docente {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 700px;
+    font-family: Arial, sans-serif;
+}
+
+    .formulario-docente h3 {
+        color: #2c3e50;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 0.5rem;
+    }
+
+    .formulario-docente .form-group,
+    .formulario-docente div {
+        margin-bottom: 1rem;
+    }
+
+    .formulario-docente label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+        color: #2c3e50;
+    }
+
+    .formulario-docente input,
+    .formulario-docente select {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    .formulario-docente .text-danger {
+        color: #e74c3c;
+        font-size: 0.9rem;
+    }
+
+    .formulario-docente button[type="submit"] {
+        background-color: #2c3e50;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .formulario-docente button[type="submit"]:hover {
+            background-color: #34495e;
+        }
+
+/* Para que el contenido no quede debajo del sidebar */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Versión móvil */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .formulario-docente {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}

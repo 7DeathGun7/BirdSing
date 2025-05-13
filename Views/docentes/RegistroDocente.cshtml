@@ -4,9 +4,11 @@
     Layout = "_LayoutAdmin";
 }
 
+<link rel="stylesheet" href="~/css/RegistroDocentes.css">
+
 <h2>Registrar Docente</h2>
 
-<form asp-action="RegistroDocente" method="post">
+<form asp-action="RegistroDocente" method="post" class="formulario-docente">
     <h3>Datos del Usuario</h3>
     <div>
         <label asp-for="Usuario.NombreUsuario"></label>
