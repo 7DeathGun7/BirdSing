@@ -9,7 +9,11 @@
 
 <form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* Sólo mostramos el resumen si hay errores *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
 
     <div class="mb-3">
         <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
