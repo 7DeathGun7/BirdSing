@@ -38,17 +38,25 @@
         <select asp-for="Usuario.IdRol" class="form-control" asp-items="ViewBag.Roles"></select>
     </div>
     <h3>Datos del Tutor</h3>
-    <div>
-        <label asp-for="Tutor.Telefono"></label>
-        <input asp-for="Tutor.Telefono" />
+    <div class="mb-3">
+        <label asp-for="Tutor.Telefono" class="form-label"></label>
+        <input asp-for="Tutor.Telefono"
+               class="form-control"
+               type="tel"
+               maxlength="10"
+               pattern="\d{10}"
+               title="Sólo 10 dígitos numéricos" />
         <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Tutor.Direccion"></label>
-        <input asp-for="Tutor.Direccion" />
+    <div class="mb-3">
+        <label asp-for="Tutor.Direccion" class="form-label"></label>
+        <input asp-for="Tutor.Direccion" class="form-control" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Registrar</button>
-    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
