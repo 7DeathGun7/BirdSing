@@ -8,7 +8,11 @@
 
 <form asp-action="Registro" method="post" class="mt-4">
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* Solo renderizamos el bloque si hay errores *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
 
     <div class="mb-3">
         <label asp-for="IdDocente" class="form-label">Docente</label>
