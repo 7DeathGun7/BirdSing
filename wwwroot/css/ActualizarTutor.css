@@ -61,7 +61,6 @@ form {
 
 /* Para que el contenido no se esconda detrás del sidebar */
 .content {
-    margin-left: 250px;
     padding: 2rem;
     background-color: #ecf0f1;
     min-height: 100vh;
