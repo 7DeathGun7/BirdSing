@@ -1,22 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using BirdSing.Models;
 
 namespace BirdSing.Models
 {
     public class MateriaDocente
     {
-        [Key]
+        // Si tienes Id como PK:
         public int Id { get; set; }
 
-        [ForeignKey("Docente")]
         public int IdDocente { get; set; }
         public Docente? Docente { get; set; }
 
-        [ForeignKey("Materia")]
         public int IdMateria { get; set; }
         public Materia? Materia { get; set; }
 
+        // Claves antiguas para edición
+        [NotMapped]
+        public int OldIdDocente { get; set; }
+        [NotMapped]
+        public int OldIdMateria { get; set; }
     }
-
 }

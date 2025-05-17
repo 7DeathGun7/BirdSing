@@ -1,157 +1,165 @@
-﻿using BirdSing.Models.ModelosViews;
-using BirdSing.Models;
+﻿using System.Linq;
 using BirdSing.Data;
+using BirdSing.Models;
+using BirdSing.Models.ModelosViews;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using BCrypt.Net;
 
 namespace BirdSing.Controllers
 {
-    [Authorize(Roles = "1")] // Solo permite el acceso a administradores
+    [Authorize(Roles = "1")]  // Admin solamente
     public class TutoresController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public TutoresController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // GET: Tutores/ListaTutores
         public IActionResult ListaTutores()
         {
             var tutores = _context.Tutores
                 .Include(t => t.Usuario)
-                .ThenInclude(u => u.Rol)
+                    .ThenInclude(u => u.Rol)
                 .ToList();
             return View(tutores);
         }
 
+        // GET: Tutores/RegistroTutor
         public IActionResult RegistroTutor()
         {
-            var rolTutor = _context.Roles.FirstOrDefault(r => r.Nombre == "Tutor"); // Puedes usar ID si lo prefieres
-            ViewBag.Roles = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Value = rolTutor.IdRol.ToString(),
-                    Text = rolTutor.Nombre
-                }
-            };
-
+            CargarSoloRolTutor();
             return View(new UsuarioTutorViewModel());
         }
 
+        // POST: Tutores/RegistroTutor
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RegistroTutor(UsuarioTutorViewModel model)
         {
             if (ModelState.IsValid)
             {
-                using (IDbContextTransaction transaction = _context.Database.BeginTransaction())
+                using IDbContextTransaction tx = _context.Database.BeginTransaction();
+                try
                 {
-                    try
-                    {
-                        model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
-                        _context.Usuarios.Add(model.Usuario);
-                        _context.SaveChanges();
+                    // 1) Hashear y guardar el usuario
+                    model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
+                    _context.Usuarios.Add(model.Usuario);
+                    _context.SaveChanges();
 
-                        model.Tutor.IdUsuario = model.Usuario.IdUsuario;
-                        _context.Tutores.Add(model.Tutor);
-                        _context.SaveChanges();
+                    // 2) Crear tutor vinculado al usuario recién creado
+                    model.Tutor.IdUsuario = model.Usuario.IdUsuario;
+                    _context.Tutores.Add(model.Tutor);
+                    _context.SaveChanges();
 
-                        transaction.Commit();
-                        return RedirectToAction("ListaTutores");
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        ModelState.AddModelError("", "Hubo un error al registrar el Tutor y Usuario: " + ex.Message);
-                    }
+                    tx.Commit();
+                    return RedirectToAction(nameof(ListaTutores));
+                }
+                catch (System.Exception ex)
+                {
+                    tx.Rollback();
+                    ModelState.AddModelError(string.Empty, "Error al registrar Tutor: " + ex.Message);
                 }
             }
 
-            var rolTutor = _context.Roles.FirstOrDefault(r => r.Nombre == "Tutor");
-            ViewBag.Roles = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Value = rolTutor.IdRol.ToString(),
-                    Text = rolTutor.Nombre
-                }
-            };
-
+            // Si algo falla, recargamos el dropdown y volvemos a la vista
+            CargarSoloRolTutor();
             return View(model);
         }
 
+        // GET: Tutores/ActualizarTutor/5
         public IActionResult ActualizarTutor(int id)
         {
-            var tutor = _context.Tutores.Include(t => t.Usuario).ThenInclude(u => u.Rol).FirstOrDefault(t => t.IdTutor == id);
+            var tutor = _context.Tutores
+                .Include(t => t.Usuario)
+                    .ThenInclude(u => u.Rol)
+                .FirstOrDefault(t => t.IdTutor == id);
+
             if (tutor == null)
-            {
                 return NotFound();
-            }
 
-            var roles = _context.Roles.ToList();
-            ViewBag.Roles = roles.Select(r => new SelectListItem
+            var vm = new UsuarioTutorViewModel
             {
-                Value = r.IdRol.ToString(),
-                Text = r.Nombre
-            }).ToList();
-
-            var model = new UsuarioTutorViewModel
-            {
-                Usuario = tutor.Usuario,
-                Tutor = tutor
+                Tutor = tutor,
+                Usuario = tutor.Usuario
             };
 
-            return View(model);
+            CargarSoloRolTutor();
+            return View(vm);
         }
 
+        // POST: Tutores/ActualizarTutor
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ActualizarTutor(UsuarioTutorViewModel model)
         {
+            // La contraseña no se edita aquí, quitamos su validación
+            ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.Password));
+
             if (ModelState.IsValid)
             {
                 var tutorExistente = _context.Tutores.Find(model.Tutor.IdTutor);
                 var usuarioExistente = _context.Usuarios.Find(model.Usuario.IdUsuario);
 
-                if (tutorExistente == null || usuarioExistente == null) return NotFound();
+                if (tutorExistente == null || usuarioExistente == null)
+                    return NotFound();
 
+                // Actualizar datos del usuario
                 usuarioExistente.NombreUsuario = model.Usuario.NombreUsuario;
                 usuarioExistente.ApellidoPaterno = model.Usuario.ApellidoPaterno;
                 usuarioExistente.ApellidoMaterno = model.Usuario.ApellidoMaterno;
                 usuarioExistente.Email = model.Usuario.Email;
                 usuarioExistente.IdRol = model.Usuario.IdRol;
 
+                // Actualizar datos del tutor
                 tutorExistente.Telefono = model.Tutor.Telefono;
                 tutorExistente.Direccion = model.Tutor.Direccion;
 
                 _context.SaveChanges();
-                return RedirectToAction("ListaTutores");
+                return RedirectToAction(nameof(ListaTutores));
             }
 
-            var roles = _context.Roles.ToList();
-            ViewBag.Roles = roles.Select(r => new SelectListItem
-            {
-                Value = r.IdRol.ToString(),
-                Text = r.Nombre
-            }).ToList();
-
+            // Si hay errores, recargamos el dropdown y regresamos a la vista
+            CargarSoloRolTutor();
             return View(model);
         }
 
+        // GET: Tutores/EliminarTutor/5
         public IActionResult EliminarTutor(int id)
         {
-            var tutor = _context.Tutores.Include(t => t.Usuario).FirstOrDefault(t => t.IdTutor == id);
+            var tutor = _context.Tutores
+                .Include(t => t.Usuario)
+                .FirstOrDefault(t => t.IdTutor == id);
+
             if (tutor != null)
             {
                 _context.Tutores.Remove(tutor);
                 _context.Usuarios.Remove(tutor.Usuario);
                 _context.SaveChanges();
             }
-            return RedirectToAction("ListaTutores");
+
+            return RedirectToAction(nameof(ListaTutores));
+        }
+
+        // Helper: solo cargamos el rol "Tutor" en la lista desplegable
+        private void CargarSoloRolTutor()
+        {
+            var rolTutor = _context.Roles
+                .Where(r => r.Nombre == "Tutor")
+                .Select(r => new SelectListItem
+                {
+                    Value = r.IdRol.ToString(),
+                    Text = r.Nombre
+                })
+                .ToList();
+
+            ViewBag.Roles = rolTutor;
         }
     }
 }
+

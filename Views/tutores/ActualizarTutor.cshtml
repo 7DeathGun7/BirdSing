@@ -2,51 +2,66 @@
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Actualizar Tutor";
 }
 
 <link rel="stylesheet" href="~/css/ActualizarTutor.css">
 
 <h2>Actualizar Tutor</h2>
 
-<form asp-action="ActualizarTutor" method="post">
-    <h3>Datos del Usuario</h3>
-    <div>
-        <label asp-for="Usuario.NombreUsuario"></label>
-        <input asp-for="Usuario.NombreUsuario" />
+<form asp-action="ActualizarTutor" method="post" class="mt-4 needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <!-- Mostrar errores de validación -->
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <!-- Campos ocultos para que el binder reciba los IDs -->
+    <input asp-for="Tutor.IdTutor" type="hidden" />
+    <input asp-for="Usuario.IdUsuario" type="hidden" />
+
+    <h5>Datos del Usuario</h5>
+    <div class="mb-3">
+        <label asp-for="Usuario.NombreUsuario" class="form-label"></label>
+        <input asp-for="Usuario.NombreUsuario" class="form-control" />
         <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoPaterno"></label>
-        <input asp-for="Usuario.ApellidoPaterno" />
+    <div class="mb-3">
+        <label asp-for="Usuario.ApellidoPaterno" class="form-label"></label>
+        <input asp-for="Usuario.ApellidoPaterno" class="form-control" />
         <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoMaterno"></label>
-        <input asp-for="Usuario.ApellidoMaterno" />
+    <div class="mb-3">
+        <label asp-for="Usuario.ApellidoMaterno" class="form-label"></label>
+        <input asp-for="Usuario.ApellidoMaterno" class="form-control" />
         <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.Email"></label>
-        <input asp-for="Usuario.Email" />
+    <div class="mb-3">
+        <label asp-for="Usuario.Email" class="form-label"></label>
+        <input asp-for="Usuario.Email" class="form-control" />
         <span asp-validation-for="Usuario.Email" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Usuario.IdRol">Rol</label>
-        <select asp-for="Usuario.IdRol" class="form-control" asp-items="ViewBag.Roles"></select>
+    <div class="mb-3">
+        <label asp-for="Usuario.IdRol" class="form-label">Rol</label>
+        <select asp-for="Usuario.IdRol" asp-items="ViewBag.Roles" class="form-select"></select>
+        <span asp-validation-for="Usuario.IdRol" class="text-danger"></span>
     </div>
 
-    <h3>Datos del Tutor</h3>
-    <div>
-        <label asp-for="Tutor.Telefono"></label>
-        <input asp-for="Tutor.Telefono" />
+    <h5 class="mt-4">Datos del Tutor</h5>
+    <div class="mb-3">
+        <label asp-for="Tutor.Telefono" class="form-label"></label>
+        <input asp-for="Tutor.Telefono" class="form-control" />
         <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Tutor.Direccion"></label>
-        <input asp-for="Tutor.Direccion" />
+    <div class="mb-3">
+        <label asp-for="Tutor.Direccion" class="form-label"></label>
+        <input asp-for="Tutor.Direccion" class="form-control" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Actualizar</button>
-    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="ListaTutores" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

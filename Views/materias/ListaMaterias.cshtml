@@ -2,30 +2,41 @@
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Lista de Materias";
 }
 
-<h2>Lista de Materias</h2>
+<h2>@ViewData["Title"]</h2>
 
-<table class="table">
-    <thead>
+<p>
+    <a asp-action="RegistroMateria" class="btn btn-success">+ Nueva Materia</a>
+</p>
+
+<table class="table table-striped mt-3">
+    <thead class="table-dark">
         <tr>
             <th>Grado</th>
             <th>Materia</th>
-            <th>Acciones</th>
+            <th style="width:150px">Acciones</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var materia in Model)
         {
             <tr>
-                <td>@materia.Grado.Grados</td>
+                <!-- Aquí cambiamos IdGrado por el nombre del grado -->
+                <td>@materia.Grado?.Grados</td>
                 <td>@materia.NombreMateria</td>
                 <td>
-                    <a asp-action="ActualizarMateria" asp-route-id="@materia.IdMateria">Actualizar</a>
-                    <a asp-action="EliminarMateria" asp-route-id="@materia.IdMateria" onclick="return confirm('¿Estás seguro de que deseas eliminar esta materia?');">Eliminar</a>
+                    <a asp-action="ActualizarMateria" asp-route-id="@materia.IdMateria" class="btn btn-sm btn-primary">
+                        Editar
+                    </a>
+                    <a asp-action="EliminarMateria" asp-route-id="@materia.IdMateria"
+                       class="btn btn-sm btn-danger ms-1"
+                       onclick="return confirm('¿Eliminar esta materia?');">
+                        Eliminar
+                    </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<a asp-action="RegistroMateria">Registrar Nueva Materia</a>
