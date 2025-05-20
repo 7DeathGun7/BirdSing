@@ -9,7 +9,11 @@
     @Html.AntiForgeryToken()
 
     <!-- Mostrar errores de validación -->
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* Mostrar errores de validación solamente si hay alguno *@
+        @if (!ViewData.ModelState.IsValid)
+            {
+           <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
 
     <!-- Campos ocultos para que el binder reciba los IDs -->
     <input asp-for="Tutor.IdTutor" type="hidden" />
