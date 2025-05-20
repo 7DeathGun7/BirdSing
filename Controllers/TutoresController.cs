@@ -138,14 +138,12 @@ namespace BirdSing.Controllers
 
             if (tutor != null)
             {
-                tutor.Activo = false;
-                tutor.Usuario!.Activo = false;
-
-                var avisos = _context.Avisos.Where(a => a.IdTutor == tutor.IdTutor);
-                foreach (var aviso in avisos)
-                    aviso.Activo = false;
-
-                await _context.SaveChangesAsync(); // ❗ le faltaba `await` en tu captura
+                //Sección que intenta romper la relación con el alumno
+                _context.AlumnosTutores.RemoveRange(_context.AlumnosTutores.Where(at => at.IdTutor == tutor.IdTutor));
+                //Fin de la sección que intenta romper la relación con el alumno
+                _context.Tutores.Remove(tutor);
+                _context.Usuarios.Remove(tutor.Usuario);
+                _context.SaveChanges();
             }
 
             return RedirectToAction(nameof(ListaTutores));
