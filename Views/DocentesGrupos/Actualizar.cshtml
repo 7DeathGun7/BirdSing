@@ -9,6 +9,8 @@
 
 <form asp-action="Actualizar" method="post" class="mt-4">
     @Html.AntiForgeryToken()
+    <input type="hidden" name="oldIdGrado" value="@Model.IdGrado" />
+    <input type="hidden" name="oldIdGrupo" value="@Model.IdGrupo" />
 
     <div class="mb-3">
         <label asp-for="IdDocente" class="form-label">Docente</label>

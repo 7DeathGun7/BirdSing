@@ -84,13 +84,13 @@ namespace BirdSing.Controllers
 
 
         // POST: /DocentesGrupos/Actualizar
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Actualizar(DocenteGrupo model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Actualizar(DocenteGrupo model, int oldIdGrado, int oldIdGrupo)
         {
             if (ModelState.IsValid)
             {
-                // Para PK compuesta: eliminar + reinsertar
-                var old = _context.DocentesGrupos.Find(model.IdDocente, model.IdGrado, model.IdGrupo);
+                var old = _context.DocentesGrupos.Find(model.IdDocente, oldIdGrado, oldIdGrupo);
                 if (old != null)
                 {
                     _context.DocentesGrupos.Remove(old);
@@ -102,6 +102,7 @@ namespace BirdSing.Controllers
             CargarDropdowns();
             return View(model);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> ObtenerGruposPorGrado(int gradoId)
