@@ -14,5 +14,8 @@ namespace BirdSing.Models
         public int IdMateria { get; set; }
         [ForeignKey(nameof(IdMateria))]
         public Materia? Materia { get; set; }
+
+        public bool Activo { get; set; } = true;
+
     }
 }

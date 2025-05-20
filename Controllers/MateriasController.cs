@@ -77,41 +77,38 @@ namespace BirdSing.Controllers
         }
 
         // GET: /Materias/EliminarMateria/5
-        public IActionResult EliminarMateria(int id)
+        [HttpPost]
+        public async Task<IActionResult> EliminarMateria(int id)
         {
             // 1) Buscar la materia
             var materia = _context.Materias.Find(id);
             if (materia == null)
                 return NotFound();
 
-            // 2) Limpiar dependencias para no romper las foreign keys
+            // 2) Inactivar dependencias sin eliminarlas físicamente
 
             // 2a) MateriasDocentes
             var md = _context.MateriasDocentes
-                .Where(x => x.IdMateria == id)
-                .ToList();
-            if (md.Any())
-                _context.MateriasDocentes.RemoveRange(md);
+                .Where(x => x.IdMateria == id);
+            foreach (var item in md)
+                item.Activo = false;
 
-            // 2b) GrupoMaterias (si existe)
+            // 2b) GrupoMaterias
             var gm = _context.GrupoMaterias
-                .Where(x => x.IdMateria == id)
-                .ToList();
-            if (gm.Any())
-                _context.GrupoMaterias.RemoveRange(gm);
+                .Where(x => x.IdMateria == id);
+            foreach (var item in gm)
+                item.Activo = false;
 
             // 2c) Avisos
             var avisos = _context.Avisos
-                .Where(a => a.IdMateria == id)
-                .ToList();
-            if (avisos.Any())
-                _context.Avisos.RemoveRange(avisos);
+                .Where(a => a.IdMateria == id);
+            foreach (var aviso in avisos)
+                aviso.Activo = false;
 
-            // 3) Finalmente eliminar la materia
-            _context.Materias.Remove(materia);
+            // 3) Inactivar materia
+            materia.Activo = false;
 
-            // 4) Guardar todos los cambios de golpe
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(ListaMaterias));
         }

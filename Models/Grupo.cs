@@ -16,6 +16,8 @@ namespace BirdSing.Models
         [StringLength(50)]
         public string? Grupos { get; set; }
 
+        public bool Activo { get; set; } = true;
+
         // <- Agrega estas colecciones para facilitar Includes
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
         public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();

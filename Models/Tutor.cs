@@ -19,8 +19,11 @@ namespace BirdSing.Models
         [Display(Name = "Teléfono")]
         public string Telefono { get; set; } = null!;
 
+        [Required]
         [StringLength(255)]
         public string? Direccion { get; set; }
+
+        public bool Activo { get; set; } = true;
 
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();

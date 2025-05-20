@@ -30,7 +30,7 @@ namespace BirdSing.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == model.Email);
-                if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
+                if (usuario == null || !usuario.Activo || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
                 {
                     ModelState.AddModelError("", "Correo o contraseña incorrectos.");
                     return View(model);

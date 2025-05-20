@@ -130,17 +130,22 @@ namespace BirdSing.Controllers
         }
 
         // GET: Tutores/EliminarTutor/5
-        public IActionResult EliminarTutor(int id)
+        public async Task<IActionResult> EliminarTutor(int id)
         {
             var tutor = _context.Tutores
-                .Include(t => t.Usuario)
-                .FirstOrDefault(t => t.IdTutor == id);
+        .Include(t => t.Usuario)
+        .FirstOrDefault(t => t.IdTutor == id);
 
             if (tutor != null)
             {
-                _context.Tutores.Remove(tutor);
-                _context.Usuarios.Remove(tutor.Usuario);
-                _context.SaveChanges();
+                tutor.Activo = false;
+                tutor.Usuario!.Activo = false;
+
+                var avisos = _context.Avisos.Where(a => a.IdTutor == tutor.IdTutor);
+                foreach (var aviso in avisos)
+                    aviso.Activo = false;
+
+                await _context.SaveChangesAsync(); // ❗ le faltaba `await` en tu captura
             }
 
             return RedirectToAction(nameof(ListaTutores));

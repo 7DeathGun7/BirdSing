@@ -98,14 +98,21 @@ namespace BirdSing.Controllers
         }
 
         // GET: /Alumnos/EliminarAlumno/5
-        public IActionResult EliminarAlumno(int id)
+        public async Task<IActionResult> EliminarAlumno(int id)
         {
             var alumno = _context.Alumnos.Find(id);
             if (alumno != null)
             {
-                _context.Alumnos.Remove(alumno);
-                _context.SaveChanges();
+                alumno.Activo = false;
+                alumno.Usuario!.Activo = false;
+
+                var avisos = _context.Avisos.Where(a => a.MatriculaAlumno == alumno.MatriculaAlumno);
+                foreach (var aviso in avisos)
+                    aviso.Activo = false;
+
+                await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(ListaAlumnos));
         }
 

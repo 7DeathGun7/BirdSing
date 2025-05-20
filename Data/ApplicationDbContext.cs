@@ -172,6 +172,15 @@ namespace BirdSing.Data
                 .WithMany()
                 .HasForeignKey(dg => dg.IdGrupo)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Usuario>().HasQueryFilter(u => u.Activo);
+            modelBuilder.Entity<Tutor>().HasQueryFilter(t => t.Activo);
+            modelBuilder.Entity<Alumno>().HasQueryFilter(a => a.Activo);
+            modelBuilder.Entity<Docente>().HasQueryFilter(d => d.Activo);
+            modelBuilder.Entity<Materia>().HasQueryFilter(m => m.Activo);
+            modelBuilder.Entity<Grupo>().HasQueryFilter(g => g.Activo);
+            modelBuilder.Entity<Grado>().HasQueryFilter(g => g.Activo);
+            modelBuilder.Entity<Aviso>().HasQueryFilter(a => a.Activo);
         }
     }
 }

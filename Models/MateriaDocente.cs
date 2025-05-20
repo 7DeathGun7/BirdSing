@@ -19,5 +19,7 @@ namespace BirdSing.Models
         public int OldIdDocente { get; set; }
         [NotMapped]
         public int OldIdMateria { get; set; }
+
+        public bool Activo { get; set; } = true;
     }
 }

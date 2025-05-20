@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250429044833_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250520220313_AddActivoToEntities")]
+    partial class AddActivoToEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatriculaAlumno"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ApellidoMaterno")
                         .IsRequired()
@@ -85,6 +88,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Parentesco")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -104,6 +110,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
@@ -161,6 +170,9 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDocente"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
 
@@ -189,6 +201,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(2);
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("GrupoIdGrupo")
                         .HasColumnType("int");
 
@@ -211,6 +226,9 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrado"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Grados")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -227,6 +245,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupo"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Grupos")
                         .HasMaxLength(50)
@@ -252,6 +273,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.HasKey("IdGrupo", "IdMateria");
 
                     b.HasIndex("IdMateria");
@@ -266,6 +290,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMateria"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("IdGrado")
                         .HasColumnType("int");
@@ -289,6 +316,9 @@ namespace BirdSing.Migrations
 
                     b.Property<int>("IdMateria")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -329,7 +359,11 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTutor"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Direccion")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -337,8 +371,8 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Telefono")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdTutor");
 
@@ -354,6 +388,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ApellidoMaterno")
                         .IsRequired()

@@ -24,6 +24,8 @@ namespace BirdSing.Models
 
         [ForeignKey("IdTutor")]  // Asegúrate de que coincida con la clave primaria de Tutor
         public Tutor? Tutor { get; set; }
+
+        public bool Activo { get; set; } = true;
     }
 
 }

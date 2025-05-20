@@ -96,48 +96,54 @@ namespace BirdSing.Controllers
             return RedirectToAction(nameof(ListaGrupos));
         }
 
-        public IActionResult EliminarGrupo(int id)
+        [HttpPost]
+        public async Task<IActionResult> EliminarGrupo(int id)
         {
-            // 1) Cargo el grupo junto con todas sus tablas hijas
-            var grupo = _context.Grupos
+            var grupo = await _context.Grupos
                 .Include(g => g.GrupoMaterias)
                 .Include(g => g.DocentesGrupos)
                 .Include(g => g.Alumnos)
-                    .ThenInclude(a => a.AlumnosTutores) // si manejas Alumno-Tutor
-                .FirstOrDefault(g => g.IdGrupo == id);
+                    .ThenInclude(a => a.AlumnosTutores)
+                .FirstOrDefaultAsync(g => g.IdGrupo == id);
 
             if (grupo == null)
                 return NotFound();
 
-            // 2) Borro primero las relaciones en tablas intermedias
-            if (grupo.GrupoMaterias.Any())
-                _context.GrupoMaterias.RemoveRange(grupo.GrupoMaterias);
+            // 1) Inactivar GrupoMaterias
+            foreach (var gm in grupo.GrupoMaterias)
+                gm.Activo = false;
 
-            if (grupo.DocentesGrupos.Any())
-                _context.DocentesGrupos.RemoveRange(grupo.DocentesGrupos);
+            // 2) Inactivar DocentesGrupos
+            foreach (var dg in grupo.DocentesGrupos)
+                dg.Activo = false;
 
-            // 3) Si tienes Alumnos en este grupo, y quieres borrarlos:
-            if (grupo.Alumnos.Any())
+            // 3) Inactivar Alumnos y sus relaciones
+            foreach (var alumno in grupo.Alumnos)
             {
-                // Si además existe AlumnoTutor, lo quitamos antes
-                foreach (var alumno in grupo.Alumnos)
-                {
-                    if (alumno.AlumnosTutores.Any())
-                        _context.AlumnosTutores.RemoveRange(alumno.AlumnosTutores);
-                }
-                _context.Alumnos.RemoveRange(grupo.Alumnos);
+                alumno.Activo = false;
+                if (alumno.Usuario != null)
+                    alumno.Usuario.Activo = false;
+
+                foreach (var at in alumno.AlumnosTutores)
+                    at.Activo = false;
+
+                // También puedes inactivar avisos del alumno si lo deseas:
+                var avisos = _context.Avisos
+                    .Where(a => a.MatriculaAlumno == alumno.MatriculaAlumno);
+                foreach (var aviso in avisos)
+                    aviso.Activo = false;
             }
 
-            // 4) Finalmente quito el propio Grupo
-            _context.Grupos.Remove(grupo);
-            _context.SaveChanges();
+            // 4) Inactivar el grupo
+            grupo.Activo = false;
 
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListaGrupos));
         }
-    
 
-// Helper privado para poblar el dropdown de grados
-private void CargarGradosEnViewBag()
+
+        // Helper privado para poblar el dropdown de grados
+        private void CargarGradosEnViewBag()
         {
             ViewBag.Grados = _context.Grados
                 .Select(g => new SelectListItem

@@ -33,6 +33,8 @@ namespace BirdSing.Models
         [Required]
         [StringLength(255)]
         public string Password { get; set; } = null!;
+        public bool Activo { get; set; } = true;
+
 
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
 

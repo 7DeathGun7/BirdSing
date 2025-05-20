@@ -19,5 +19,6 @@ namespace BirdSing.Models
         public int IdGrupo { get; set; }
         [ForeignKey(nameof(IdGrupo))]
         public Grupo? Grupo { get; set; }
+        public bool Activo { get; set; } = true;
     }
 }
