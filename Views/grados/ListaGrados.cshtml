@@ -19,10 +19,15 @@
             <tr>
                 <td>@grado.Grados</td>
                 <td>
-                    <a asp-action="ActualizarGrado" asp-route-id="@grado.IdGrado">Actualizar</a>
-                    <a asp-action="EliminarGrado" asp-route-id="@grado.IdGrado" onclick="return confirm('¿Estás seguro de que deseas eliminar este grado?');">Eliminar</a>
+                    <a asp-action="ActualizarGrado" asp-route-id="@grado.IdGrado" class="btn btn-link">Actualizar</a>
+
+                    <form asp-action="EliminarGrado" asp-route-id="@grado.IdGrado" method="post" style="display:inline-block" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este grado?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link text-danger p-0 m-0 align-baseline">Eliminar</button>
+                    </form>
                 </td>
             </tr>
+
         }
     </tbody>
 </table>

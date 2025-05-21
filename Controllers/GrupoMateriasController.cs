@@ -109,6 +109,31 @@ namespace BirdSing.Controllers
                     Text = $"{m.Grado!.Grados} – {m.NombreMateria}"
                 })
                 .ToList();
+
         }
+
+        [HttpGet]
+        public JsonResult ObtenerGradoPorGrupo(int grupoId)
+        {
+            var grupo = _context.Grupos.FirstOrDefault(g => g.IdGrupo == grupoId);
+            if (grupo == null) return Json(new { gradoId = 0 });
+
+            return Json(new { gradoId = grupo.IdGrado });
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerMateriasPorGrado(int gradoId)
+        {
+            var materias = _context.Materias
+                .Where(m => m.IdGrado == gradoId && m.Activo)
+                .Select(m => new {
+                    value = m.IdMateria,
+                    text = m.NombreMateria
+                })
+                .ToList();
+
+            return Json(materias);
+        }
+
     }
 }
