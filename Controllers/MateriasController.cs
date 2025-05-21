@@ -78,40 +78,28 @@ namespace BirdSing.Controllers
 
         // GET: /Materias/EliminarMateria/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarMateria(int id)
         {
-            // 1) Buscar la materia
-            var materia = _context.Materias.Find(id);
-            if (materia == null)
-                return NotFound();
+            var materia = await _context.Materias.FindAsync(id);
+            if (materia == null) return NotFound();
 
-            // 2) Inactivar dependencias sin eliminarlas físicamente
-
-            // 2a) MateriasDocentes
-            var md = _context.MateriasDocentes
-                .Where(x => x.IdMateria == id);
-            foreach (var item in md)
-                item.Activo = false;
-
-            // 2b) GrupoMaterias
-            var gm = _context.GrupoMaterias
-                .Where(x => x.IdMateria == id);
-            foreach (var item in gm)
-                item.Activo = false;
-
-            // 2c) Avisos
-            var avisos = _context.Avisos
-                .Where(a => a.IdMateria == id);
-            foreach (var aviso in avisos)
-                aviso.Activo = false;
-
-            // 3) Inactivar materia
             materia.Activo = false;
 
-            await _context.SaveChangesAsync();
+            // Elimina asociaciones
+            var md = _context.MateriasDocentes.Where(x => x.IdMateria == id);
+            var gm = _context.GrupoMaterias.Where(x => x.IdMateria == id);
+            var avisos = _context.Avisos.Where(a => a.IdMateria == id);
 
+            foreach (var aviso in avisos) aviso.Activo = false;
+
+            _context.MateriasDocentes.RemoveRange(md);
+            _context.GrupoMaterias.RemoveRange(gm);
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListaMaterias));
         }
+
 
         // Helper privado para poblar el dropdown de Grados
         private void CargarGradosEnViewBag()
