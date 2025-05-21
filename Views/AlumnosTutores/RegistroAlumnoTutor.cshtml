@@ -1,0 +1,48 @@
+﻿@model BirdSing.Models.AlumnoTutor
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Asignar Tutor a Alumno";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    @* Sólo mostramos el resumen si hay errores *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
+        <select asp-for="MatriculaAlumno"
+                asp-items="ViewBag.Alumnos"
+                class="form-select js-searchable">
+        </select>
+        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdTutor" class="form-label">Tutor</label>
+        <select asp-for="IdTutor"
+                asp-items="ViewBag.Tutores"
+                class="form-select js-searchable">
+        </select>
+        <span asp-validation-for="IdTutor" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parentesco" class="form-label">Parentesco</label>
+        <input asp-for="Parentesco" class="form-control" />
+        <span asp-validation-for="Parentesco" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Registrar</button>
+    <a asp-action="ListaAlumnosTutores" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

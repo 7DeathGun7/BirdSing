@@ -1,0 +1,56 @@
+﻿@model BirdSing.Models.ViewModels.MisAlumnosViewModel
+
+@{
+    Layout = "_LayoutDocente";
+    ViewData["Title"] = "Mis Alumnos";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label asp-for="GradoId" class="form-label">Grado</label>
+        <select asp-for="GradoId" asp-items="Model.Grados" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="GrupoId" class="form-label">Grupo</label>
+        <select asp-for="GrupoId" asp-items="Model.Grupos" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="MateriaId" class="form-label">Materia</label>
+        <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="AlumnoId" class="form-label">Alumno</label>
+        <select asp-for="AlumnoId" asp-items="Model.AlumnosList" class="form-select">
+        </select>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido P</th>
+            <th>Apellido M</th>
+            <th>Grado</th>
+            <th>Grupo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.Alumnos)
+        {
+            <tr>
+                <td>@(a.Usuario?.NombreUsuario ?? a.NombreAlumno ?? "-")</td>
+                <td>@(a.Usuario?.ApellidoPaterno ?? a.ApellidoPaterno ?? "-")</td>
+                <td>@(a.Usuario?.ApellidoMaterno ?? a.ApellidoMaterno ?? "-")</td>
+                <td>@(a.Grupo?.Grado?.Grados ?? "-")</td>
+                <td>@(a.Grupo?.Grupos ?? "-")</td>
+            </tr>
+        }
+    </tbody>
+
+</table>

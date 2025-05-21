@@ -1,4 +1,148 @@
-﻿@page
-@model BirdSing.Views.PanelDocente.CrearAvisosModel
+﻿@model BirdSing.Models.ViewModels.CrearAvisoViewModel
+
 @{
+    Layout = "_LayoutDocente";
+    ViewData["Title"] = "Crear Aviso";
+}
+
+<h2>Crear Aviso</h2>
+
+<form asp-action="CrearAvisos" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <!-- 1) Modo de envío -->
+    <div class="mb-3">
+        <label class="form-label">Modo de envío:</label><br />
+        <input asp-for="ModoEnvio" type="radio" value="Grupal" onchange="toggleIndividual()" /> Grupal
+        &nbsp;
+        <input asp-for="ModoEnvio" type="radio" value="Individual" onchange="toggleIndividual()" /> Individual
+        <span asp-validation-for="ModoEnvio" class="text-danger"></span>
+    </div>
+
+    <!-- 2) Grupo -->
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label"></label>
+        <select asp-for="IdGrupo" asp-items="Model.Grupos"
+                class="form-select"
+                id="selectGrupo">
+            <option value="">-- Selecciona grupo --</option>
+        </select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <!-- 3) Materia (solo en Individual) -->
+    <div id="divMateria" class="mb-3" style="display:none">
+        <label asp-for="MateriaId" class="form-label"></label>
+        <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select">
+            <option value="">-- Selecciona materia --</option>
+        </select>
+        <span asp-validation-for="MateriaId" class="text-danger"></span>
+    </div>
+
+    <!-- 4) Combobox Alumno (solo en Individual) -->
+    <div id="divAlumno" class="mb-4" style="display:none">
+        <label class="form-label">Alumno</label>
+        <div class="dropdown">
+            <button class="btn btn-light w-100 text-start dropdown-toggle"
+                    type="button"
+                    id="btnDropdownAlumnos"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                -- Selecciona alumno --
+            </button>
+            <div class="dropdown-menu p-2 w-100" aria-labelledby="btnDropdownAlumnos">
+                <input type="text"
+                       id="inputFilterAlumnos"
+                       class="form-control mb-2"
+                       placeholder="Buscar..."
+                       oninput="filtrarAlumnosInside()" />
+
+                <div id="listAlumnosInside" style="max-height:200px; overflow:auto;">
+                    <!-- aquí se inyectan items -->
+                </div>
+            </div>
+        </div>
+        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+        <!-- campo oculto que realmente sube el Id -->
+        <input asp-for="MatriculaAlumno" type="hidden" id="MatriculaAlumno" />
+    </div>
+
+    <!-- 5) Título -->
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <!-- 6) Mensaje -->
+    <div class="mb-3">
+        <label asp-for="Mensaje" class="form-label"></label>
+        <textarea asp-for="Mensaje" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Mensaje" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar Aviso</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // 1) Muestra/oculta Materia y Alumno
+        function toggleIndividual() {
+            const modo = document.querySelector('input[name="ModoEnvio"]:checked')?.value;
+            const mostrar = modo === 'Individual';
+            document.getElementById('divMateria').style.display = mostrar ? 'block' : 'none';
+            document.getElementById('divAlumno').style.display  = mostrar ? 'block' : 'none';
+        }
+
+        // 2) Al cambiar Grupo: fetch alumnos y monta items en el dropdown
+        document.getElementById('selectGrupo').addEventListener('change', async function() {
+            const grupoId = this.value;
+            const cont = document.getElementById('listAlumnosInside');
+            cont.innerHTML = '';
+            document.getElementById('btnDropdownAlumnos').textContent   = '-- Selecciona alumno --';
+            document.getElementById('MatriculaAlumno').value            = '';
+            document.getElementById('MateriaId').value                  = '';
+
+            if (!grupoId) return;
+
+            // Trae también las materias del docente
+            // (opcional: si quieres filtrar materias por grupo, podrías llamar a otro endpoint)
+            // aquí asumimos que Model.Materias ya contiene sólo las del docente
+
+            const resp = await fetch(`@Url.Action("GetAlumnos", "PanelDocente")?idGrupo=${grupoId}`);
+            const alumnos = await resp.json();
+
+            for (const a of alumnos) {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.textContent = a.nombre;
+                div.dataset.id = a.matricula;
+                div.addEventListener('click', () => {
+                    document.getElementById('btnDropdownAlumnos').textContent = a.nombre;
+                    document.getElementById('MatriculaAlumno').value      = a.matricula;
+                    bootstrap.Dropdown.getInstance(
+                      document.getElementById('btnDropdownAlumnos')
+                    ).hide();
+                });
+                cont.appendChild(div);
+            }
+        });
+
+        // 3) Filtrar dentro del listado
+        function filtrarAlumnosInside() {
+            const txt = document.getElementById('inputFilterAlumnos').value.toLowerCase();
+            document.querySelectorAll('#listAlumnosInside .dropdown-item')
+                .forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(txt)
+                                      ? '' : 'none';
+                });
+        }
+
+        // 4) Al cargar la página, setea visibilidad por defecto
+        window.addEventListener('load', toggleIndividual);
+    </script>
 }

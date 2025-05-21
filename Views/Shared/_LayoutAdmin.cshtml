@@ -1,12 +1,78 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrador</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BirdSing</title>
 
-    <link rel="stylesheet" href="~/css/LayoutADMIN.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            transition: width 0.3s;
+        }
+
+            .sidebar h2 {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .sidebar li {
+                margin: 0.5rem 0;
+            }
+
+            .sidebar a {
+                color: white;
+                text-decoration: none;
+                display: block;
+                padding: 0.5rem;
+                border-radius: 4px;
+            }
+
+                .sidebar a:hover {
+                    background-color: #555;
+                }
+
+        .dropdown-content {
+            display: none;
+            padding-left: 1rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .logout {
+            color: red !important;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -17,7 +83,7 @@
             <h2>Menú</h2>
             <ul>
                 <li><a asp-controller="PanelAdmin" asp-action="Index">Inicio</a></li>
-                <!-- Sección de Tutores -->
+
                 <li class="dropdown">
                     <a href="#">Tutores</a>
                     <ul class="dropdown-content">
@@ -26,8 +92,6 @@
                     </ul>
                 </li>
 
-
-                <!-- Sección de Docentes -->
                 <li class="dropdown">
                     <a href="#">Docentes</a>
                     <ul class="dropdown-content">
@@ -35,7 +99,7 @@
                         <li><a asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Grados -->
+
                 <li class="dropdown">
                     <a href="#">Grados</a>
                     <ul class="dropdown-content">
@@ -43,7 +107,7 @@
                         <li><a asp-controller="Grados" asp-action="RegistroGrado">Registrar Grado</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Grupos -->
+
                 <li class="dropdown">
                     <a href="#">Grupos</a>
                     <ul class="dropdown-content">
@@ -51,7 +115,12 @@
                         <li><a asp-controller="Grupos" asp-action="RegistroGrupo">Registrar Grupo</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Materias -->
+
+                <!-- Nueva sección: Grado y Grupo por Docente -->
+                <li>
+                    <a asp-controller="DocentesGrupos" asp-action="Lista">Grado y Grupo por Docente</a>
+                </li>
+
                 <li class="dropdown">
                     <a href="#">Materias</a>
                     <ul class="dropdown-content">
@@ -59,15 +128,24 @@
                         <li><a asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Materias Docentes -->
+
                 <li class="dropdown">
                     <a href="#">Materias Docentes</a>
                     <ul class="dropdown-content">
-                        <li><a asp-controller="MateriasDocentes" asp-action="ListaMateriasDocentes">Lista de Materias Docentes</a></li>
-                        <li><a asp-controller="MateriasDocentes" asp-action="RegistroMateriaDocente">Registrar Materia Docente</a></li>
+                        <li><a asp-controller="MateriasDocentes" asp-action="ListaMateriasDocentes">Lista Materias–Docentes</a></li>
+                        <li><a asp-controller="MateriasDocentes" asp-action="RegistroMateriaDocente">Registrar Materia–Docente</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Alumnos -->
+
+                <!-- Nueva sección: Materias por Grado/Grupo -->
+                <li class="dropdown">
+                    <a href="#">Materias por Grado/Grupo</a>
+                    <ul class="dropdown-content">
+                        <li><a asp-controller="GrupoMaterias" asp-action="ListaGrupoMaterias">Ver asignaciones</a></li>
+                        <li><a asp-controller="GrupoMaterias" asp-action="RegistroGrupoMateria">Nueva asignación</a></li>
+                    </ul>
+                </li>
+
                 <li class="dropdown">
                     <a href="#">Alumnos</a>
                     <ul class="dropdown-content">
@@ -75,15 +153,15 @@
                         <li><a asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Alumnos Tutores -->
+
                 <li class="dropdown">
                     <a href="#">Alumnos Tutores</a>
                     <ul class="dropdown-content">
-                        <li><a asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista de Alumnos Tutores</a></li>
-                        <li><a asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno Tutor</a></li>
+                        <li><a asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
+                        <li><a asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno–Tutor</a></li>
                     </ul>
                 </li>
-                <!-- Cerrar sesión -->
+
                 <li><a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -105,8 +183,18 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/JavaADMIN.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.js-searchable').select2({
+                width: '100%',
+                placeholder: 'Seleccione…',
+                allowClear: true
+            });
+        });
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+

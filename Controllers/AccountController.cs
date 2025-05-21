@@ -30,26 +30,27 @@ namespace BirdSing.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == model.Email);
-
-                if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
+                if (usuario == null || !usuario.Activo || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
                 {
                     ModelState.AddModelError("", "Correo o contraseña incorrectos.");
                     return View(model);
                 }
 
+                // <-- Aquí agregamos el NameIdentifier claim con el IdUsuario
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
                     new Claim(ClaimTypes.Name, usuario.NombreUsuario),
                     new Claim(ClaimTypes.Email, usuario.Email),
                     new Claim(ClaimTypes.Role, usuario.IdRol.ToString())
                 };
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                var authProps = new AuthenticationProperties { IsPersistent = true };
 
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
 
-                // Redireccionar según el rol
                 switch (usuario.IdRol)
                 {
                     case 1: return RedirectToAction("Index", "PanelAdmin");
@@ -66,6 +67,11 @@ namespace BirdSing.Controllers
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View("AccessDenied");
         }
     }
 }

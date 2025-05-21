@@ -1,0 +1,41 @@
+﻿@model BirdSing.Models.DocenteGrupo
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Asignar Grado+Grupo a Docente";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Registro" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+    @* Solo renderizamos el bloque si hay errores *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="IdDocente" class="form-label">Docente</label>
+        <select asp-for="IdDocente" asp-items="ViewBag.Docentes" class="form-select"></select>
+        <span asp-validation-for="IdDocente" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdGrado" class="form-label">Grado</label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select"></select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label">Grupo</label>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select"></select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Registrar</button>
+    <a asp-action="Lista" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,10 @@
+﻿@model BirdSing.Models.Aviso
+
+<h2>@Model.Titulo</h2>
+
+<p><strong>Fecha:</strong> @Model.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+<p><strong>Mensaje:</strong> @Model.Mensaje</p>
+<p><strong>Materia:</strong> @Model.Materia?.NombreMateria</p>
+<p><strong>Alumno:</strong> @Model.Alumno?.Usuario?.NombreUsuario</p>
+
+<a asp-action="MisAvisos" class="btn btn-secondary mt-3">Volver</a>

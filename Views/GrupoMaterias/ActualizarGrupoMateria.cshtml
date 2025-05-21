@@ -1,0 +1,32 @@
+﻿@model BirdSing.Models.GrupoMateria
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Editar Materia–Grupo";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ActualizarGrupoMateria" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+    <input asp-for="IdGrupo" type="hidden" />
+    <input asp-for="IdMateria" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label">Grado–Grupo</label>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select"></select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdMateria" class="form-label">Materia</label>
+        <select asp-for="IdMateria" asp-items="ViewBag.Materias" class="form-select"></select>
+        <span asp-validation-for="IdMateria" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a asp-action="ListaGrupoMaterias" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

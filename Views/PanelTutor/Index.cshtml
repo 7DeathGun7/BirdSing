@@ -1,8 +1,27 @@
-﻿
-@{
-    ViewData["Title"] = "Panel de Tutor";
+﻿@{
+    Layout = "_LayoutTutor";
+    ViewData["Title"] = "Bienvenido Tutor";
 }
 
-<h1>Bienvenido Tutor</h1>
-<a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Cerrar sesión</a>
+<h1>@ViewData["Title"]</h1>
+<h2>Hola, @ViewBag.NombreTutor</h2>
 
+
+<div class="row">
+    <div class="col-md-3">
+        <nav class="nav flex-column">
+            <a class="nav-link" asp-action="MisAvisos">Mis Avisos</a>
+            <a class="nav-link" asp-action="InformacionTutor">Mi Perfil</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="mt-3">
+                <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+            </form>
+        </nav>
+    </div>
+    <div class="col-md-9">
+        <p class="lead">Selecciona una opción del menú de la izquierda.</p>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+    </div>
+</div>

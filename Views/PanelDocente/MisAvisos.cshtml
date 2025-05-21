@@ -1,0 +1,67 @@
+﻿@model BirdSing.Models.ViewModels.MisAvisosViewModel
+@{
+    Layout = "_LayoutDocente";
+    ViewData["Title"] = "Mis Avisos";
+}
+
+<h2>Mis Avisos</h2>
+<form method="get">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Grado - Grupo</label>
+            <select name="GradoGrupo" asp-items="Model.GradosGrupos" class="form-control"></select>
+        </div>
+        <div class="col-md-3">
+            <label>Alumno</label>
+            <select name="AlumnoId" asp-items="Model.Alumnos" class="form-control"></select>
+        </div>
+        <div class="col-md-3">
+            <label>Buscar por nombre</label>
+            <input type="text" name="NombreAlumno" value="@Model.NombreAlumno" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label>Desde</label>
+            <input type="date" name="FechaDesde" value="@Model.FechaDesde?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label>Hasta</label>
+            <input type="date" name="FechaHasta" value="@Model.FechaHasta?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Alumno</th>
+            <th>Grupo</th>
+            <th>Materia</th>
+            <th>Título</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var aviso in Model.Avisos)
+        {
+            <tr>
+                <td>@aviso.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    @(
+                        aviso.Alumno?.Usuario != null
+                        ? aviso.Alumno.Usuario.NombreUsuario + " " + aviso.Alumno.Usuario.ApellidoPaterno
+                        : aviso.Alumno?.NombreAlumno + " " + aviso.Alumno?.ApellidoPaterno
+                        )
+                </td>
+
+                <td>@aviso.Grupo?.Grupos</td>
+                <td>@aviso.Materia?.NombreMateria</td>
+                <td>@aviso.Titulo</td>
+                <td>@aviso.TipoAviso</td>
+            </tr>
+        }
+    </tbody>
+</table>

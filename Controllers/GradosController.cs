@@ -61,15 +61,16 @@ namespace BirdSing.Controllers
             return View(model);
         }
 
-        public IActionResult EliminarGrado(int id)
+        [HttpPost]
+        public async Task<IActionResult> EliminarGrado(int id)
         {
-            var grado = _context.Grados.Find(id);
+            var grado = await _context.Grados.FindAsync(id);
             if (grado != null)
             {
-                _context.Grados.Remove(grado);
-                _context.SaveChanges();
+                grado.Activo = false;
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction("ListaGrados");
+            return RedirectToAction(nameof(ListaGrados));
         }
     }
 }

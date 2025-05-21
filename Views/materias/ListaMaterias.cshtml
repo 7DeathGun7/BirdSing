@@ -30,11 +30,11 @@
                     <a asp-action="ActualizarMateria" asp-route-id="@materia.IdMateria" class="btn btn-sm btn-primary">
                         Editar
                     </a>
-                    <a asp-action="EliminarMateria" asp-route-id="@materia.IdMateria"
-                       class="btn btn-sm btn-danger ms-1"
-                       onclick="return confirm('¿Eliminar esta materia?');">
-                        Eliminar
-                    </a>
+                    <form asp-action="EliminarMateria" asp-route-id="@materia.IdMateria" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta materia?');">
+
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+
                 </td>
             </tr>
         }

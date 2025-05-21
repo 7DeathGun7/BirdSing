@@ -2,47 +2,67 @@
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Actualizar Alumno";
 }
 
-<h2>Actualizar Alumno</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="ActualizarAlumno" method="post">
-    <div>
-        <label asp-for="NombreAlumno"></label>
-        <input asp-for="NombreAlumno" />
+<form asp-action="ActualizarAlumno" method="post" class="mt-4 needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    @if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
+
+    <!-- Campo oculto con la PK para que el binder la reciba -->
+    <input asp-for="MatriculaAlumno" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="NombreAlumno" class="form-label"></label>
+        <input asp-for="NombreAlumno" class="form-control" />
         <span asp-validation-for="NombreAlumno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="ApellidoPaterno"></label>
-        <input asp-for="ApellidoPaterno" />
+
+    <div class="mb-3">
+        <label asp-for="ApellidoPaterno" class="form-label"></label>
+        <input asp-for="ApellidoPaterno" class="form-control" />
         <span asp-validation-for="ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="ApellidoMaterno"></label>
-        <input asp-for="ApellidoMaterno" />
+
+    <div class="mb-3">
+        <label asp-for="ApellidoMaterno" class="form-label"></label>
+        <input asp-for="ApellidoMaterno" class="form-control" />
         <span asp-validation-for="ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="FechaNacimiento"></label>
-        <input asp-for="FechaNacimiento" type="date" />
+
+    <div class="mb-3">
+        <label asp-for="FechaNacimiento" class="form-label"></label>
+        <input asp-for="FechaNacimiento" type="date" class="form-control" />
         <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Curp"></label>
-        <input asp-for="Curp" />
+
+    <div class="mb-3">
+        <label asp-for="Curp" class="form-label"></label>
+        <input asp-for="Curp" class="form-control" />
         <span asp-validation-for="Curp" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="IdGrado"></label>
-        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+
+    <div class="mb-3">
+        <label asp-for="IdGrado" class="form-label">Grado</label>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-select"></select>
         <span asp-validation-for="IdGrado" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="IdGrupo"></label>
-        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos"></select>
+
+    <div class="mb-3">
+        <label asp-for="IdGrupo" class="form-label">Grupo</label>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-select"></select>
         <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Actualizar</button>
-    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="ListaAlumnos" class="btn btn-secondary ms-2">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
