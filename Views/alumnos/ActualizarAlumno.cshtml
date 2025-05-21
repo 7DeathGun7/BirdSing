@@ -9,7 +9,10 @@
 
 <form asp-action="ActualizarAlumno" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()
+    @if (!ViewData.ModelState.IsValid)
+{
     <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
 
     <!-- Campo oculto con la PK para que el binder la reciba -->
     <input asp-for="MatriculaAlumno" type="hidden" />
