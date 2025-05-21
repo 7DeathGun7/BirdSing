@@ -1,62 +1,115 @@
 ﻿@model BirdSing.Models.ModelosViews.UsuarioTutorViewModel
-
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Registrar Tutor";
 }
 
-<h2>Registrar Tutor</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="RegistroTutor" method="post">
     <h3>Datos del Usuario</h3>
     <div>
         <label asp-for="Usuario.NombreUsuario"></label>
         <input asp-for="Usuario.NombreUsuario" />
-        <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Usuario.ApellidoPaterno"></label>
         <input asp-for="Usuario.ApellidoPaterno" />
-        <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Usuario.ApellidoMaterno"></label>
         <input asp-for="Usuario.ApellidoMaterno" />
-        <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Usuario.Email"></label>
         <input asp-for="Usuario.Email" />
-        <span asp-validation-for="Usuario.Email" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Usuario.Password"></label>
         <input asp-for="Usuario.Password" type="password" />
-        <span asp-validation-for="Usuario.Password" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Usuario.IdRol">Rol</label>
-        <select asp-for="Usuario.IdRol" class="form-control" asp-items="ViewBag.Roles"></select>
-    </div>
+
     <h3>Datos del Tutor</h3>
-    <div class="mb-3">
-        <label asp-for="Tutor.Telefono" class="form-label"></label>
-        <input asp-for="Tutor.Telefono"
-               class="form-control"
-               type="tel"
-               maxlength="10"
-               pattern="\d{10}"
-               title="Sólo 10 dígitos numéricos" />
-        <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
+    <div>
+        <label asp-for="Tutor.Telefono"></label>
+        <input asp-for="Tutor.Telefono" type="tel" maxlength="10" pattern="\d{10}" />
     </div>
+
     <div class="mb-3">
-        <label asp-for="Tutor.Direccion" class="form-label"></label>
-        <input asp-for="Tutor.Direccion" class="form-control" />
+        <label asp-for="Tutor.Direccion" class="form-label">Dirección</label>
+        <input asp-for="Tutor.Direccion" class="form-control" id="direccionInput"
+               placeholder="Ej: Calle Sergio Butrón Casas, Chetumal, Quintana Roo, México" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Registrar</button>
+    <div id="map" style="height: 400px;" class="mb-3"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">Registrar</button>
 </form>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const mapaCentro = [18.5145, -88.2996]; // Coordenadas centradas en Chetumal
+        const map = L.map('map').setView(mapaCentro, 16);
+
+        // Agregar mapa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const marker = L.marker(mapaCentro, { draggable: true }).addTo(map);
+        const direccionInput = document.getElementById("direccionInput");
+
+        //  Búsqueda directa con Nominatim al escribir
+        direccionInput.addEventListener("input", function () {
+            const query = this.value;
+            if (query.length < 3) return;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 17);
+                        marker.setLatLng([lat, lon]);
+                        direccionInput.value = data[0].display_name;
+                    }
+                });
+        });
+
+        //  Al hacer clic en el mapa → reverse geocoding
+        map.on("click", function (e) {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng([lat, lng]);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        direccionInput.value = data.display_name;
+                    } else {
+                        direccionInput.value = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+                    }
+                });
+        });
+
+        //  Cuando se arrastra el marcador → reverse geocoding
+        marker.on("dragend", function () {
+            const position = marker.getLatLng();
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        direccionInput.value = data.display_name;
+                    } else {
+                        direccionInput.value = `Lat: ${position.lat.toFixed(5)}, Lng: ${position.lng.toFixed(5)}`;
+                    }
+                });
+        });
+    </script>
 }

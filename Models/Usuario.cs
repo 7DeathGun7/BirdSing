@@ -26,7 +26,9 @@ namespace BirdSing.Models
         public string ApellidoMaterno { get; set; } = null!;
 
         [Required]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Correo electrónico inválido.")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+        ErrorMessage = "El correo electrónico debe tener un formato válido.")]
         [StringLength(100)]
         public string Email { get; set; } = null!;
 
