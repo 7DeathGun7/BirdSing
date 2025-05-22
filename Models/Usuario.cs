@@ -9,6 +9,7 @@ namespace BirdSing.Models
         [Key]
         public int IdUsuario { get; set; }
 
+        [Required]
         [ForeignKey("Rol")]
         public int IdRol { get; set; }
         public Rol? Rol { get; set; }
@@ -24,11 +25,10 @@ namespace BirdSing.Models
         [Required]
         [StringLength(100)]
         public string ApellidoMaterno { get; set; } = null!;
-
         [Required]
         [EmailAddress(ErrorMessage = "Correo electrónico inválido.")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-        ErrorMessage = "El correo electrónico debe tener un formato válido.")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@(?:gmail|hotmail|outlook|yahoo|edu|live)\.(?:com|mx|org|net)$",
+            ErrorMessage = "Solo dominios válidos: gmail, hotmail, outlook, yahoo, etc.")]
         [StringLength(100)]
         public string Email { get; set; } = null!;
 
