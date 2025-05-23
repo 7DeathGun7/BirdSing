@@ -18,7 +18,7 @@ namespace BirdSing.Models
 
         public bool Activo { get; set; } = true;
 
-        // <- Agrega estas colecciones para facilitar Includes
+        // <- Agrega estas colecciones para facilitar Includes.
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
         public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();
         public ICollection<DocenteGrupo> DocentesGrupos { get; set; } = new List<DocenteGrupo>();
