@@ -2,48 +2,56 @@
 
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Actualizar Docente";
 }
 
-<h2>Actualizar Docente</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="ActualizarDocente" method="post">
+    <input type="hidden" asp-for="Usuario.IdUsuario" />
+    <input type="hidden" asp-for="Docente.IdDocente" />
+    <input type="hidden" asp-for="Usuario.IdRol" /> <!-- Rol oculto -->
+
     <h3>Datos del Usuario</h3>
-    <div>
+
+    <div class="form-group mb-2">
         <label asp-for="Usuario.NombreUsuario"></label>
-        <input asp-for="Usuario.NombreUsuario" />
+        <input asp-for="Usuario.NombreUsuario" class="form-control @(ViewData.ModelState["Usuario.NombreUsuario"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: jose123" />
         <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group mb-2">
         <label asp-for="Usuario.ApellidoPaterno"></label>
-        <input asp-for="Usuario.ApellidoPaterno" />
+        <input asp-for="Usuario.ApellidoPaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoPaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: Gómez" />
         <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group mb-2">
         <label asp-for="Usuario.ApellidoMaterno"></label>
-        <input asp-for="Usuario.ApellidoMaterno" />
+        <input asp-for="Usuario.ApellidoMaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoMaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: Ramírez" />
         <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group mb-2">
         <label asp-for="Usuario.Email"></label>
-        <input asp-for="Usuario.Email" />
+        <input asp-for="Usuario.Email" class="form-control @(ViewData.ModelState["Usuario.Email"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: correo@dominio.com" />
         <span asp-validation-for="Usuario.Email" class="text-danger"></span>
-    </div>
-    <div>
-        <label asp-for="Usuario.IdRol"></label>
-        <select asp-for="Usuario.IdRol" asp-items="ViewBag.Roles"></select>
-        <span asp-validation-for="Usuario.IdRol" class="text-danger"></span>
     </div>
 
     <h3>Datos del Docente</h3>
-    <div>
+
+    <div class="form-group mb-2">
         <label asp-for="Docente.MatriculaSEP"></label>
-        <input asp-for="Docente.MatriculaSEP" />
+        <input asp-for="Docente.MatriculaSEP" class="form-control @(ViewData.ModelState["Docente.MatriculaSEP"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: SEP12345678" />
         <span asp-validation-for="Docente.MatriculaSEP" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Actualizar</button>
-    </div>
-    <input asp-for="Docente.IdDocente" type="hidden" />
-    <input asp-for="Usuario.IdUsuario" type="hidden" />
 
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a asp-action="ListaDocentes" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

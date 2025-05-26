@@ -41,17 +41,30 @@ namespace BirdSing.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RegistroDocente(UsuarioDocenteViewModel model)
         {
+            // Evita errores de validación si el rol viene oculto
+            ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.IdRol));
+
             if (ModelState.IsValid)
             {
                 using var tx = _context.Database.BeginTransaction();
                 try
                 {
-                    // 1) Hash y guardar Usuario
+                    // Asignar rol Docente
+                    var rolDocente = _context.Roles.FirstOrDefault(r => r.Nombre == "Docente");
+                    if (rolDocente == null)
+                    {
+                        ModelState.AddModelError("", "No se encontró el rol Docente.");
+                        CargarSoloRolDocente();
+                        return View(model);
+                    }
+                    model.Usuario.IdRol = rolDocente.IdRol;
+
+                    // Guardar Usuario con contraseña hasheada
                     model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
                     _context.Usuarios.Add(model.Usuario);
                     _context.SaveChanges();
 
-                    // 2) Vincular y guardar Docente
+                    // Guardar Docente vinculado
                     model.Docente.IdUsuario = model.Usuario.IdUsuario;
                     _context.Docentes.Add(model.Docente);
                     _context.SaveChanges();
@@ -59,16 +72,28 @@ namespace BirdSing.Controllers
                     tx.Commit();
                     return RedirectToAction(nameof(ListaDocentes));
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     tx.Rollback();
                     ModelState.AddModelError("", "Error al registrar Docente: " + ex.Message);
                 }
             }
 
+            // DEBUG: Mostrar errores del modelo en consola
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Error en '{key}': {error.ErrorMessage}");
+                }
+            }
+
             CargarSoloRolDocente();
             return View(model);
         }
+
+
 
         // GET: /Docentes/ActualizarDocente/5
         [HttpGet]
