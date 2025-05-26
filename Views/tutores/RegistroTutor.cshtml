@@ -8,36 +8,48 @@
 
 <form asp-action="RegistroTutor" method="post">
     <h3>Datos del Usuario</h3>
-    <div>
-        <label asp-for="Usuario.NombreUsuario"></label>
-        <input asp-for="Usuario.NombreUsuario" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.NombreUsuario" class="control-label">Nombre de Usuario</label>
+        <input asp-for="Usuario.NombreUsuario" class="form-control @(ViewData.ModelState["Usuario.NombreUsuario"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: jose123" />
+        <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoPaterno"></label>
-        <input asp-for="Usuario.ApellidoPaterno" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoPaterno" class="control-label">Apellido Paterno</label>
+        <input asp-for="Usuario.ApellidoPaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoPaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: Martínez" />
+        <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoMaterno"></label>
-        <input asp-for="Usuario.ApellidoMaterno" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoMaterno" class="control-label">Apellido Materno</label>
+        <input asp-for="Usuario.ApellidoMaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoMaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: López" />
+        <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.Email"></label>
-        <input asp-for="Usuario.Email" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.Email" class="control-label">Correo electrónico</label>
+        <input asp-for="Usuario.Email" class="form-control @(ViewData.ModelState["Usuario.Email"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ejemplo@gmail.com" />
+        <span asp-validation-for="Usuario.Email" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.Password"></label>
-        <input asp-for="Usuario.Password" type="password" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.Password" class="control-label">Contraseña</label>
+        <input asp-for="Usuario.Password" type="password" class="form-control @(ViewData.ModelState["Usuario.Password"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ContraseñaSegura123" />
+        <span asp-validation-for="Usuario.Password" class="text-danger"></span>
     </div>
 
     <h3>Datos del Tutor</h3>
-    <div>
-        <label asp-for="Tutor.Telefono"></label>
-        <input asp-for="Tutor.Telefono" type="tel" maxlength="10" pattern="\d{10}" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Tutor.Telefono" class="control-label">Teléfono</label>
+        <input asp-for="Tutor.Telefono" type="tel" class="form-control @(ViewData.ModelState["Tutor.Telefono"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: 9831234567" maxlength="10" pattern="\d{10}" />
+        <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
+    <div class="form-group mb-2">
         <label asp-for="Tutor.Direccion" class="form-label">Dirección</label>
-        <input asp-for="Tutor.Direccion" class="form-control" id="direccionInput"
+        <input asp-for="Tutor.Direccion" class="form-control @(ViewData.ModelState["Tutor.Direccion"]?.Errors.Count > 0 ? "is-invalid" : "")" id="direccionInput"
                placeholder="Ej: Calle Sergio Butrón Casas, Chetumal, Quintana Roo, México" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
@@ -45,17 +57,19 @@
     <div id="map" style="height: 400px;" class="mb-3"></div>
 
     <button type="submit" class="btn btn-primary mt-3">Registrar</button>
+    <a asp-action="ListaTutores" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
 </form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        const mapaCentro = [18.5145, -88.2996]; // Coordenadas centradas en Chetumal
+        const mapaCentro = [18.5145, -88.2996];
         const map = L.map('map').setView(mapaCentro, 16);
 
-        // Agregar mapa base
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
@@ -64,7 +78,6 @@
         const marker = L.marker(mapaCentro, { draggable: true }).addTo(map);
         const direccionInput = document.getElementById("direccionInput");
 
-        //  Búsqueda directa con Nominatim al escribir
         direccionInput.addEventListener("input", function () {
             const query = this.value;
             if (query.length < 3) return;
@@ -82,7 +95,6 @@
                 });
         });
 
-        //  Al hacer clic en el mapa → reverse geocoding
         map.on("click", function (e) {
             const { lat, lng } = e.latlng;
             marker.setLatLng([lat, lng]);
@@ -98,7 +110,6 @@
                 });
         });
 
-        //  Cuando se arrastra el marcador → reverse geocoding
         marker.on("dragend", function () {
             const position = marker.getLatLng();
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`)
