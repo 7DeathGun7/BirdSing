@@ -46,6 +46,17 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
+            // Validación: no permitir duplicados por grado y nombre
+            bool grupoDuplicado = _context.Grupos
+                .Any(g => g.IdGrado == vm.IdGrado && g.Grupos == vm.NombreGrupo && g.Activo);
+
+            if (grupoDuplicado)
+            {
+                ModelState.AddModelError("NombreGrupo", "Ya existe un grupo con ese nombre para el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(vm);
+            }
+
             var grupo = new Grupo
             {
                 IdGrado = vm.IdGrado,
@@ -86,6 +97,17 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
+            // Verifica si hay otro grupo con el mismo nombre en el mismo grado (excluyendo el actual)
+            bool grupoDuplicado = _context.Grupos
+                .Any(g => g.IdGrupo != vm.IdGrupo && g.IdGrado == vm.IdGrado && g.Grupos == vm.NombreGrupo && g.Activo);
+
+            if (grupoDuplicado)
+            {
+                ModelState.AddModelError("NombreGrupo", "Ya existe un grupo con ese nombre en el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(vm);
+            }
+
             var entidad = _context.Grupos.Find(vm.IdGrupo);
             if (entidad == null) return NotFound();
 
@@ -95,6 +117,7 @@ namespace BirdSing.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(ListaGrupos));
         }
+
 
         [HttpPost]
         public async Task<IActionResult> EliminarGrupo(int id)
