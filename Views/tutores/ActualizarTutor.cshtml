@@ -47,10 +47,11 @@
 
     <div class="form-group mb-2">
         <label asp-for="Tutor.Direccion" class="control-label"></label>
-        <input asp-for="Tutor.Direccion" class="form-control @(ViewData.ModelState["Tutor.Direccion"]?.Errors.Count > 0 ? "is-invalid" : "")" id="direccionInput"
-               placeholder="Ej: Calle Sergio Butrón Casas, Chetumal, Quintana Roo, México" />
+        <input asp-for="Tutor.Direccion" class="form-control" id="direccionInput" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
+
+    <input id="cordenadasInput" name="Tutor.Coordenadas" type="hidden" value="@Model.Tutor.Coordenadas" />
 
     <div id="map" style="height: 400px;" class="mb-3"></div>
 
@@ -65,30 +66,39 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        const mapaCentro = [18.5145, -88.2996];
-        const map = L.map('map').setView(mapaCentro, 16);
+        const direccionInput = document.getElementById("direccionInput");
+        const cordenadasInput = document.getElementById("cordenadasInput");
 
+        // Extraer lat/lng desde el valor almacenado (formato: "Lat: xx, Lng: yy")
+        let lat = 18.5145, lng = -88.2996; // valores por defecto
+        const match = cordenadasInput.value.match(/Lat:\s*(-?\d+\.\d+),\s*Lng:\s*(-?\d+\.\d+)/);
+        if (match) {
+            lat = parseFloat(match[1]);
+            lng = parseFloat(match[2]);
+        }
+
+        const map = L.map('map').setView([lat, lng], 16);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        const marker = L.marker(mapaCentro, { draggable: true }).addTo(map);
-        const direccionInput = document.getElementById("direccionInput");
+        const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
-        // Si ya hay dirección cargada, buscar coordenadas
-        if (direccionInput.value.length > 5) {
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccionInput.value)}`)
+        function actualizarCoordenadas(lat, lng) {
+            cordenadasInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+        }
+
+        marker.on("dragend", function () {
+            const { lat, lng } = marker.getLatLng();
+            actualizarCoordenadas(lat, lng);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.length > 0) {
-                        const lat = parseFloat(data[0].lat);
-                        const lon = parseFloat(data[0].lon);
-                        map.setView([lat, lon], 17);
-                        marker.setLatLng([lat, lon]);
-                    }
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
                 });
-        }
+        });
 
         direccionInput.addEventListener("input", function () {
             const query = this.value;
@@ -102,37 +112,12 @@
                         const lon = parseFloat(data[0].lon);
                         map.setView([lat, lon], 17);
                         marker.setLatLng([lat, lon]);
-                        direccionInput.value = data[0].display_name;
+                        actualizarCoordenadas(lat, lon);
                     }
                 });
         });
 
-        map.on("click", function (e) {
-            const { lat, lng } = e.latlng;
-            marker.setLatLng([lat, lng]);
-
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        direccionInput.value = data.display_name;
-                    } else {
-                        direccionInput.value = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
-                    }
-                });
-        });
-
-        marker.on("dragend", function () {
-            const position = marker.getLatLng();
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        direccionInput.value = data.display_name;
-                    } else {
-                        direccionInput.value = `Lat: ${position.lat.toFixed(5)}, Lng: ${position.lng.toFixed(5)}`;
-                    }
-                });
-        });
+        // Inicializa campo cordenadas
+        actualizarCoordenadas(lat, lng);
     </script>
 }

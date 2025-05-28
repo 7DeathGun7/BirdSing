@@ -53,6 +53,8 @@
                placeholder="Ej: Calle Sergio Butrón Casas, Chetumal, Quintana Roo, México" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
+    <input id="cordenadasInput" name="Tutor.Coordenadas" type="hidden" />
+
 
     <div id="map" style="height: 400px;" class="mb-3"></div>
 
@@ -76,8 +78,30 @@
         }).addTo(map);
 
         const marker = L.marker(mapaCentro, { draggable: true }).addTo(map);
-        const direccionInput = document.getElementById("direccionInput");
 
+        const direccionInput = document.getElementById("direccionInput");
+        const cordenadasInput = document.getElementById("cordenadasInput");
+
+        function actualizarCoordenadas(lat, lng) {
+            cordenadasInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+        }
+
+        // Si hay dirección precargada
+        if (direccionInput.value.length > 5) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccionInput.value)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 17);
+                        marker.setLatLng([lat, lon]);
+                        actualizarCoordenadas(lat, lon);
+                    }
+                });
+        }
+
+        // Cambia marcador al escribir dirección
         direccionInput.addEventListener("input", function () {
             const query = this.value;
             if (query.length < 3) return;
@@ -91,6 +115,7 @@
                         map.setView([lat, lon], 17);
                         marker.setLatLng([lat, lon]);
                         direccionInput.value = data[0].display_name;
+                        actualizarCoordenadas(lat, lon);
                     }
                 });
         });
@@ -98,28 +123,23 @@
         map.on("click", function (e) {
             const { lat, lng } = e.latlng;
             marker.setLatLng([lat, lng]);
+            actualizarCoordenadas(lat, lng);
 
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data && data.display_name) {
-                        direccionInput.value = data.display_name;
-                    } else {
-                        direccionInput.value = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
-                    }
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
                 });
         });
 
         marker.on("dragend", function () {
-            const position = marker.getLatLng();
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`)
+            const { lat, lng } = marker.getLatLng();
+            actualizarCoordenadas(lat, lng);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data && data.display_name) {
-                        direccionInput.value = data.display_name;
-                    } else {
-                        direccionInput.value = `Lat: ${position.lat.toFixed(5)}, Lng: ${position.lng.toFixed(5)}`;
-                    }
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
                 });
         });
     </script>

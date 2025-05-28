@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250520220313_AddActivoToEntities")]
-    partial class AddActivoToEntities
+    [Migration("20250527221258_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

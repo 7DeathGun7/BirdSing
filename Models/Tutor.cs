@@ -23,6 +23,10 @@ namespace BirdSing.Models
         [StringLength(255)]
         public string? Direccion { get; set; }
 
+        [Required]
+        public string Coordenadas { get; set; }
+
+
         public bool Activo { get; set; } = true;
 
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
