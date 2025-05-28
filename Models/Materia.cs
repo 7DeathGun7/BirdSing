@@ -23,7 +23,8 @@ namespace BirdSing.Models
         public ICollection<MateriaDocente> MateriasDocentes { get; set; } = new List<MateriaDocente>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
 
-        public ICollection<AsignacionDocente> Asignaciones { get; set; }
+        public ICollection<AsignacionDocente> Asignaciones { get; set; } = new List<AsignacionDocente>();
+
 
     }
 
