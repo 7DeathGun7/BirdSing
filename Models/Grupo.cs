@@ -23,5 +23,7 @@ namespace BirdSing.Models
         public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();
         public ICollection<DocenteGrupo> DocentesGrupos { get; set; } = new List<DocenteGrupo>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
+        public ICollection<AsignacionDocente> Asignaciones { get; set; }
+
     }
 }

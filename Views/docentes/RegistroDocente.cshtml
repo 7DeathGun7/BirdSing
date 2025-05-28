@@ -37,10 +37,15 @@
     </div>
 
     <div class="form-group mb-2">
-        <label asp-for="Usuario.Password"></label>
-        <input asp-for="Usuario.Password" type="password" class="form-control @(ViewData.ModelState["Usuario.Password"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ContraseñaSegura123" />
+        <label asp-for="Usuario.Password" class="control-label">Contraseña</label>
+        <div class="input-group">
+            <input asp-for="Usuario.Password" type="password" class="form-control" id="passwordInput" />
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">👁️</button>
+        </div>
         <span asp-validation-for="Usuario.Password" class="text-danger"></span>
     </div>
+
+
 
     <h3>Datos del Docente</h3>
 
@@ -54,8 +59,13 @@
         <button type="submit" class="btn btn-primary">Registrar</button>
         <a asp-action="ListaDocentes" class="btn btn-secondary ms-2">Cancelar</a>
     </div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
 </form>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<script>
+    function togglePassword() {
+        const input = document.getElementById("passwordInput");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>

@@ -58,16 +58,30 @@ namespace BirdSing.Controllers
                         return View(model);
                     }
                     model.Usuario.IdRol = rolDocente.IdRol;
-
                     // Guardar Usuario con contraseña hasheada
                     model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
                     _context.Usuarios.Add(model.Usuario);
                     _context.SaveChanges();
 
+                    // 🔍 Verificar si se generó el Id
+                    if (model.Usuario.IdUsuario == 0)
+                    {
+                        tx.Rollback();
+                        ModelState.AddModelError("", "No se pudo generar el Id del Usuario.");
+                        return View(model);
+                    }
+
+                    // Diagnóstico: revisar si se guardó el Usuario
+                    Console.WriteLine("✅ Usuario guardado con Id: " + model.Usuario.IdUsuario);
+
                     // Guardar Docente vinculado
                     model.Docente.IdUsuario = model.Usuario.IdUsuario;
+                    Console.WriteLine("➡️  Se asignará al Docente el ID de usuario: " + model.Docente.IdUsuario);
                     _context.Docentes.Add(model.Docente);
                     _context.SaveChanges();
+
+                    Console.WriteLine("✅ Docente guardado correctamente.");
+
 
                     tx.Commit();
                     return RedirectToAction(nameof(ListaDocentes));

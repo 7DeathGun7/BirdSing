@@ -1,0 +1,32 @@
+﻿@model IEnumerable<BirdSing.Models.AsignacionDocente>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Asignaciones de Docentes";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Docente</th>
+            <th>Materia</th>
+            <th>Grupo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Docente.Usuario.NombreUsuario</td>
+                <td>@item.Materia.NombreMateria</td>
+                <td>@item.Grupo.Grupos</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

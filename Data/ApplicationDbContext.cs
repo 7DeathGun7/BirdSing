@@ -24,6 +24,8 @@ namespace BirdSing.Data
         public DbSet<MateriaDocente> MateriasDocentes { get; set; }
         public DbSet<Aviso> Avisos { get; set; }
         public DbSet<DocenteGrupo> DocentesGrupos { get; set; }
+        public DbSet<AsignacionDocente> AsignacionDocentes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -172,6 +174,28 @@ namespace BirdSing.Data
                 .WithMany()
                 .HasForeignKey(dg => dg.IdGrupo)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //
+            // 9) AsignacionDocente (relación completa con restricciones)
+            //
+            modelBuilder.Entity<AsignacionDocente>()
+             .HasOne(a => a.Docente)
+             .WithMany(d => d.Asignaciones)
+             .HasForeignKey(a => a.IdDocente)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AsignacionDocente>()
+                .HasOne(a => a.Materia)
+                .WithMany(m => m.Asignaciones)
+                .HasForeignKey(a => a.IdMateria)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AsignacionDocente>()
+                .HasOne(a => a.Grupo)
+                .WithMany(g => g.Asignaciones)
+                .HasForeignKey(a => a.IdGrupo)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Usuario>().HasQueryFilter(u => u.Activo);
             modelBuilder.Entity<Tutor>().HasQueryFilter(t => t.Activo);

@@ -4,6 +4,7 @@ using BirdSing.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528022748_AddAsignacionDocente")]
+    partial class AddAsignacionDocente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,37 +101,6 @@ namespace BirdSing.Migrations
                     b.HasIndex("IdTutor");
 
                     b.ToTable("AlumnosTutores");
-                });
-
-            modelBuilder.Entity("BirdSing.Models.AsignacionDocente", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("IdDocente")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdGrupo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdMateria")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdDocente");
-
-                    b.HasIndex("IdGrupo");
-
-                    b.HasIndex("IdMateria");
-
-                    b.ToTable("AsignacionDocentes");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Aviso", b =>
@@ -504,33 +476,6 @@ namespace BirdSing.Migrations
                     b.Navigation("Tutor");
                 });
 
-            modelBuilder.Entity("BirdSing.Models.AsignacionDocente", b =>
-                {
-                    b.HasOne("BirdSing.Models.Docente", "Docente")
-                        .WithMany("Asignaciones")
-                        .HasForeignKey("IdDocente")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BirdSing.Models.Grupo", "Grupo")
-                        .WithMany("Asignaciones")
-                        .HasForeignKey("IdGrupo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BirdSing.Models.Materia", "Materia")
-                        .WithMany("Asignaciones")
-                        .HasForeignKey("IdMateria")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Docente");
-
-                    b.Navigation("Grupo");
-
-                    b.Navigation("Materia");
-                });
-
             modelBuilder.Entity("BirdSing.Models.Aviso", b =>
                 {
                     b.HasOne("BirdSing.Models.Docente", "Docente")
@@ -706,8 +651,6 @@ namespace BirdSing.Migrations
 
             modelBuilder.Entity("BirdSing.Models.Docente", b =>
                 {
-                    b.Navigation("Asignaciones");
-
                     b.Navigation("Avisos");
 
                     b.Navigation("GrupoAsignados");
@@ -724,8 +667,6 @@ namespace BirdSing.Migrations
                 {
                     b.Navigation("Alumnos");
 
-                    b.Navigation("Asignaciones");
-
                     b.Navigation("Avisos");
 
                     b.Navigation("DocentesGrupos");
@@ -735,8 +676,6 @@ namespace BirdSing.Migrations
 
             modelBuilder.Entity("BirdSing.Models.Materia", b =>
                 {
-                    b.Navigation("Asignaciones");
-
                     b.Navigation("Avisos");
 
                     b.Navigation("GrupoMaterias");
