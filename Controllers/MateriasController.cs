@@ -37,16 +37,30 @@ namespace BirdSing.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult RegistroMateria(Materia model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Materias.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(ListaMaterias));
+                CargarGradosEnViewBag();
+                return View(model);
             }
 
-            CargarGradosEnViewBag();
-            return View(model);
+            // Validación: no permitir nombre repetido en el mismo grado
+            bool existe = _context.Materias.Any(m =>
+                m.NombreMateria == model.NombreMateria &&
+                m.IdGrado == model.IdGrado &&
+                m.Activo);
+
+            if (existe)
+            {
+                ModelState.AddModelError("NombreMateria", "Esta materia ya existe para el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(model);
+            }
+
+            _context.Materias.Add(model);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaMaterias));
         }
+
 
         // GET: /Materias/ActualizarMateria/5
         public IActionResult ActualizarMateria(int id)
@@ -65,15 +79,29 @@ namespace BirdSing.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult ActualizarMateria(Materia model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Materias.Update(model);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(ListaMaterias));
+                CargarGradosEnViewBag();
+                return View(model);
             }
 
-            CargarGradosEnViewBag();
-            return View(model);
+            //  Validación: no permitir duplicados al actualizar
+            bool duplicado = _context.Materias.Any(m =>
+                m.IdMateria != model.IdMateria &&
+                m.NombreMateria == model.NombreMateria &&
+                m.IdGrado == model.IdGrado &&
+                m.Activo);
+
+            if (duplicado)
+            {
+                ModelState.AddModelError("NombreMateria", "Ya existe otra materia con ese nombre para el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(model);
+            }
+
+            _context.Materias.Update(model);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ListaMaterias));
         }
 
         // GET: /Materias/EliminarMateria/5
