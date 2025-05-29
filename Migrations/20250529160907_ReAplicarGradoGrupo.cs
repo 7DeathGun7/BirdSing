@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BirdSing.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class ReAplicarGradoGrupo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -200,6 +200,7 @@ namespace BirdSing.Migrations
                     IdUsuario = table.Column<int>(type: "int", nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Direccion = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Coordenadas = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -211,6 +212,40 @@ namespace BirdSing.Migrations
                         principalTable: "Usuarios",
                         principalColumn: "IdUsuario",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AsignacionDocentes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdDocente = table.Column<int>(type: "int", nullable: false),
+                    IdMateria = table.Column<int>(type: "int", nullable: false),
+                    IdGrupo = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AsignacionDocentes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Docentes_IdDocente",
+                        column: x => x.IdDocente,
+                        principalTable: "Docentes",
+                        principalColumn: "IdDocente",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Grupos_IdGrupo",
+                        column: x => x.IdGrupo,
+                        principalTable: "Grupos",
+                        principalColumn: "IdGrupo",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Materias_IdMateria",
+                        column: x => x.IdMateria,
+                        principalTable: "Materias",
+                        principalColumn: "IdMateria",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -377,6 +412,21 @@ namespace BirdSing.Migrations
                 column: "IdTutor");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AsignacionDocentes_IdDocente",
+                table: "AsignacionDocentes",
+                column: "IdDocente");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AsignacionDocentes_IdGrupo",
+                table: "AsignacionDocentes",
+                column: "IdGrupo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AsignacionDocentes_IdMateria",
+                table: "AsignacionDocentes",
+                column: "IdMateria");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Avisos_IdDocente",
                 table: "Avisos",
                 column: "IdDocente");
@@ -457,6 +507,9 @@ namespace BirdSing.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AlumnosTutores");
+
+            migrationBuilder.DropTable(
+                name: "AsignacionDocentes");
 
             migrationBuilder.DropTable(
                 name: "Avisos");

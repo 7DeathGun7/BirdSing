@@ -1,0 +1,43 @@
+﻿@model BirdSing.Models.Grado
+@{
+    ViewData["Title"] = "Editar Grado y Grupos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var grupos = Model.Grupos.ToList();
+}
+
+<h2 class="text-center">Editar Grado y Grupos</h2>
+
+<form asp-action="EditarGradoGrupo" method="post">
+    <input type="hidden" name="IdGrado" value="@Model.IdGrado" />
+
+    <div class="form-group">
+        <label>Nombre del Grado</label>
+        <input name="NombreGrado" value="@Model.Grados" class="form-control" required />
+    </div>
+
+    <hr />
+    <h4>Grupos Asignados</h4>
+    @for (int i = 0; i < grupos.Count; i++)
+    {
+        <div class="form-row align-items-center mb-2">
+            <input type="hidden" name="Grupos[@i].IdGrupo" value="@grupos[i].IdGrupo" />
+            <input type="text" name="Grupos[@i].Grupos" value="@grupos[i].Grupos" class="form-control col-6 mr-2" required />
+
+            <button formaction="@Url.Action("EliminarGrupo", "GradoGrupo", new { id = grupos[i].IdGrupo })"
+                    formmethod="post"
+                    class="btn btn-danger btn-sm">
+                Eliminar Grupo
+            </button>
+        </div>
+    }
+
+    <div class="form-group mt-3">
+        <label>Agregar nuevo grupo</label>
+        <input type="text" name="NuevoGrupo" class="form-control" placeholder="Nombre del nuevo grupo" />
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a asp-action="ListaGradoGrupo" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

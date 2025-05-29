@@ -176,5 +176,20 @@ namespace BirdSing.Controllers
                 })
                 .ToList();
         }
+
+        [HttpGet]
+        public IActionResult PorGrado(int id)
+        {
+            var grupos = _context.Grupos
+                .Where(g => g.IdGrado == id)
+                .Select(g => new SelectListItem
+                {
+                    Value = g.IdGrupo.ToString(),
+                    Text = g.Grupos
+                }).ToList();
+
+            return Json(grupos);
+        }
+
     }
 }

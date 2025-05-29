@@ -1,12 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BirdSing</title>
-
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <title>@ViewData["Title"] - Panel Administrador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 
     <style>
         body {
@@ -98,20 +97,13 @@
                 </li>
 
                 <li class="dropdown">
-                    <a href="#">Grados</a>
+                    <a href="#">Grados y Grupos</a>
                     <ul class="dropdown-content">
-                        <li><a asp-controller="Grados" asp-action="ListaGrados">Lista de Grados</a></li>
-                        <li><a asp-controller="Grados" asp-action="RegistroGrado">Registrar Grado</a></li>
+                        <li><a asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo">Registrar Grado y Grupo</a></li>
+                        <li><a asp-controller="GradoGrupo" asp-action="ListaGradoGrupo">Lista Grado y Grupo</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown">
-                    <a href="#">Grupos</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Grupos" asp-action="ListaGrupos">Lista de Grupos</a></li>
-                        <li><a asp-controller="Grupos" asp-action="RegistroGrupo">Registrar Grupo</a></li>
-                    </ul>
-                </li>
 
                 <!-- Nueva sección: Grado y Grupo por Docente -->
                 <li>

@@ -6,7 +6,7 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>Docente</th>
@@ -23,10 +23,18 @@
                 <td>@item.Materia.NombreMateria</td>
                 <td>@item.Grupo.Grupos</td>
                 <td>
-                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Editar</a>
-                    <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    <a asp-action="Detalles" asp-route-id="@item.Id" class="btn btn-info btn-sm">👁 Ver</a>
+                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Editar</a>
+                    <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">🗑 Eliminar</button>
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Asignaciones de Docentes</h2>
+    <a asp-action="Registro" class="btn btn-success">➕ Nueva Asignación</a>
+</div>
