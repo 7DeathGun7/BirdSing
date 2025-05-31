@@ -1,12 +1,17 @@
 ﻿@* /Views/Shared/_LayoutTutor.cshtml *@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Panel Tutor</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+
+    @section Styles {
+        <link rel="stylesheet" href="~/css/LayoutDocente.css" />
+    }
+
 </head>
 <body>
     <div class="container-fluid">
