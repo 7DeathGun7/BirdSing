@@ -1,0 +1,90 @@
+/* ===== Estilos para el Formulario de Registro de Tutor ===== */
+
+body {
+    background-color: #ecf0f1;
+    font-family: Arial, sans-serif;
+}
+
+h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.formulario-tutor {
+    background-color: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 800px;
+}
+
+    .formulario-tutor div {
+        margin-bottom: 1.5rem;
+    }
+
+    .formulario-tutor label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #34495e;
+    }
+
+    .formulario-tutor input[type="text"],
+    .formulario-tutor input[type="email"],
+    .formulario-tutor input[type="password"],
+    .formulario-tutor input[type="tel"],
+    .formulario-tutor input[type="search"],
+    .formulario-tutor input[type="number"],
+    .formulario-tutor input[type="date"],
+    .formulario-tutor input:not([type="submit"]),
+    .formulario-tutor .form-control {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
+
+        .formulario-tutor input:focus,
+        .formulario-tutor .form-control:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
+#map {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* Botón */
+.formulario-tutor button[type="submit"] {
+    background-color: #2980b9;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+    .formulario-tutor button[type="submit"]:hover {
+        background-color: #1c5980;
+    }
+
+/* Validaciones */
+.text-danger {
+    font-size: 0.9rem;
+    color: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .formulario-tutor {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}

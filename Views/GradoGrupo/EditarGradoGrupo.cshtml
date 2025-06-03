@@ -5,9 +5,12 @@
     var grupos = Model.Grupos.ToList();
 }
 
+<link rel="stylesheet" href="~/css/EditGraGru.css" />
+
 <h2 class="text-center">Editar Grado y Grupos</h2>
 
-<form asp-action="EditarGradoGrupo" method="post">
+<form asp-action="EditarGradoGrupo" method="post" class="editar-grado-grupos">
+
     <input type="hidden" name="IdGrado" value="@Model.IdGrado" />
 
     <div class="form-group">

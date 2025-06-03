@@ -1,0 +1,95 @@
+﻿/* ===== Estilos para la tabla de Grados y Grupos ===== */
+
+.tabla-grados {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+    .tabla-grados th,
+    .tabla-grados td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+        vertical-align: top;
+    }
+
+    .tabla-grados thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .tabla-grados tbody tr:hover {
+        background-color: #ecf0f1;
+    }
+
+    .tabla-grados ul {
+        padding-left: 1.2rem;
+        margin: 0;
+    }
+
+    .tabla-grados li {
+        list-style-type: disc;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Botones dentro de tabla */
+    .tabla-grados .btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .tabla-grados .btn-warning {
+        background-color: #f1c40f;
+        color: #2c3e50;
+        border: none;
+    }
+
+        .tabla-grados .btn-warning:hover {
+            background-color: #f39c12;
+        }
+
+    .tabla-grados .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+    }
+
+        .tabla-grados .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+/* Ajuste del contenedor y título */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+}
+
+h2.text-center {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .tabla-grados {
+        font-size: 0.9rem;
+    }
+
+        .tabla-grados th,
+        .tabla-grados td {
+            padding: 0.6rem;
+        }
+
+        .tabla-grados ul {
+            padding-left: 1rem;
+        }
+}
