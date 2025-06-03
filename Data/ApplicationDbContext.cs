@@ -196,6 +196,12 @@ namespace BirdSing.Data
                 .HasForeignKey(a => a.IdGrupo)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<AsignacionDocente>()
+            .HasIndex(a => new { a.IdDocente, a.IdGrupo, a.IdMateria })
+            .IsUnique();
+
+
+
 
             modelBuilder.Entity<Usuario>().HasQueryFilter(u => u.Activo);
             modelBuilder.Entity<Tutor>().HasQueryFilter(t => t.Activo);

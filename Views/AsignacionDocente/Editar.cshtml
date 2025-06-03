@@ -1,0 +1,127 @@
+﻿@model BirdSing.Models.AsignacionDocente
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Editar Asignación";
+
+    var docentes = ViewBag.Docentes as List<SelectListItem> ?? new List<SelectListItem>();
+    var grados = ViewBag.Grados as List<SelectListItem> ?? new List<SelectListItem>();
+    var grupos = ViewBag.Grupos as List<SelectListItem> ?? new List<SelectListItem>();
+    var materias = ViewBag.Materias as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<h2 class="text-center mb-4">Editar Asignación</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="IdDocente">Docente</label>
+        <select asp-for="IdDocente" class="form-control" asp-items="docentes">
+            <option value="">Seleccione un docente</option>
+        </select>
+        <span asp-validation-for="IdDocente" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdGrado">Grado</label>
+        <select asp-for="IdGrado" class="form-control" id="IdGrado">
+            <option value="">Seleccione un grado</option>
+            @foreach (var grado in grados)
+            {
+                <option value="@grado.Value" selected="@(grado.Value == Model.IdGrado.ToString())">@grado.Text</option>
+            }
+        </select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdGrupo">Grupo</label>
+        <select asp-for="IdGrupo" class="form-control" id="IdGrupo">
+            <option value="">Seleccione un grupo</option>
+            @foreach (var grupo in grupos)
+            {
+                <option value="@grupo.Value" selected="@(grupo.Value == Model.IdGrupo.ToString())">@grupo.Text</option>
+            }
+        </select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdMateria">Materia</label>
+        <select asp-for="IdMateria" class="form-control" id="IdMateria">
+            <option value="">Seleccione una materia</option>
+            @foreach (var materia in materias)
+            {
+                <option value="@materia.Value" selected="@(materia.Value == Model.IdMateria.ToString())">@materia.Text</option>
+            }
+        </select>
+        <span asp-validation-for="IdMateria" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar cambios</button>
+    <a asp-action="Lista" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            function cargarCampos(gradoId, grupoActual, materiaActual) {
+                if (!gradoId) {
+                    $('#IdGrupo').prop('disabled', true).html('<option value="">Seleccione un grupo</option>');
+                    $('#IdMateria').prop('disabled', true).html('<option value="">Seleccione una materia</option>');
+                    return;
+                }
+
+                // Grupos
+                $.getJSON('/AsignacionDocente/ObtenerGruposPorGrado', { idGrado: gradoId }, function (data) {
+                    let grupoSelect = $('#IdGrupo');
+                    grupoSelect.empty().append('<option value="">Seleccione un grupo</option>');
+                    $.each(data, function (i, item) {
+                        let selected = item.value === grupoActual ? 'selected' : '';
+                        grupoSelect.append('<option value="' + item.value + '" ' + selected + '>' + item.text + '</option>');
+                    });
+                    grupoSelect.prop('disabled', false);
+                });
+
+                // Materias
+                $.getJSON('/AsignacionDocente/ObtenerMateriasPorGrado', { idGrado: gradoId }, function (data) {
+                    let materiaSelect = $('#IdMateria');
+                    materiaSelect.empty().append('<option value="">Seleccione una materia</option>');
+                    $.each(data, function (i, item) {
+                        let selected = item.value === materiaActual ? 'selected' : '';
+                        materiaSelect.append('<option value="' + item.value + '" ' + selected + '>' + item.text + '</option>');
+                    });
+                    materiaSelect.prop('disabled', false);
+                });
+            }
+
+            $('#IdGrado').change(function () {
+                let gradoId = $(this).val();
+                cargarCampos(gradoId, "", "");
+            });
+
+            // Si ya hay grado cargado al inicio
+            const gradoInicial = $('#IdGrado').val();
+            const grupoInicial = "@Model.IdGrupo";
+            const materiaInicial = "@Model.IdMateria";
+
+            if (gradoInicial) {
+                cargarCampos(gradoInicial, grupoInicial, materiaInicial);
+            }
+        });
+    </script>
+}

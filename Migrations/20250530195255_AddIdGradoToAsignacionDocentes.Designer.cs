@@ -4,6 +4,7 @@ using BirdSing.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250530195255_AddIdGradoToAsignacionDocentes")]
+    partial class AddIdGradoToAsignacionDocentes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,11 +126,16 @@ namespace BirdSing.Migrations
                     b.Property<int>("IdMateria")
                         .HasColumnType("int");
 
+                    b.Property<int>("gradoIdGrado")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdGrupo");
 
                     b.HasIndex("IdMateria");
+
+                    b.HasIndex("gradoIdGrado");
 
                     b.HasIndex("IdDocente", "IdGrupo", "IdMateria")
                         .IsUnique();
@@ -528,11 +536,19 @@ namespace BirdSing.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("BirdSing.Models.Grado", "grado")
+                        .WithMany()
+                        .HasForeignKey("gradoIdGrado")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Docente");
 
                     b.Navigation("Grupo");
 
                     b.Navigation("Materia");
+
+                    b.Navigation("grado");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Aviso", b =>

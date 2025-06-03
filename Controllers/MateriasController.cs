@@ -3,6 +3,7 @@ using BirdSing.Data;
 using BirdSing.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BirdSing.Controllers
@@ -140,6 +141,19 @@ namespace BirdSing.Controllers
                     Text = g.Grados
                 })
                 .ToList();
+        }
+        [HttpGet]
+        public IActionResult ObtenerPorGrado(int idGrado)
+        {
+            var materias = _context.Materias
+                .Where(m => m.IdGrado == idGrado && m.Activo)
+                .Select(m => new SelectListItem
+                {
+                    Value = m.IdMateria.ToString(),
+                    Text = m.NombreMateria
+                }).ToList();
+
+            return Json(materias);
         }
     }
 }
