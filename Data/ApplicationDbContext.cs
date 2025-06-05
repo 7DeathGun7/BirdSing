@@ -25,6 +25,8 @@ namespace BirdSing.Data
         public DbSet<Aviso> Avisos { get; set; }
         public DbSet<DocenteGrupo> DocentesGrupos { get; set; }
         public DbSet<AsignacionDocente> AsignacionDocentes { get; set; }
+        public DbSet<CompraTutor> CompraTutores { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

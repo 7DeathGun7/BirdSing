@@ -40,9 +40,20 @@ namespace BirdSing.Models
         public int IdGrupo { get; set; }
         public Grupo? Grupo { get; set; }
 
+
+        //Coperativa
+
+        public decimal Saldo { get; set; } = 0;
+
+        public bool CuentaPausada { get; set; } = false;
+
+
         public bool Activo { get; set; } = true;
 
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
+        public ICollection<CompraTutor>? ComprasTutor { get; set; }
+        public ICollection<AlumnoTutor>? Tutores { get; set; }
+
     }
 }

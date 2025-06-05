@@ -178,6 +178,44 @@ namespace BirdSing.Controllers
             TempData["Success"] = "Contraseña actualizada correctamente.";
             return RedirectToAction("InformacionTutor");
         }
+        [Authorize(Roles = "3")]
+        public IActionResult Cooperativa()
+        {
+            var idTutor = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+
+            var alumno = _context.Alumnos
+                .Include(a => a.ComprasTutor)
+                .FirstOrDefault(a => a.Tutores!.Any(t => t.IdTutor == idTutor));
+
+            if (alumno == null) return RedirectToAction("Index");
+
+            return View("CooperativaTutor", alumno);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "3")]
+        public IActionResult RecargarSaldo(int idAlumno, decimal monto)
+        {
+            var alumno = _context.Alumnos.Find(idAlumno);
+            if (alumno == null) return NotFound();
+
+            alumno.Saldo += monto;
+
+            var recarga = new CompraTutor
+            {
+                IdAlumno = idAlumno,
+                Monto = monto,
+                Tipo = "Recarga"
+            };
+
+            _context.CompraTutores.Add(recarga);
+            _context.SaveChanges();
+
+            TempData["mensaje"] = $"Recarga exitosa de ${monto}";
+
+            return RedirectToAction("Cooperativa");
+        }
+
 
 
     }

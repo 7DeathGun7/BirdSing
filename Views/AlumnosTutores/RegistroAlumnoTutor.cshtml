@@ -6,6 +6,14 @@
 }
 
 <h2>@ViewData["Title"]</h2>
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @ViewBag.Mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 
 <form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()

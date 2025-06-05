@@ -59,12 +59,24 @@ namespace BirdSing.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.AlumnosTutores.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(ListaAlumnosTutores));
+                var existe = _context.AlumnosTutores.Any(at =>
+                    at.MatriculaAlumno == model.MatriculaAlumno &&
+                    at.IdTutor == model.IdTutor);
+
+                if (!existe)
+                {
+                    _context.AlumnosTutores.Add(model);
+                    _context.SaveChanges();
+                    TempData["mensaje"] = "Tutor asignado correctamente.";
+                    return RedirectToAction(nameof(ListaAlumnosTutores)); // ✅ Redirige si se guardó correctamente
+                }
+                else
+                {
+                    ViewBag.Mensaje = "Este tutor ya está asignado a este alumno.";
+                }
             }
 
-            // Si hay error, recargamos dropdowns iguales al GET
+            // Si hubo error o ya existía, recarga la vista actual
             var alumnos = _context.Alumnos.ToList();
             ViewBag.Alumnos = alumnos.Select(a => new SelectListItem
             {
@@ -81,8 +93,9 @@ namespace BirdSing.Controllers
                 Text = t.Usuario!.NombreUsuario
             }).ToList();
 
-            return View(model);
+            return View(model); // 🔁 Se mantiene en el formulario
         }
+
 
         // GET: /AlumnosTutores/ActualizarAlumnoTutor?matriculaAlumno=1&idTutor=2
         [HttpGet]
