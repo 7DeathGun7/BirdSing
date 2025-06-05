@@ -4,85 +4,81 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Panel Administrador</title>
-   
-       <link rel="stylesheet" href="~/css/LayoutADMIN.css" />
-       <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="~/css/LayoutADMIN.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
             <h2>Menú</h2>
-            <ul>
-                <li><a asp-controller="PanelAdmin" asp-action="Index">Inicio</a></li>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="PanelAdmin" asp-action="Index">Inicio</a>
+                </li>
 
-                <li class="dropdown">
-                    <a href="#">Tutores</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
-                        <li><a asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuTutores')">Tutores ▸</a>
+                    <ul id="submenuTutores" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown">
-                    <a href="#">Docentes</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Docentes" asp-action="ListaDocentes">Lista de Docentes</a></li>
-                        <li><a asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuDocentes')">Docentes ▸</a>
+                    <ul id="submenuDocentes" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="ListaDocentes">Lista de Docentes</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown">
-                    <a href="#">Grados y Grupos</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo">Registrar Grado y Grupo</a></li>
-                        <li><a asp-controller="GradoGrupo" asp-action="ListaGradoGrupo">Lista Grado y Grupo</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuGrupos')">Grados y Grupos ▸</a>
+                    <ul id="submenuGrupos" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo">Registrar Grado y Grupo</a></li>
+                        <li><a class="nav-link text-white" asp-controller="GradoGrupo" asp-action="ListaGradoGrupo">Lista Grado y Grupo</a></li>
                     </ul>
                 </li>
 
-
-                <!-- Nueva sección: Grado y Grupo por Docente -->
-               
-
-                <li class="dropdown">
-                    <a href="#">Materias</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
-                        <li><a asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuMaterias')">Materias ▸</a>
+                    <ul id="submenuMaterias" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
                     </ul>
                 </li>
 
-
-                <li class="dropdown">
-                    <a href="#">Asignaciones Docentes</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="AsignacionDocente" asp-action="Lista">Lista de Asignaciones</a></li>
-                        <li><a asp-controller="AsignacionDocente" asp-action="Registro">Registrar Asignación</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAsignaciones')">Asignaciones Docentes ▸</a>
+                    <ul id="submenuAsignaciones" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Lista">Lista de Asignaciones</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Registro">Registrar Asignación</a></li>
                     </ul>
                 </li>
 
-
-                <!-- Nueva sección: Materias por Grado/Grupo -->
-
-                <li class="dropdown">
-                    <a href="#">Alumnos</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>
-                        <li><a asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumnos')">Alumnos ▸</a>
+                    <ul id="submenuAlumnos" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown">
-                    <a href="#">Alumnos Tutores</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
-                        <li><a asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno–Tutor</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumTutores')">Alumnos Tutores ▸</a>
+                    <ul id="submenuAlumTutores" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno–Tutor</a></li>
                     </ul>
                 </li>
 
-                <li><a asp-controller="Coperativa" asp-action="ListaCoperativa"> Coperativa </a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="Coperativa" asp-action="ListaCoperativa">Coperativa</a>
+                </li>
 
-                <li><a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a></li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-white" asp-controller="Account" asp-action="Logout">Cerrar sesión</a>
+                </li>
             </ul>
         </aside>
 
@@ -98,9 +94,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="~/js/JavaADMIN.js"></script>
 
-
     <script>
-
         $(document).ready(function() {
             $('.js-searchable').select2({
                 width: '100%',
@@ -108,9 +102,15 @@
                 allowClear: true
             });
         });
+
+        function toggleSubmenu(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === "none" ? "block" : "none";
+        }
     </script>
 
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+
 
