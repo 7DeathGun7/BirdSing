@@ -68,8 +68,9 @@ namespace BirdSing.Controllers
             _context.Tutores.Add(model.Tutor);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Tutor registrado correctamente.";
-            return RedirectToAction("ListaTutores"); // o como se llame tu vista
+            TempData["Success"] = $"Tutor ({model.Usuario.Email}) agregado correctamente.";
+            return RedirectToAction("ListaTutores");
+
         }
 
 
@@ -99,11 +100,23 @@ namespace BirdSing.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ActualizarTutor(UsuarioTutorViewModel model)
         {
-            // La contraseña no se edita aquí, quitamos su validación
+            // Ignorar la validación de contraseña porque no se edita aquí
             ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.Password));
 
             if (ModelState.IsValid)
             {
+                // Verificar si el correo ya está usado por otro usuario
+                var emailDuplicado = _context.Usuarios
+                    .Any(u => u.Email == model.Usuario.Email && u.IdUsuario != model.Usuario.IdUsuario);
+
+                if (emailDuplicado)
+                {
+                    ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado por otro tutor.");
+                    CargarSoloRolTutor();
+                    return View(model);
+                }
+
+                // Obtener los registros existentes
                 var tutorExistente = _context.Tutores.Find(model.Tutor.IdTutor);
                 var usuarioExistente = _context.Usuarios.Find(model.Usuario.IdUsuario);
 
@@ -120,35 +133,35 @@ namespace BirdSing.Controllers
                 // Actualizar datos del tutor
                 tutorExistente.Telefono = model.Tutor.Telefono;
                 tutorExistente.Direccion = model.Tutor.Direccion;
+                tutorExistente.Coordenadas = model.Tutor.Coordenadas;
 
                 _context.SaveChanges();
                 return RedirectToAction(nameof(ListaTutores));
             }
 
-            // Si hay errores, recargamos el dropdown y regresamos a la vista
+            // Si hay errores, recargar dropdown de rol
             CargarSoloRolTutor();
             return View(model);
         }
+
 
         // GET: Tutores/EliminarTutor/5
         public async Task<IActionResult> EliminarTutor(int id)
         {
             var tutor = _context.Tutores
-        .Include(t => t.Usuario)
-        .FirstOrDefault(t => t.IdTutor == id);
+                .Include(t => t.Usuario)
+                .FirstOrDefault(t => t.IdTutor == id);
 
             if (tutor != null)
             {
-                //Sección que intenta romper la relación con el alumno
-                _context.AlumnosTutores.RemoveRange(_context.AlumnosTutores.Where(at => at.IdTutor == tutor.IdTutor));
-                //Fin de la sección que intenta romper la relación con el alumno
-                _context.Tutores.Remove(tutor);
-                _context.Usuarios.Remove(tutor.Usuario);
-                _context.SaveChanges();
+                tutor.Activo = false;
+                tutor.Usuario.Activo = false;
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(ListaTutores));
         }
+
 
         // Helper: solo cargamos el rol "Tutor" en la lista desplegable
         private void CargarSoloRolTutor()

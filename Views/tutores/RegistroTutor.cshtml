@@ -36,8 +36,14 @@
     </div>
 
     <div class="form-group mb-2">
-        <label asp-for="Usuario.Password" class="control-label">Contraseña</label>
-        <input asp-for="Usuario.Password" type="password" class="form-control @(ViewData.ModelState["Usuario.Password"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ContraseñaSegura123" />
+        <label asp-for="Usuario.Password" class="control-label"></label>
+        <div class="input-group">
+            <input asp-for="Usuario.Password"
+                   class="form-control @(ViewData.ModelState["Usuario.Password"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                   id="passwordInput"
+                   type="password" />
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">👁</button>
+        </div>
         <span asp-validation-for="Usuario.Password" class="text-danger"></span>
     </div>
 
@@ -63,7 +69,6 @@
     <button type="submit" class="btn btn-primary mt-3">Registrar</button>
     <a asp-action="ListaTutores" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
 </form>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
@@ -71,6 +76,11 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        function togglePassword() {
+            const input = document.getElementById("passwordInput");
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
         const mapaCentro = [18.5145, -88.2996];
         const map = L.map('map').setView(mapaCentro, 16);
 
@@ -88,7 +98,6 @@
             cordenadasInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
         }
 
-        // Si hay dirección precargada
         if (direccionInput.value.length > 5) {
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccionInput.value)}`)
                 .then(res => res.json())
@@ -103,7 +112,6 @@
                 });
         }
 
-        // Cambia marcador al escribir dirección
         direccionInput.addEventListener("input", function () {
             const query = this.value;
             if (query.length < 3) return;

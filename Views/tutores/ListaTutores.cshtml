@@ -8,6 +8,14 @@
 
 <h2>Lista de Tutores</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <table class="tabla-tutores">
     <thead>
         <tr>
