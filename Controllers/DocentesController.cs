@@ -44,6 +44,17 @@ namespace BirdSing.Controllers
             // Evita errores de validación si el rol viene oculto
             ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.IdRol));
 
+            // Validar duplicación de correo
+            if (_context.Usuarios.Any(u => u.Email == model.Usuario.Email))
+            {
+                ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado.");
+            }
+
+            // Validar duplicación de matrícula
+            if (_context.Docentes.Any(d => d.MatriculaSEP == model.Docente.MatriculaSEP))
+                ModelState.AddModelError("Docente.MatriculaSEP", "Esta matrícula ya está registrada.");
+            
+
             if (ModelState.IsValid)
             {
                 using var tx = _context.Database.BeginTransaction();
@@ -138,6 +149,17 @@ namespace BirdSing.Controllers
         {
             // No incluimos contraseña en el formulario de edición:
             ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.Password));
+
+            bool correoDuplicado = _context.Usuarios
+       .Any(u => u.Email == model.Usuario.Email && u.IdUsuario != model.Usuario.IdUsuario);
+            if (correoDuplicado)
+                ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado por otro usuario.");
+
+            // Validar duplicación de matrícula (por otro docente)
+            bool matriculaDuplicada = _context.Docentes
+                .Any(d => d.MatriculaSEP == model.Docente.MatriculaSEP && d.IdDocente != model.Docente.IdDocente);
+            if (matriculaDuplicada)
+                ModelState.AddModelError("Docente.MatriculaSEP", "Esta matrícula ya está registrada por otro docente.");
 
             if (ModelState.IsValid)
             {
