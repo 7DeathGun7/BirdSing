@@ -5,6 +5,8 @@
     ViewData["Title"] = "Asignar Tutor a Alumno";
 }
 
+<link rel="stylesheet" href="~/css/RegistroAlumnoTutor.css" asp-append-version="true" />
+
 <h2>@ViewData["Title"]</h2>
 @if (ViewBag.Mensaje != null)
 {
@@ -14,8 +16,7 @@
     </div>
 }
 
-
-<form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation" novalidate>
+<form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation formulario-registro-alumno-tutor" novalidate>
     @Html.AntiForgeryToken()
     @* Sólo mostramos el resumen si hay errores *@
     @if (!ViewData.ModelState.IsValid)

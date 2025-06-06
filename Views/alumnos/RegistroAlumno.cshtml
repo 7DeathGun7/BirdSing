@@ -4,10 +4,13 @@
     Layout = "_LayoutAdmin";
 }
 
+<link rel="stylesheet" href="~/css/AlumnoRe.css" asp-append-version="true" />
+
+
 <h2>Registrar Alumno</h2>
 
-<form asp-action="RegistroAlumno" method="post">
-    <div>
+<form asp-action="RegistroAlumno" method="post" class="formulario-registro-alumno">
+    <div class="form-group">
         <label asp-for="NombreAlumno"></label>
         <input asp-for="NombreAlumno" />
         <span asp-validation-for="NombreAlumno" class="text-danger"></span>

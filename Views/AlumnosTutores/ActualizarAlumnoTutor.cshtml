@@ -5,13 +5,14 @@
     ViewData["Title"] = "Editar Asignación Alumno–Tutor";
 }
 
+<link rel="stylesheet" href="~/css/ActualizarAlumnoTutor.css" asp-append-version="true" />
+
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="ActualizarAlumnoTutor" method="post" class="mt-4 needs-validation" novalidate>
+<form asp-action="ActualizarAlumnoTutor" method="post" class="mt-4 needs-validation formulario-actualizacion-alumno-tutor" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="alert alert-danger"></div>
 
-    <!-- claves compuestas antiguas -->
     <input asp-for="MatriculaAlumno" type="hidden" />
     <input asp-for="IdTutor" type="hidden" />
 

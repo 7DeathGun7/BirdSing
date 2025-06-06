@@ -5,14 +5,16 @@
     ViewData["Title"] = "Actualizar Alumno";
 }
 
+<link rel="stylesheet" href="~/css/AlumnoActualizacion.css" asp-append-version="true" />
+
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="ActualizarAlumno" method="post" class="mt-4 needs-validation" novalidate>
+<form asp-action="ActualizarAlumno" method="post" class="mt-4 needs-validation formulario-actualizacion-alumno" novalidate>
     @Html.AntiForgeryToken()
     @if (!ViewData.ModelState.IsValid)
-{
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
-}
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
 
     <!-- Campo oculto con la PK para que el binder la reciba -->
     <input asp-for="MatriculaAlumno" type="hidden" />

@@ -5,13 +5,15 @@
     ViewData["Title"] = "Lista de Alumnos–Tutores";
 }
 
+<link rel="stylesheet" href="~/css/ListaAlumnoTutor.css" asp-append-version="true" />
+
 <h2>@ViewData["Title"]</h2>
 
 <p>
     <a asp-action="RegistroAlumnoTutor" class="btn btn-success">+ Asignar Tutor</a>
 </p>
 
-<table class="table table-striped mt-3">
+<table class="table table-striped mt-3 tabla-alumno-tutor">
     <thead class="table-dark">
         <tr>
             <th>Alumno</th>

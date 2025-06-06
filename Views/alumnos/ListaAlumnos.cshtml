@@ -5,11 +5,14 @@
     ViewData["Title"] = "Lista de Alumnos";
 }
 
+<link rel="stylesheet" href="~/css/ListaAlumnos.css" asp-append-version="true" />
+
+<div class="content">
 <h2>@ViewData["Title"]</h2>
 
-<table class="table table-striped mt-4">
-    <thead class="table-dark">
-        <tr>
+    <table class="table table-striped mt-4 tabla-alumnos">
+        <thead class="table-dark">
+            <tr>
             <th>Nombre</th>
             <th>Apellido Paterno</th>
             <th>Apellido Materno</th>
@@ -45,3 +48,4 @@
 <p class="mt-3">
     <a asp-action="RegistroAlumno" class="btn btn-success">Registrar Nuevo Alumno</a>
 </p>
+</div>
