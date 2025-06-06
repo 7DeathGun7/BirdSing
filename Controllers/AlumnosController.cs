@@ -100,12 +100,23 @@ namespace BirdSing.Controllers
         // GET: /Alumnos/EliminarAlumno/5
         public async Task<IActionResult> EliminarAlumno(int id)
         {
-            var alumno = _context.Alumnos.Find(id);
+            var alumno = _context.Alumnos
+                .Include(a => a.Usuario)
+                .FirstOrDefault(a => a.MatriculaAlumno == id);
+
             if (alumno != null)
             {
                 alumno.Activo = false;
-                alumno.Usuario!.Activo = false;
 
+                if (alumno.Usuario != null)
+                    alumno.Usuario.Activo = false;
+
+                // 🔍 Eliminar las relaciones con tutores
+                var relaciones = _context.AlumnosTutores
+                    .Where(at => at.MatriculaAlumno == alumno.MatriculaAlumno);
+                _context.AlumnosTutores.RemoveRange(relaciones);
+
+                // 🔍 Desactivar avisos si aplica
                 var avisos = _context.Avisos.Where(a => a.MatriculaAlumno == alumno.MatriculaAlumno);
                 foreach (var aviso in avisos)
                     aviso.Activo = false;
@@ -115,6 +126,7 @@ namespace BirdSing.Controllers
 
             return RedirectToAction(nameof(ListaAlumnos));
         }
+
 
         // Helper para poblar dropdowns de Grados y Grupos
         private void CargarGradosYGrupos()
