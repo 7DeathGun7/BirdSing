@@ -18,17 +18,17 @@
 
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuTutores')">Tutores ▸</a>
-                    <ul id="submenuTutores" class="submenu" style="display: none; padding-left: 15px;">
-                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
+                    <ul id="submenuTutores" class="submenu" style="display: none; padding-left: 15px;">                        
                         <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuDocentes')">Docentes ▸</a>
                     <ul id="submenuDocentes" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li
                         <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="ListaDocentes">Lista de Docentes</a></li>
-                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li>
                     </ul>
                 </li>
 
@@ -43,32 +43,32 @@
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuMaterias')">Materias ▸</a>
                     <ul id="submenuMaterias" class="submenu" style="display: none; padding-left: 15px;">
-                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
                         <li><a class="nav-link text-white" asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAsignaciones')">Asignaciones Docentes ▸</a>
                     <ul id="submenuAsignaciones" class="submenu" style="display: none; padding-left: 15px;">
-                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Lista">Lista de Asignaciones</a></li>
                         <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Registro">Registrar Asignación</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Lista">Lista de Asignaciones</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumnos')">Alumnos ▸</a>
                     <ul id="submenuAlumnos" class="submenu" style="display: none; padding-left: 15px;">
-                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>
                         <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>                    
                     </ul>
                 </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumTutores')">Alumnos Tutores ▸</a>
-                    <ul id="submenuAlumTutores" class="submenu" style="display: none; padding-left: 15px;">
-                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
+                    <ul id="submenuAlumTutores" class="submenu" style="display: none; padding-left: 15px;">                    
                         <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno–Tutor</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
                     </ul>
                 </li>
 
