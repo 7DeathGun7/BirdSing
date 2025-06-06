@@ -1,0 +1,97 @@
+﻿/* ===== Estilos para el formulario de Asignación de Docente ===== */
+
+.formulario-asignacion {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 700px;
+    font-family: Arial, sans-serif;
+}
+
+    .formulario-asignacion h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+
+    .formulario-asignacion .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .formulario-asignacion label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.4rem;
+        color: #2c3e50;
+    }
+
+    .formulario-asignacion select {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        background-color: #fff;
+    }
+
+    .formulario-asignacion .text-danger {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-top: 0.2rem;
+        display: block;
+    }
+
+    .formulario-asignacion .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 1rem;
+        border-radius: 5px;
+        color: #721c24;
+        margin-bottom: 2rem;
+    }
+
+    .formulario-asignacion button[type="submit"],
+    .formulario-asignacion .btn-secondary {
+        padding: 0.7rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .formulario-asignacion button[type="submit"] {
+        background-color: #2c3e50;
+        color: white;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .formulario-asignacion button[type="submit"]:hover {
+            background-color: #34495e;
+        }
+
+    .formulario-asignacion .btn-secondary {
+        background-color: #bdc3c7;
+        color: #2c3e50;
+        margin-left: 0.5rem;
+    }
+
+        .formulario-asignacion .btn-secondary:hover {
+            background-color: #95a5a6;
+        }
+
+@media (max-width: 768px) {
+    .formulario-asignacion {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+        .formulario-asignacion button,
+        .formulario-asignacion .btn-secondary {
+            width: 100%;
+            margin-left: 0;
+        }
+}

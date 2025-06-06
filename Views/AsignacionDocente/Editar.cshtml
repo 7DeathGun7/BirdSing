@@ -10,9 +10,12 @@
     var materias = ViewBag.Materias as List<SelectListItem> ?? new List<SelectListItem>();
 }
 
+<link rel="stylesheet" href="~/css/formulario-edicion.css" asp-append-version="true" />
+
+
 <h2 class="text-center mb-4">Editar Asignación</h2>
 
-<form asp-action="Editar" method="post">
+<form asp-action="Editar" method="post" class="formulario-edicion">
     <input type="hidden" asp-for="Id" />
 
     @if (!ViewData.ModelState.IsValid)

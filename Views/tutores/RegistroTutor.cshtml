@@ -4,7 +4,7 @@
     ViewData["Title"] = "Registrar Tutor";
 }
 
-<link rel="stylesheet" href="~/css/RegistroTutor.css" />
+<link rel="stylesheet" href="~/css/RegistroT.css" />
 
 <h2>@ViewData["Title"]</h2>
 
@@ -66,8 +66,11 @@
 
     <div id="map" style="height: 400px;" class="mb-3"></div>
 
-    <button type="submit" class="btn btn-primary mt-3">Registrar</button>
-    <a asp-action="ListaTutores" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
+    <div class="mt-4">
+        <button type="submit">Registrar</button>
+    <a asp-action="ListaTutores" class="btn-secondary">Cancelar</a>
+    </div>
+
 </form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

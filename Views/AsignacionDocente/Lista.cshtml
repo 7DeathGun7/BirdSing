@@ -4,9 +4,13 @@
     ViewData["Title"] = "Asignaciones de Docentes";
 }
 
+<link rel="stylesheet" href="~/css/lista-ad.css" />
+
+
 <h2>@ViewData["Title"]</h2>
 
-<table class="table table-bordered">
+<table class="tabla-asignaciones">
+
     <thead>
         <tr>
             <th>Docente</th>
@@ -36,5 +40,5 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Asignaciones de Docentes</h2>
-    <a asp-action="Registro" class="btn btn-success">➕ Nueva Asignación</a>
+    <a asp-action="Registro" class="btn-success">➕ Nueva Asignación</a>
 </div>

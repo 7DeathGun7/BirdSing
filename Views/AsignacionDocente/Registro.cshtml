@@ -5,6 +5,8 @@
     ViewData["Title"] = "Asignar Docente a Materia y Grupo";
 }
 
+<link rel="stylesheet" href="~/css/asignacion-docente.css" />
+
 <h2 class="text-center">Asignar Docente a Materia y Grupo</h2>
 
 @if (!ViewData.ModelState.IsValid)
@@ -19,7 +21,8 @@
     </div>
 }
 
-<form asp-action="Registro" method="post" onsubmit="return mostrarConfirmacion()">
+<form asp-action="Registro" method="post" class="formulario-asignacion" onsubmit="return mostrarConfirmacion()">
+
     <div class="form-group">
         <label asp-for="IdDocente">Docente</label>
         <select asp-for="IdDocente" class="form-control" asp-items="ViewBag.Docentes">
