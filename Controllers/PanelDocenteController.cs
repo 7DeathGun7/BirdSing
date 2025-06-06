@@ -449,7 +449,7 @@ namespace BirdSing.Controllers
             var alumnosConUsuario = await _context.Alumnos
             .Include(a => a.Usuario)
             .Include(a => a.Grupo).ThenInclude(g => g.Grado)
-            .Where(a => grupoIds.Contains(a.IdGrupo))
+            .Where(a => a.IdGrupo.HasValue && grupoIds.Contains(a.IdGrupo.Value))
             .ToListAsync();
 
             // 7) Dropdown Alumnos

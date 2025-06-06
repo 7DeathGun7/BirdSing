@@ -33,11 +33,11 @@ namespace BirdSing.Models
         public string? Curp { get; set; }
 
         [ForeignKey("Grado")]
-        public int IdGrado { get; set; }
+        public int? IdGrado { get; set; }
         public Grado? Grado { get; set; }
 
         [ForeignKey("Grupo")]
-        public int IdGrupo { get; set; }
+        public int? IdGrupo { get; set; }
         public Grupo? Grupo { get; set; }
 
 
