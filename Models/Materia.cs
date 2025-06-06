@@ -10,7 +10,7 @@ namespace BirdSing.Models
         public int IdMateria { get; set; }
 
         [ForeignKey("Grado")]
-        public int IdGrado { get; set; }
+        public int? IdGrado { get; set; }
         public Grado? Grado { get; set; }
         public ICollection<GrupoMateria> GrupoMaterias { get; set; } = new List<GrupoMateria>();
 

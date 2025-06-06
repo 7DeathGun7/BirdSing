@@ -146,6 +146,13 @@ namespace BirdSing.Data
                 .HasForeignKey(gm => gm.IdGrupo)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Materia>()
+                .HasOne(m => m.Grado)
+                .WithMany()
+                .HasForeignKey(m => m.IdGrado)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
             modelBuilder.Entity<GrupoMateria>()
                 .HasOne(gm => gm.Materia)
                 .WithMany(m => m.GrupoMaterias)
