@@ -82,3 +82,23 @@
             margin-left: 0;
         }
 }
+
+.formulario-registro-alumno a.btn-secondary {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem;
+    background-color: #95a5a6; /* Gris suave */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .formulario-registro-alumno a.btn-secondary:hover {
+        background-color: #7f8c8d; /* Gris más oscuro al pasar el cursor */
+        color: white;
+    }

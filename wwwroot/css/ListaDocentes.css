@@ -67,3 +67,75 @@
             padding: 0.6rem;
         }
 }
+
+/* Botón "Registrar Nuevo Docente" */
+.contenedor-boton-registrar {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-success:hover {
+        background-color: #1e8449;
+        transform: translateY(-2px);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+    }
+
+/* Botones de acción: Actualizar y Eliminar */
+.tabla-docentes .btn-warning,
+.tabla-docentes .btn-danger {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+    color: white;
+    text-decoration: none;
+    margin-right: 0.5rem;
+    font-weight: normal;
+}
+
+.tabla-docentes .btn-warning {
+    background-color: #f1c40f;
+    color: #2c3e50;
+}
+
+    .tabla-docentes .btn-warning:hover {
+        background-color: #f39c12;
+    }
+
+.tabla-docentes .btn-danger {
+    background-color: #e74c3c;
+}
+
+    .tabla-docentes .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-success {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 0.65rem 1rem;
+    }
+
+    .contenedor-boton-registrar {
+        padding: 0 1rem;
+    }
+}

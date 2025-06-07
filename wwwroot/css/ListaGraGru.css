@@ -78,18 +78,45 @@ h2.text-center {
     margin-bottom: 1.5rem;
 }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .tabla-grados {
-        font-size: 0.9rem;
+/* Contenedor para centrar o alinear el botón */
+.contenedor-boton-registrar {
+    display: flex;
+    justify-content: center; /* Cambia a "flex-end" si lo quieres alineado a la derecha */
+    margin-top: 2rem;
+}
+
+/* Botón "Registrar Grado y Grupo" */
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    border: none;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-success:hover {
+        background-color: #1e8449;
+        transform: translateY(-2px);
     }
 
-        .tabla-grados th,
-        .tabla-grados td {
-            padding: 0.6rem;
-        }
+    .btn-success:active {
+        transform: translateY(0);
+    }
 
-        .tabla-grados ul {
-            padding-left: 1rem;
-        }
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor-boton-registrar {
+        justify-content: center;
+    }
+
+    .btn-success {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 0.65rem 1rem;
+    }
 }
