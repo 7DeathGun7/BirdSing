@@ -11,7 +11,18 @@
 
 <form asp-action="ActualizarAlumnoTutor" method="post" class="mt-4 needs-validation formulario-actualizacion-alumno-tutor" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* ✅ Solo mostrar alerta roja si hay errores reales *@
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
 
     <input asp-for="MatriculaAlumno" type="hidden" />
     <input asp-for="IdTutor" type="hidden" />
