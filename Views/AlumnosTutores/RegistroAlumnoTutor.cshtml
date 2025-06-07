@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="~/css/RegistroAlumnoTutor.css" asp-append-version="true" />
 
 <h2>@ViewData["Title"]</h2>
+
 @if (ViewBag.Mensaje != null)
 {
     <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -18,33 +19,46 @@
 
 <form asp-action="RegistroAlumnoTutor" method="post" class="mt-4 needs-validation formulario-registro-alumno-tutor" novalidate>
     @Html.AntiForgeryToken()
-    @* Sólo mostramos el resumen si hay errores *@
-    @if (!ViewData.ModelState.IsValid)
+
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
     {
-        <div asp-validation-summary="All" class="alert alert-danger"></div>
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
     }
 
     <div class="mb-3">
         <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
-        <select asp-for="MatriculaAlumno"
-                asp-items="ViewBag.Alumnos"
-                class="form-select js-searchable">
+        <select asp-for="MatriculaAlumno" class="form-select js-searchable">
+            <option value="">Seleccione un alumno</option>
+            @foreach (var a in (List<SelectListItem>)ViewBag.Alumnos)
+            {
+                <option value="@a.Value" selected="@(Model.MatriculaAlumno.ToString() == a.Value ? "selected" : null)">@a.Text</option>
+            }
         </select>
         <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="IdTutor" class="form-label">Tutor</label>
-        <select asp-for="IdTutor"
-                asp-items="ViewBag.Tutores"
-                class="form-select js-searchable">
+        <select asp-for="IdTutor" class="form-select js-searchable">
+            <option value="">Seleccione un tutor</option>
+            @foreach (var t in (List<SelectListItem>)ViewBag.Tutores)
+            {
+                <option value="@t.Value" selected="@(Model.IdTutor.ToString() == t.Value ? "selected" : null)">@t.Text</option>
+            }
         </select>
         <span asp-validation-for="IdTutor" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Parentesco" class="form-label">Parentesco</label>
-        <input asp-for="Parentesco" class="form-control" />
+        <input asp-for="Parentesco" class="form-control" placeholder="Ej: Padre, Madre, Tutor legal..." />
         <span asp-validation-for="Parentesco" class="text-danger"></span>
     </div>
 
