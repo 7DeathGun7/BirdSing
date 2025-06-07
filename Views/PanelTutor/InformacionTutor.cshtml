@@ -5,9 +5,13 @@
     ViewData["Title"] = "Mi Información";
 }
 
+<link rel="stylesheet" href="~/css/TutorInformacion.css" asp-append-version="true" />
+
+
 <h2>@ViewData["Title"]</h2>
 
-<div class="card p-4 mt-4">
+<div class="card card-info-tutor mt-4">
+
     <div class="mb-3">
         <label class="form-label">Nombre</label>
         <input class="form-control" value="@Model.Usuario?.NombreUsuario" disabled />

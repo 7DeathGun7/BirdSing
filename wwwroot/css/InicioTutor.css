@@ -1,0 +1,114 @@
+﻿/* ===== Estilos para la vista de Inicio del Tutor ===== */
+
+.inicio-tutor-container {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 900px;
+    font-family: Arial, sans-serif;
+}
+
+    .inicio-tutor-container h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .inicio-tutor-container h2 {
+        font-size: 1.5rem;
+        color: #34495e;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .inicio-tutor-container .tutor-nav {
+        background-color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .inicio-tutor-container .tutor-nav-link {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease-in-out;
+        display: block;
+        padding-left: 0.25rem;
+    }
+
+        .inicio-tutor-container .tutor-nav-link:hover {
+            background-color: #dfe6e9;
+            border-left: 4px solid #27ae60;
+            padding-left: 0.5rem;
+            color: #27ae60;
+            text-decoration: none;
+        }
+
+    .inicio-tutor-container .logout-btn {
+        margin-top: 1rem;
+        width: 100%;
+        font-weight: bold;
+        background-color: #e74c3c;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        padding: 0.6rem 1rem;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .inicio-tutor-container .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+    .inicio-tutor-container .lead {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        margin-top: 1rem;
+    }
+
+    .inicio-tutor-container .alert-success {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 6px;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    /* Contenedor para centrar y ampliar el mini menú */
+    .inicio-tutor-container .tutor-menu-box {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    /* Ampliar el menú visualmente */
+    .inicio-tutor-container .tutor-nav {
+        width: 100%;
+        max-width: 300px;
+        background-color: #ecf0f1;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .inicio-tutor-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+        .inicio-tutor-container .tutor-nav {
+            margin-bottom: 1.5rem;
+        }
+
+        .inicio-tutor-container .logout-btn {
+            width: 100%;
+        }
+}
