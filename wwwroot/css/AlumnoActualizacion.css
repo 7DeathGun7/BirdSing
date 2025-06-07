@@ -1,6 +1,6 @@
 ﻿/* ===== Estilos para el formulario de Actualización de Alumno ===== */
 
-.formulario-actualizacion-alumno {
+form.formulario-actualizacion-alumno {
     background: #ffffff;
     padding: 2rem;
     margin: 2rem auto;
@@ -10,68 +10,97 @@
     font-family: Arial, sans-serif;
 }
 
-    /* Styles for the main heading within the form container */
-    .formulario-actualizacion-alumno h2 {
+    form.formulario-actualizacion-alumno h2 {
         text-align: center;
         color: #2c3e50;
         margin-bottom: 2rem;
+        font-weight: bold;
     }
 
-    /* Custom styles for validation summary alert if needed, otherwise Bootstrap's will apply */
-    .formulario-actualizacion-alumno .alert-danger:not(.bootstrap-override) { /* Added a custom selector to prevent Bootstrap overriding if you want specific custom styles */
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        padding: 1rem;
-        border-radius: 5px;
-        color: #721c24;
-        margin-bottom: 2rem;
+    form.formulario-actualizacion-alumno div {
+        margin-bottom: 1rem;
     }
 
-    /* Styles for validation error text for individual fields */
-    .formulario-actualizacion-alumno .text-danger {
-        color: #e74c3c !important; /* Use !important to ensure override Bootstrap's .text-danger if needed */
+    form.formulario-actualizacion-alumno label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+        color: #2c3e50;
+    }
+
+    form.formulario-actualizacion-alumno input,
+    form.formulario-actualizacion-alumno select {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    form.formulario-actualizacion-alumno .text-danger {
+        color: #e74c3c;
         font-size: 0.9rem;
-        margin-top: 0.2rem;
+        margin-top: 0.25rem;
         display: block;
     }
 
-    /* Overriding default Bootstrap button styles with your desired colors */
-    .formulario-actualizacion-alumno .btn-primary {
-        background-color: #27ae60; /* Your desired green for primary actions */
-        border-color: #27ae60;
+    form.formulario-actualizacion-alumno button[type="submit"],
+    form.formulario-actualizacion-alumno a.btn-secondary {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    form.formulario-actualizacion-alumno button[type="submit"] {
+        background-color: #27ae60;
         color: white;
-        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
     }
 
-        .formulario-actualizacion-alumno .btn-primary:hover {
+        form.formulario-actualizacion-alumno button[type="submit"]:hover {
             background-color: #219150;
-            border-color: #219150;
         }
 
-    .formulario-actualizacion-alumno .btn-secondary {
-        background-color: #bdc3c7; /* Your desired grey for secondary actions */
-        border-color: #bdc3c7;
+    form.formulario-actualizacion-alumno a.btn-secondary {
+        background-color: #bdc3c7;
         color: #2c3e50;
-        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        margin-left: 1rem;
     }
 
-        .formulario-actualizacion-alumno .btn-secondary:hover {
+        form.formulario-actualizacion-alumno a.btn-secondary:hover {
             background-color: #95a5a6;
-            border-color: #95a5a6;
         }
 
-/* Media Queries for Responsiveness */
+/* Para evitar que el contenido se oculte detrás del sidebar */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .formulario-actualizacion-alumno {
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    form.formulario-actualizacion-alumno {
         margin: 1rem;
         padding: 1.5rem;
     }
 
-        /* Make buttons full width on small screens if desired, overriding Bootstrap's default behavior for these specific buttons */
-        .formulario-actualizacion-alumno .btn-primary,
-        .formulario-actualizacion-alumno .btn-secondary {
+        form.formulario-actualizacion-alumno button[type="submit"],
+        form.formulario-actualizacion-alumno a.btn-secondary {
+            display: block;
             width: 100%;
-            margin-left: 0 !important; /* Override Bootstrap's ms-2 */
-            margin-top: 0.5rem; /* Add some spacing between stacked buttons */
+            margin: 0 0 0.5rem 0;
         }
 }
