@@ -3,19 +3,25 @@
     ViewData["Title"] = "Bienvenido Docente";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2 class="mb-3">@ViewBag.NombreDocente</h2> <p class="lead">
-    Desde aquí puedes:
-</p>
-<ul>
-    <li><a asp-action="CrearAvisos">Crear nuevos avisos</a></li>
-    <li><a asp-action="MisAvisos">Ver mis avisos</a></li>
-    <li><a asp-action="MisAlumnos">Ver mis alumnos y materias</a></li>
-</ul>
+<link rel="stylesheet" href="~/css/BienvenidoDocente.css" asp-append-version="true" />
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
-    </div>
-}
+
+<div class="bienvenida-container">
+    <h1>@ViewData["Title"]</h1>
+    <h2 class="mb-3">@ViewBag.NombreDocente</h2>
+    <p class="lead">
+        Desde aquí puedes:
+    </p>
+    <ul>
+        <li><a asp-action="CrearAvisos">Crear nuevos avisos</a></li>
+        <li><a asp-action="MisAvisos">Ver mis avisos</a></li>
+        <li><a asp-action="MisAlumnos">Ver mis alumnos y materias</a></li>
+    </ul>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+</div>

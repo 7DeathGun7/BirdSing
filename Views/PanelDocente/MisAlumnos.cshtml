@@ -5,9 +5,11 @@
     ViewData["Title"] = "Mis Alumnos";
 }
 
+<link rel="stylesheet" href="~/css/MisAlumnos.css" asp-append-version="true" />
+
 <h2>@ViewData["Title"]</h2>
 
-<form method="get" class="row g-3 mb-4">
+<form method="get" class="row g-3 mb-4 filtros-alumnos">
     <div class="col-md-3">
         <label asp-for="GradoId" class="form-label">Grado</label>
         <select asp-for="GradoId" asp-items="Model.Grados" class="form-select"></select>
@@ -22,15 +24,14 @@
     </div>
     <div class="col-md-3">
         <label asp-for="AlumnoId" class="form-label">Alumno</label>
-        <select asp-for="AlumnoId" asp-items="Model.AlumnosList" class="form-select">
-        </select>
+        <select asp-for="AlumnoId" asp-items="Model.AlumnosList" class="form-select"></select>
     </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
+    <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn">Filtrar</button>
     </div>
 </form>
 
-<table class="table table-striped">
+<table class="table table-striped table-alumnos">
     <thead>
         <tr>
             <th>Nombre</th>
@@ -52,5 +53,4 @@
             </tr>
         }
     </tbody>
-
 </table>

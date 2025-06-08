@@ -4,8 +4,11 @@
     ViewData["Title"] = "Mis Avisos";
 }
 
+<link rel="stylesheet" href="~/css/MisAvisos.css" asp-append-version="true" />
+
 <h2>Mis Avisos</h2>
-<form method="get">
+
+<form method="get" class="filtros-aviso">
     <div class="row mb-3">
         <div class="col-md-3">
             <label>Grado - Grupo</label>
@@ -28,12 +31,12 @@
             <input type="date" name="FechaHasta" value="@Model.FechaHasta?.ToString("yyyy-MM-dd")" class="form-control" />
         </div>
         <div class="col-md-1 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <button type="submit" class="btn">Filtrar</button>
         </div>
     </div>
 </form>
 
-<table class="table table-striped">
+<table class="table table-aviso">
     <thead>
         <tr>
             <th>Fecha</th>
@@ -51,17 +54,16 @@
                 <td>@aviso.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>
                     @(
-                        aviso.Alumno?.Usuario != null
-                        ? aviso.Alumno.Usuario.NombreUsuario + " " + aviso.Alumno.Usuario.ApellidoPaterno
-                        : aviso.Alumno?.NombreAlumno + " " + aviso.Alumno?.ApellidoPaterno
-                        )
-                </td>
-
-                <td>@aviso.Grupo?.Grupos</td>
-                <td>@aviso.Materia?.NombreMateria</td>
-                <td>@aviso.Titulo</td>
-                <td>@aviso.TipoAviso</td>
-            </tr>
-        }
+                                    aviso.Alumno?.Usuario != null
+                                    ? aviso.Alumno.Usuario.NombreUsuario + " " + aviso.Alumno.Usuario.ApellidoPaterno
+                                    : aviso.Alumno?.NombreAlumno + " " + aviso.Alumno?.ApellidoPaterno
+                                    )
+            </td>
+            <td>@aviso.Grupo?.Grupos</td>
+            <td>@aviso.Materia?.NombreMateria</td>
+            <td>@aviso.Titulo</td>
+            <td>@aviso.TipoAviso</td>
+        </tr>
+                }
     </tbody>
 </table>

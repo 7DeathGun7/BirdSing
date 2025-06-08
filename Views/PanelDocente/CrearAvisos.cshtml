@@ -5,6 +5,9 @@
     Layout = "_LayoutDocente";
 }
 
+<link rel="stylesheet" href="~/css/CrearAviso.css" asp-append-version="true" />
+
+<div class="form-crear-aviso">
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="CrearAvisos" method="get">
@@ -28,6 +31,7 @@
         <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
 </form>
+
 
 <form asp-action="CrearAvisos" method="post">
     <input type="hidden" name="ModoEnvio" value="@Model.ModoEnvio" />
@@ -64,3 +68,4 @@
     <button type="submit" class="btn btn-primary">Enviar Aviso</button>
     <a asp-action="Index" class="btn btn-link">Cancelar</a>
 </form>
+</div>

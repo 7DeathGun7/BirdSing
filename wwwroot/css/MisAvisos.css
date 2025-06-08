@@ -1,0 +1,85 @@
+﻿/* ===== Estilos para la vista Mis Avisos ===== */
+
+.filtros-aviso {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 1000px;
+    font-family: Arial, sans-serif;
+}
+
+    .filtros-aviso label {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.3rem;
+    }
+
+    .filtros-aviso input,
+    .filtros-aviso select {
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .filtros-aviso button {
+        background-color: #2980b9;
+        color: white;
+        padding: 0.6rem 1.4rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .filtros-aviso button:hover {
+            background-color: #2471a3;
+        }
+
+/* Estilo para la tabla */
+.table-aviso {
+    margin: 2rem auto;
+    max-width: 1000px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .table-aviso thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .table-aviso th,
+    .table-aviso td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .table-aviso tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filtros-aviso {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .table-aviso {
+        margin: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .filtros-aviso .row > div {
+        margin-bottom: 1rem;
+    }
+
+    .filtros-aviso button {
+        margin-top: 0.5rem;
+    }
+}
