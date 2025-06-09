@@ -8,64 +8,92 @@
 <link rel="stylesheet" href="~/css/CrearAviso.css" asp-append-version="true" />
 
 <div class="form-crear-aviso">
-<h2>@ViewData["Title"]</h2>
+    <h2>@ViewData["Title"]</h2>
 
-<form asp-action="CrearAvisos" method="get">
-    <div class="mb-3">
-        <label class="form-label">Modo de envío:</label>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="modoEnvio" value="Grupal" @(Model.ModoEnvio == "Grupal" ? "checked" : "") onchange="this.form.submit()" />
-            <label class="form-check-label">Grupal</label>
+    <form asp-action="CrearAvisos" method="get">
+        <div class="mb-3 modo-envio">
+            <label class="form-label">Modo de envío:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="modoEnvio" value="Grupal" @(Model.ModoEnvio == "Grupal" ? "checked" : "") onchange="this.form.submit()" />
+                <label class="form-check-label">Grupal</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="modoEnvio" value="Individual" @(Model.ModoEnvio == "Individual" ? "checked" : "") onchange="this.form.submit()" />
+                <label class="form-check-label">Individual</label>
+            </div>
         </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="modoEnvio" value="Individual" @(Model.ModoEnvio == "Individual" ? "checked" : "") onchange="this.form.submit()" />
-            <label class="form-check-label">Individual</label>
+
+        <div class="mb-3">
+            <label asp-for="IdGrupo" class="form-label">Grado – Grupo</label>
+            <select asp-for="IdGrupo" asp-items="Model.Grupos" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Selecciona grupo --</option>
+            </select>
+            <span asp-validation-for="IdGrupo" class="text-danger"></span>
         </div>
-    </div>
+    </form>
 
-    <div class="mb-3">
-        <label asp-for="IdGrupo" class="form-label">Grado – Grupo</label>
-        <select asp-for="IdGrupo" asp-items="Model.Grupos" class="form-select" onchange="this.form.submit()">
-            <option value="">-- Selecciona grupo --</option>
-        </select>
-        <span asp-validation-for="IdGrupo" class="text-danger"></span>
-    </div>
-</form>
+    <form asp-action="CrearAvisos" method="post">
+        <input type="hidden" name="ModoEnvio" value="@Model.ModoEnvio" />
+        <input type="hidden" name="IdGrupo" value="@Model.IdGrupo" />
 
+        <div class="form-group">
+            <label class="form-label">Medio de envío</label><br />
+            <input type="radio" name="MetodoEnvio" value="WhatsApp" checked /> WhatsApp
+            <input type="radio" name="MetodoEnvio" value="SMS" class="ms-3" /> SMS
+        </div>
 
-<form asp-action="CrearAvisos" method="post">
-    <input type="hidden" name="ModoEnvio" value="@Model.ModoEnvio" />
-    <input type="hidden" name="IdGrupo" value="@Model.IdGrupo" />
+        <div class="mb-3">
+            <label asp-for="MateriaId" class="form-label">Materia</label>
+            <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select">
+                <option value="">-- Selecciona materia --</option>
+            </select>
+            <span asp-validation-for="MateriaId" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="MateriaId" class="form-label">Materia</label>
-        <select asp-for="MateriaId" asp-items="Model.Materias" class="form-select">
-            <option value="">-- Selecciona materia --</option>
-        </select>
-        <span asp-validation-for="MateriaId" class="text-danger"></span>
-    </div>
+        <div class="mb-3" id="alumnos-container" style="display:@(Model.ModoEnvio == "Individual" ? "block" : "none")">
+            <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
+            <select asp-for="MatriculaAlumno" asp-items="Model.Alumnos" class="form-select">
+                <option value="">-- Selecciona alumno --</option>
+            </select>
+            <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3" id="alumnos-container" style="display:@(Model.ModoEnvio == "Individual" ? "block" : "none")">
-        <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
-        <select asp-for="MatriculaAlumno" asp-items="Model.Alumnos" class="form-select">
-            <option value="">-- Selecciona alumno --</option>
-        </select>
-        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Titulo" class="form-label">Título</label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Titulo" class="form-label">Título</label>
-        <input asp-for="Titulo" class="form-control" />
-        <span asp-validation-for="Titulo" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="Mensaje" class="form-label">Mensaje</label>
+            <textarea asp-for="Mensaje" class="form-control" id="mensajeBox" maxlength="160" rows="5"></textarea>
+            <span asp-validation-for="Mensaje" class="text-danger"></span>
+            <small id="contadorCaracteres" class="form-text text-muted">0 / 160 caracteres</small>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Mensaje" class="form-label">Mensaje</label>
-        <textarea asp-for="Mensaje" class="form-control" rows="5"></textarea>
-        <span asp-validation-for="Mensaje" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Enviar Aviso</button>
-    <a asp-action="Index" class="btn btn-link">Cancelar</a>
-</form>
+        <button type="submit" class="btn btn-primary">Enviar Aviso</button>
+        <a asp-action="Index" class="btn btn-link">Cancelar</a>
+    </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radios = document.querySelectorAll("input[name='MetodoEnvio']");
+            const mensajeBox = document.getElementById("mensajeBox");
+            const contador = document.getElementById("contadorCaracteres");
+
+            function actualizarLimite() {
+                const seleccionado = document.querySelector("input[name='MetodoEnvio']:checked").value;
+                const max = (seleccionado === "SMS") ? 160 : 1000;
+                mensajeBox.setAttribute("maxlength", max);
+                contador.textContent = `${mensajeBox.value.length} / ${max} caracteres`;
+            }
+
+            mensajeBox.addEventListener("input", actualizarLimite);
+            radios.forEach(r => r.addEventListener("change", actualizarLimite));
+            actualizarLimite(); // Inicial
+        });
+    </script>
+}

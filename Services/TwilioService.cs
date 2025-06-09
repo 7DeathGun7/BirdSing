@@ -29,5 +29,15 @@ namespace BirdSing.Services
             };
             return MessageResource.CreateAsync(opts);
         }
+
+        public Task SendSmsAsync(string to, string message)
+        {
+            var opts = new CreateMessageOptions(new PhoneNumber(to))
+            {
+                From = new PhoneNumber(_settings.FromWhatsapp), // Puedes usar un número SMS real si tienes uno.
+                Body = message
+            };
+            return MessageResource.CreateAsync(opts);
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace BirdSing.Services
     public interface ITwilioService
     {
         Task SendWhatsappAsync(string toWhatsapp, Dictionary<string, string> templateVariables);
+        Task SendSmsAsync(string to, string message);
     }
 }

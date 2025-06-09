@@ -6,7 +6,8 @@
 
 <link rel="stylesheet" href="~/css/CambiarContrasena.css" asp-append-version="true" />
 
-
+<div class="alert alert-info">
+   
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="CambiarContrasena" method="post" class="form-cambiar-contrasena">
@@ -33,6 +34,7 @@
 
     <button type="submit" class="btn btn-primary">Actualizar</button>
 </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
