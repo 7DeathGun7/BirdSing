@@ -36,6 +36,17 @@
         box-sizing: border-box;
     }
 
+    .form-crear-aviso .modo-envio {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+        .form-crear-aviso .modo-envio .form-check {
+            margin-bottom:  0;
+        }
+
     /* Radio buttons */
     .form-crear-aviso .form-check {
         margin-bottom: 0.5rem;
