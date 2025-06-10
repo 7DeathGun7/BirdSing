@@ -56,7 +56,6 @@ namespace BirdSing.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
-
             var vm = new CrearAvisoViewModel
             {
                 ModoEnvio = modoEnvio,
@@ -110,8 +109,6 @@ namespace BirdSing.Controllers
 
 
             return View(vm);
-
-
         }
 
 
@@ -119,8 +116,7 @@ namespace BirdSing.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearAvisos(CrearAvisoViewModel vm)
         {
-            if (!ModelState.IsValid ||
-               (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue))
+            if (!ModelState.IsValid || (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue))
             {
                 if (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue)
                     ModelState.AddModelError(nameof(vm.MateriaId), "Debes seleccionar una materia.");
@@ -132,7 +128,7 @@ namespace BirdSing.Controllers
                 .Include(a => a.Usuario)
                 .Include(a => a.AlumnosTutores)
                     .ThenInclude(at => at.Tutor)
-                        .ThenInclude(t => t.Usuario)
+                    .ThenInclude(t => t.Usuario)
                 .FirstOrDefaultAsync(a => a.MatriculaAlumno == vm.MatriculaAlumno!.Value);
 
             if (alumno == null)
@@ -145,35 +141,25 @@ namespace BirdSing.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var docente = await _context.Docentes.SingleAsync(d => d.IdUsuario == userId);
 
-            var avisos = alumno.AlumnosTutores
-                .Select(at => new Aviso
-                {
-                    IdDocente = docente.IdDocente,
-                    IdGrupo = vm.IdGrupo!.Value,
-                    IdMateria = vm.ModoEnvio == "Individual"
-                                      ? vm.MateriaId.GetValueOrDefault()
-                                      : 0,
-                    MatriculaAlumno = vm.MatriculaAlumno,
-                    IdTutor = at.IdTutor,
-                    TipoAviso = vm.ModoEnvio,
-                    Titulo = vm.Titulo,
-                    Mensaje = vm.Mensaje,
-                    Fecha = DateTime.Now,
-                    Leido = false
-                })
-                .ToList();
+            var avisos = alumno.AlumnosTutores.Select(at => new Aviso
+            {
+                IdDocente = docente.IdDocente,
+                IdGrupo = vm.IdGrupo!.Value,
+                IdMateria = vm.ModoEnvio == "Individual" ? vm.MateriaId.GetValueOrDefault() : 0,
+                MatriculaAlumno = vm.MatriculaAlumno,
+                IdTutor = at.IdTutor,
+                TipoAviso = vm.ModoEnvio,
+                Titulo = vm.Titulo,
+                Mensaje = vm.Mensaje,
+                Fecha = DateTime.Now,
+                Leido = false
+            }).ToList();
 
             _context.Avisos.AddRange(avisos);
             await _context.SaveChangesAsync();
 
-            var urlAviso = Url.Action(
-                nameof(MisAvisos),
-                "PanelDocente",
-                values: null,
-                protocol: Request.Scheme
-            );
-
-            var metodoEnvio = Request.Form["MetodoEnvio"].ToString();
+            var urlAviso = Url.Action(nameof(MisAvisos), "PanelDocente", null, Request.Scheme);
+            var metodoEnvio = Request.Form["MetodoEnvio"].ToString(); // "WhatsApp" o "SMS"
 
             foreach (var at in alumno.AlumnosTutores)
             {
@@ -181,42 +167,43 @@ namespace BirdSing.Controllers
                 if (string.IsNullOrEmpty(tel)) continue;
 
                 var numero = tel.StartsWith("1") ? tel : $"1{tel}";
-                var destino = metodoEnvio == "SMS"
-                    ? $"+52{numero}"
-                    : $"whatsapp:+52{numero}";
+                var nombreTutor = at.Tutor.Usuario?.NombreUsuario ?? "Tutor";
 
                 try
                 {
                     if (metodoEnvio == "WhatsApp")
                     {
+                        var destino = $"whatsapp:+52{numero}";
                         var vars = new Dictionary<string, string>
                 {
-                    { "1", at.Tutor.Usuario?.NombreUsuario ?? "Tutor" },
+                    { "1", nombreTutor },
                     { "2", urlAviso ?? "https://birdsing.com" }
                 };
+
                         await _twilio.SendWhatsappAsync(destino, vars);
                     }
                     else if (metodoEnvio == "SMS")
                     {
-                        string smsTexto = $"{at.Tutor.Usuario?.NombreUsuario}, nuevo aviso: {vm.Titulo}. Ver: {urlAviso}";
-                        if (smsTexto.Length > 160) smsTexto = smsTexto.Substring(0, 160);
-                        await _twilio.SendSmsAsync(destino, smsTexto);
+                        var destino = $"+52{numero}";
+                        var mensajeSms = $"{nombreTutor}, nuevo aviso: {vm.Titulo}. Ver: {urlAviso}";
+                        if (mensajeSms.Length > 160) mensajeSms = mensajeSms.Substring(0, 160);
+
+                        await _twilio.SendSmsAsync(destino, mensajeSms);
                     }
                 }
                 catch (ApiException ex)
                 {
-                    _logger.LogError("Twilio API error al enviar a {Destino}: {Code} — {Msg}", destino, ex.Code, ex.Message);
+                    _logger.LogError("Twilio API error al enviar a {Destino}: {Code} — {Msg}", tel, ex.Code, ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Error inesperado al enviar a {Destino}: {Msg}", destino, ex.Message);
+                    _logger.LogError("Error inesperado al enviar a {Destino}: {Msg}", tel, ex.Message);
                 }
             }
 
             TempData["Success"] = "Aviso enviado correctamente.";
             return RedirectToAction(nameof(Index));
         }
-
 
 
         /// <summary>
@@ -376,11 +363,11 @@ namespace BirdSing.Controllers
 
         // GET: /PanelDocente/MisAlumnos
         public async Task<IActionResult> MisAlumnos(
-                int? gradoId,
-                int? grupoId,
-                int? materiaId,
-                int? alumnoId     // <-- nuevo parámetro para el filtro de alumno
-            )
+            int? gradoId,
+            int? grupoId,
+            int? materiaId,
+            int? alumnoId     // <-- nuevo parámetro para el filtro de alumno
+)
         {
             // 1) Obtenemos al docente
             var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -514,7 +501,5 @@ namespace BirdSing.Controllers
                 .ToList();
             return Json(lista);
         }
-
-
     }
 }
