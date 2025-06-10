@@ -7,5 +7,7 @@ namespace BirdSing.Models
         public string AuthToken { get; set; } = null!;
         public string FromWhatsapp { get; set; } = null!;
         public string ContentSid { get; set; } = null!;  
+
+        public string FromSms { get; set; } = null!; 
     }
 }

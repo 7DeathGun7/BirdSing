@@ -34,10 +34,11 @@ namespace BirdSing.Services
         {
             var opts = new CreateMessageOptions(new PhoneNumber(to))
             {
-                From = new PhoneNumber(_settings.FromWhatsapp), // Puedes usar un número SMS real si tienes uno.
+                From = new PhoneNumber(_settings.FromSms), // Ahora usamos el número válido para SMS
                 Body = message
             };
             return MessageResource.CreateAsync(opts);
         }
+
     }
 }

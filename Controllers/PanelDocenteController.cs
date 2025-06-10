@@ -120,6 +120,7 @@ namespace BirdSing.Controllers
             {
                 if (vm.ModoEnvio == "Individual" && !vm.MateriaId.HasValue)
                     ModelState.AddModelError(nameof(vm.MateriaId), "Debes seleccionar una materia.");
+
                 await CargarSelects(vm);
                 return View(vm);
             }
@@ -166,25 +167,26 @@ namespace BirdSing.Controllers
                 var tel = at.Tutor.Telefono?.Trim();
                 if (string.IsNullOrEmpty(tel)) continue;
 
-                var numero = tel.StartsWith("1") ? tel : $"1{tel}";
+                var telefonoLimpio = tel.TrimStart('0').Replace(" ", "");
+                var prefijo = metodoEnvio == "WhatsApp" ? "+521" : "+52";
+                var destino = $"{prefijo}{telefonoLimpio}";
+
                 var nombreTutor = at.Tutor.Usuario?.NombreUsuario ?? "Tutor";
 
                 try
                 {
                     if (metodoEnvio == "WhatsApp")
                     {
-                        var destino = $"whatsapp:+52{numero}";
                         var vars = new Dictionary<string, string>
                 {
                     { "1", nombreTutor },
                     { "2", urlAviso ?? "https://birdsing.com" }
                 };
 
-                        await _twilio.SendWhatsappAsync(destino, vars);
+                        await _twilio.SendWhatsappAsync($"whatsapp:{destino}", vars);
                     }
                     else if (metodoEnvio == "SMS")
                     {
-                        var destino = $"+52{numero}";
                         var mensajeSms = $"{nombreTutor}, nuevo aviso: {vm.Titulo}. Ver: {urlAviso}";
                         if (mensajeSms.Length > 160) mensajeSms = mensajeSms.Substring(0, 160);
 
@@ -193,17 +195,18 @@ namespace BirdSing.Controllers
                 }
                 catch (ApiException ex)
                 {
-                    _logger.LogError("Twilio API error al enviar a {Destino}: {Code} — {Msg}", tel, ex.Code, ex.Message);
+                    _logger.LogError("Twilio API error al enviar a {Destino}: {Code} — {Msg}", destino, ex.Code, ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Error inesperado al enviar a {Destino}: {Msg}", tel, ex.Message);
+                    _logger.LogError("Error inesperado al enviar a {Destino}: {Msg}", destino, ex.Message);
                 }
             }
 
             TempData["Success"] = "Aviso enviado correctamente.";
             return RedirectToAction(nameof(Index));
         }
+
 
 
         /// <summary>
