@@ -1,4 +1,4 @@
-using BirdSing.Data;
+Ôªøusing BirdSing.Data;
 using BirdSing.Models;
 using BirdSing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,16 +23,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// 3) ConfiguraciÛn de Twilio
+// 3) Configuraci√≥n de Twilio
 builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
 builder.Services.AddTransient<ITwilioService, TwilioService>();
 
-// 4) MVC
+// 4) MVC + Sesiones
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// 5) Migraciones autom·ticas + seed
+// 5) Migraciones autom√°ticas + seed
 using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -40,7 +42,7 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(ctx);
 }
 
-// 6) Pipeline est·ndar
+// 6) Pipeline est√°ndar
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -52,10 +54,12 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ‚úÖ Agregado para soportar sesiones
+app.UseSession();
+
 // 7) Routing MVC
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

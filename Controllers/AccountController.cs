@@ -35,6 +35,20 @@ namespace BirdSing.Controllers
                     ModelState.AddModelError("", "Correo o contraseña incorrectos.");
                     return View(model);
                 }
+                // Verificar si usa contraseña por defecto
+                bool requiereCambio = false;
+
+                if (usuario.IdRol == 2 && BCrypt.Net.BCrypt.Verify("Docen73", usuario.Password)) // Docente
+                    requiereCambio = true;
+                if (usuario.IdRol == 3 && BCrypt.Net.BCrypt.Verify("Tu7o4", usuario.Password)) // Tutor
+                    requiereCambio = true;
+
+                if (requiereCambio)
+                {
+                    HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
+                    HttpContext.Session.SetInt32("Rol", usuario.IdRol);
+                    return RedirectToAction("ForzarCambioContrasena");
+                }
 
                 // <-- Aquí agregamos el NameIdentifier claim con el IdUsuario
                 var claims = new List<Claim>
@@ -73,5 +87,36 @@ namespace BirdSing.Controllers
         {
             return View("AccessDenied");
         }
+
+        // GET: muestra el formulario
+        [HttpGet]
+        public IActionResult ForzarCambioContrasena()
+        {
+            return View();
+        }
+
+        // POST: recibe la nueva contraseña
+        [HttpPost]
+        public IActionResult ForzarCambioContrasena(string nuevaContrasena)
+        {
+            var id = HttpContext.Session.GetInt32("UsuarioId");
+            var rol = HttpContext.Session.GetInt32("Rol");
+
+            if (id == null || rol == null)
+                return RedirectToAction("Login");
+
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id && u.IdRol == rol);
+            if (usuario != null)
+            {
+                usuario.Password = BCrypt.Net.BCrypt.HashPassword(nuevaContrasena);
+                _context.SaveChanges();
+                TempData["Mensaje"] = "Contraseña actualizada correctamente.";
+                return RedirectToAction("Login");
+            }
+
+            return View();
+        }
+
+
     }
 }

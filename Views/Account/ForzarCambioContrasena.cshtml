@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Cambio Obligatorio de Contraseña";
+}
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ForzarCambioContrasena" method="post">
+    <div class="form-group">
+        <label>Nueva Contraseña</label>
+        <input type="password" name="nuevaContrasena" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
+</form>
