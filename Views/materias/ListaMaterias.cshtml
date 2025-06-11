@@ -5,11 +5,10 @@
     ViewData["Title"] = "Lista de Materias";
 }
 
+<link rel="stylesheet" href="~/css/ListaMaterias.css" />
+
 <h2>@ViewData["Title"]</h2>
 
-<p>
-    <a asp-action="RegistroMateria" class="btn btn-success">+ Nueva Materia</a>
-</p>
 
 <table class="table table-striped mt-3">
     <thead class="table-dark">
@@ -30,13 +29,19 @@
                     <a asp-action="ActualizarMateria" asp-route-id="@materia.IdMateria" class="btn btn-sm btn-primary">
                         Editar
                     </a>
-                    <a asp-action="EliminarMateria" asp-route-id="@materia.IdMateria"
-                       class="btn btn-sm btn-danger ms-1"
-                       onclick="return confirm('¿Eliminar esta materia?');">
-                        Eliminar
-                    </a>
+                    <form asp-action="EliminarMateria" asp-route-id="@materia.IdMateria" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta materia?');">
+
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<p>
+    <a asp-action="RegistroMateria" class="btn btn-success">+ Nueva Materia</a>
+
+</p>
+

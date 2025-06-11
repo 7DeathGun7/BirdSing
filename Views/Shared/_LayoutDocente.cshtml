@@ -1,4 +1,47 @@
-﻿@page
-@model BirdSing.Views.Shared._LayoutDocenteModel
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Panel Docente</title>
+
+    <link rel="stylesheet" href="~/css/LayoutDOC.css" />
+
+</head>
+<body>
+    <div class="container">
+
+        <aside class="sidebar">
+            <h2>Menú Docente</h2>
+            <ul>
+                <li>                    
+                              <a asp-controller="PanelDocente" asp-action="CrearAvisos">Crear Aviso</a>
+                </li>
+                <li>
+                       <a asp-controller="PanelDocente" asp-action="MisAvisos">Mis Avisos</a>
+                </li>
+                <li>
+                    <a asp-controller="PanelDocente" asp-action="MisAlumnos">Mis Alumnos</a>
+                </li>
+                <li>
+                    <a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a>
+                </li>
+            </ul>
+        </aside>
+
+    
+
+
+        <!-- Contenido principal -->
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/JavaADMIN.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+

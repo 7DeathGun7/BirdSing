@@ -1,67 +1,132 @@
 ﻿@model BirdSing.Models.ModelosViews.UsuarioTutorViewModel
-
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Actualizar Tutor";
 }
 
-<link rel="stylesheet" href="~/css/ActualizarTutor.css">
+<link rel="stylesheet" href="~/css/ActualizarTutor.css" />
 
-<h2>Actualizar Tutor</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="ActualizarTutor" method="post" class="mt-4 needs-validation" novalidate>
-    @Html.AntiForgeryToken()
+<form asp-action="ActualizarTutor" method="post">
+    <input type="hidden" asp-for="Usuario.IdUsuario" />
+    <input type="hidden" asp-for="Tutor.IdTutor" />
+    <input type="hidden" asp-for="Usuario.IdRol" /> <!-- Rol oculto -->
 
-    <!-- Mostrar errores de validación -->
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <h3>Datos del Usuario</h3>
 
-    <!-- Campos ocultos para que el binder reciba los IDs -->
-    <input asp-for="Tutor.IdTutor" type="hidden" />
-    <input asp-for="Usuario.IdUsuario" type="hidden" />
-
-    <h5>Datos del Usuario</h5>
-    <div class="mb-3">
-        <label asp-for="Usuario.NombreUsuario" class="form-label"></label>
-        <input asp-for="Usuario.NombreUsuario" class="form-control" />
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.NombreUsuario" class="control-label"></label>
+        <input asp-for="Usuario.NombreUsuario" class="form-control @(ViewData.ModelState["Usuario.NombreUsuario"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: jose123" />
         <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="Usuario.ApellidoPaterno" class="form-label"></label>
-        <input asp-for="Usuario.ApellidoPaterno" class="form-control" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoPaterno" class="control-label"></label>
+        <input asp-for="Usuario.ApellidoPaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoPaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: García" />
         <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="Usuario.ApellidoMaterno" class="form-label"></label>
-        <input asp-for="Usuario.ApellidoMaterno" class="form-control" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoMaterno" class="control-label"></label>
+        <input asp-for="Usuario.ApellidoMaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoMaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: López" />
         <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="Usuario.Email" class="form-label"></label>
-        <input asp-for="Usuario.Email" class="form-control" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.Email" class="control-label"></label>
+        <input asp-for="Usuario.Email" class="form-control @(ViewData.ModelState["Usuario.Email"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ejemplo@gmail.com" />
         <span asp-validation-for="Usuario.Email" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="Usuario.IdRol" class="form-label">Rol</label>
-        <select asp-for="Usuario.IdRol" asp-items="ViewBag.Roles" class="form-select"></select>
-        <span asp-validation-for="Usuario.IdRol" class="text-danger"></span>
-    </div>
 
-    <h5 class="mt-4">Datos del Tutor</h5>
-    <div class="mb-3">
-        <label asp-for="Tutor.Telefono" class="form-label"></label>
-        <input asp-for="Tutor.Telefono" class="form-control" />
+    <h3>Datos del Tutor</h3>
+
+    <div class="form-group mb-2">
+        <label asp-for="Tutor.Telefono" class="control-label"></label>
+        <input asp-for="Tutor.Telefono"
+               class="form-control @(ViewData.ModelState["Tutor.Telefono"]?.Errors.Count > 0 ? "is-invalid" : "")"
+               placeholder="Ej: 9831234567"
+               maxlength="10"
+               inputmode="numeric"
+               pattern="\\d{10}"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" />
         <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="Tutor.Direccion" class="form-label"></label>
-        <input asp-for="Tutor.Direccion" class="form-control" />
+
+
+    <div class="form-group mb-2">
+        <label asp-for="Tutor.Direccion" class="control-label"></label>
+        <input asp-for="Tutor.Direccion" class="form-control" id="direccionInput" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-    <a asp-action="ListaTutores" class="btn btn-secondary ms-2">Cancelar</a>
+    <input id="cordenadasInput" name="Tutor.Coordenadas" type="hidden" value="@Model.Tutor.Coordenadas" />
+
+    <div id="map" style="height: 400px;" class="mb-3"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+    <a asp-action="ListaTutores" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const direccionInput = document.getElementById("direccionInput");
+        const cordenadasInput = document.getElementById("cordenadasInput");
+
+        // Extraer lat/lng desde el valor almacenado (formato: "Lat: xx, Lng: yy")
+        let lat = 18.5145, lng = -88.2996; // valores por defecto
+        const match = cordenadasInput.value.match(/Lat:\s*(-?\d+\.\d+),\s*Lng:\s*(-?\d+\.\d+)/);
+        if (match) {
+            lat = parseFloat(match[1]);
+            lng = parseFloat(match[2]);
+        }
+
+        const map = L.map('map').setView([lat, lng], 16);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        function actualizarCoordenadas(lat, lng) {
+            cordenadasInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+        }
+
+        marker.on("dragend", function () {
+            const { lat, lng } = marker.getLatLng();
+            actualizarCoordenadas(lat, lng);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
+                });
+        });
+
+        direccionInput.addEventListener("input", function () {
+            const query = this.value;
+            if (query.length < 3) return;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 17);
+                        marker.setLatLng([lat, lon]);
+                        actualizarCoordenadas(lat, lon);
+                    }
+                });
+        });
+
+        // Inicializa campo cordenadas
+        actualizarCoordenadas(lat, lng);
+    </script>
 }

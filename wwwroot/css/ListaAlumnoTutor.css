@@ -1,0 +1,118 @@
+﻿/* ===== Estilos para la tabla de Asignaciones Alumno-Tutor en el panel admin ===== */
+
+.tabla-alumno-tutor {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+    .tabla-alumno-tutor th,
+    .tabla-alumno-tutor td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .tabla-alumno-tutor thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .tabla-alumno-tutor tbody tr:hover {
+        background-color: #ecf0f1;
+    }
+
+    /* Contenedor para los botones dentro de la celda, para que estén en línea */
+    .tabla-alumno-tutor .acciones-botones {
+        display: flex; /* Usamos flexbox para una mejor alineación horizontal */
+        gap: 0.5rem; /* Espacio entre los botones */
+        flex-wrap: wrap; /* Permite que los botones se envuelvan a la siguiente línea si no hay espacio */
+        justify-content: flex-start; /* Alinea los botones al inicio */
+    }
+
+    /* Common button styles for all buttons within the table */
+    .tabla-alumno-tutor .btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        color: white;
+        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        /* Quitamos el margin-left de Bootstrap para manejar el espacio con gap */
+        margin-left: 0 !important;
+    }
+
+    /* Specific colors for buttons within the table */
+    .tabla-alumno-tutor .btn-primary {
+        background-color: #27ae60; /* Green for primary actions like 'Editar' */
+    }
+
+        .tabla-alumno-tutor .btn-primary:hover {
+            background-color: #219150;
+        }
+
+    .tabla-alumno-tutor .btn-danger {
+        background-color: #e74c3c; /* Red for danger actions like 'Eliminar' */
+    }
+
+        .tabla-alumno-tutor .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+/* Styles for the '+ Asignar Tutor' button (outside the table) */
+.btn-success {
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem; /* Appropriate margin for a standalone button */
+    background-color: #27ae60;
+    color: white;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+    .btn-success:hover {
+        background-color: #219150;
+    }
+
+/* Ajustes generales para el contenido principal */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .tabla-alumno-tutor {
+        font-size: 0.9rem;
+    }
+
+    /* Ajustes para los botones dentro de la tabla en pantallas pequeñas */
+    .tabla-alumno-tutor .acciones-botones {
+        flex-direction: column; /* Apila los botones verticalmente en pantallas pequeñas */
+        gap: 0.5rem; /* Mantiene el espacio entre ellos */
+    }
+
+    .tabla-alumno-tutor .acciones-botones .btn {
+        width: 100%; /* Hace que cada botón ocupe todo el ancho disponible */
+    }
+
+    /* Ajustar el botón 'Asignar Tutor' a ser de ancho completo en pantallas pequeñas */
+    .btn-success {
+        width: 100%;
+        /* margin-top will still apply */
+    }
+}

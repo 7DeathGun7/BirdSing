@@ -13,11 +13,21 @@ namespace BirdSing.Models
         public int IdUsuario { get; set; }
         public Usuario? Usuario { get; set; }
 
-        [StringLength(20)]
-        public string? Telefono { get; set; }
 
+        [Required]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "El teléfono debe tener exactamente 10 dígitos numéricos.")]
+        [Display(Name = "Teléfono")]
+        public string Telefono { get; set; } = null!;
+
+        [Required]
         [StringLength(255)]
         public string? Direccion { get; set; }
+
+        [Required]
+        public string Coordenadas { get; set; }
+
+
+        public bool Activo { get; set; } = true;
 
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();

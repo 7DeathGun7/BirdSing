@@ -1,0 +1,44 @@
+﻿@model IEnumerable<BirdSing.Models.GrupoMateria>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Lista Materias–Grupos";
+}
+
+<h2>@ViewData["Title"]</h2>
+<p>
+    <a asp-action="RegistroGrupoMateria" class="btn btn-success">+ Nueva Asignación</a>
+</p>
+
+<table class="table table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Grado</th>
+            <th>Grupo</th>
+            <th>Materia</th>
+            <th style="width:160px">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var gm in Model)
+        {
+            <tr>
+                <td>@gm.Grupo!.Grado!.Grados</td>
+                <td>@gm.Grupo.Grupos</td>
+                <td>@gm.Materia!.NombreMateria</td>
+                <td>
+                    <a asp-action="ActualizarGrupoMateria"
+                       asp-route-idGrupo="@gm.IdGrupo"
+                       asp-route-idMateria="@gm.IdMateria"
+                       class="btn btn-sm btn-primary">Editar</a>
+                    <a asp-action="EliminarGrupoMateria"
+                       asp-route-idGrupo="@gm.IdGrupo"
+                       asp-route-idMateria="@gm.IdMateria"
+                       class="btn btn-sm btn-danger ms-1"
+                       onclick="return confirm('¿Eliminar esta asignación?');">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

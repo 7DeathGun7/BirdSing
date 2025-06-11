@@ -16,8 +16,15 @@ namespace BirdSing.Models
         [StringLength(20)]
         public string? MatriculaSEP { get; set; }
 
+        public bool Activo { get; set; } = true;
+
         public ICollection<MateriaDocente> MateriasDocentes { get; set; } = new List<MateriaDocente>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
+        public ICollection<DocenteGrupo> GrupoAsignados { get; set; } = new List<DocenteGrupo>();
+        public ICollection<AsignacionDocente> Asignaciones { get; set; } = new List<AsignacionDocente>();
+
+
+
     }
 
 }

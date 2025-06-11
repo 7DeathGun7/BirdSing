@@ -1,11 +1,13 @@
-﻿/* ============================================
-   Estilos generales para la tabla de docentes
-   ============================================ */
+﻿/* ===== Estilos para la tabla de docentes en el panel admin ===== */
+
 .tabla-docentes {
     width: 100%;
     border-collapse: collapse;
     margin: 2rem auto;
     background: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
     font-family: Arial, sans-serif;
     border: 1px solid black; /* Borde externo negro */
 }
@@ -17,7 +19,7 @@
     .tabla-docentes td {
         padding: 1rem;
         text-align: left;
-        border: 1px solid black; /* Bordes internos negros */
+        border-bottom: 1px solid #ecf0f1;
     }
 
     /* ============================================
@@ -36,7 +38,7 @@
     }
 
     .tabla-docentes tbody tr:hover {
-        background-color: #dfe6e9;
+        background-color: #ecf0f1;
     }
 
     /* ============================================
@@ -46,6 +48,7 @@
         color: #3498db;
         text-decoration: none;
         margin-right: 0.8rem;
+        transition: color 0.2s ease-in-out;
         font-weight: bold;
         transition: color 0.2s ease-in-out;
     }
@@ -54,26 +57,28 @@
             color: #1d6fa5;
         }
 
-/* ============================================
-   Contenedor de contenido general
-   ============================================ */
+/* Ajustes para el contenedor principal */
 .content {
+    padding: 2rem;
     background-color: #ecf0f1;
     padding: 2rem;
     min-height: 100vh;
 }
 
-/* ============================================
-   Responsividad para pantallas pequeñas
-   ============================================ */
+    /* Título con márgenes adecuados */
+    .content h2 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+/* Responsive para dispositivos móviles */
 @media (max-width: 768px) {
+    .content {
+        padding: 1rem;
+    }
+
     .tabla-docentes {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        border-radius: 0;
-        box-shadow: none;
+        font-size: 0.9rem;
     }
 
         .tabla-docentes thead,
@@ -81,17 +86,79 @@
         .tabla-docentes tr,
         .tabla-docentes th,
         .tabla-docentes td {
-            white-space: nowrap;
+            padding: 0.6rem;
         }
 }
 
-/* ============================================
-   // Encabezado fijo (opcional)
-   ============================================ */
-/*
-.tabla-docentes thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+/* Botón "Registrar Nuevo Docente" */
+.contenedor-boton-registrar {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-success:hover {
+        background-color: #1e8449;
+        transform: translateY(-2px);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+    }
+
+/* Botones de acción: Actualizar y Eliminar */
+.tabla-docentes .btn-warning,
+.tabla-docentes .btn-danger {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+    color: white;
+    text-decoration: none;
+    margin-right: 0.5rem;
+    font-weight: normal;
+}
+
+.tabla-docentes .btn-warning {
+    background-color: #f1c40f;
+    color: #2c3e50;
+}
+
+    .tabla-docentes .btn-warning:hover {
+        background-color: #f39c12;
+    }
+
+.tabla-docentes .btn-danger {
+    background-color: #e74c3c;
+}
+
+    .tabla-docentes .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-success {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 0.65rem 1rem;
+    }
+
+    .contenedor-boton-registrar {
+        padding: 0 1rem;
+    }
 }
 */

@@ -21,10 +21,15 @@
                 <td>@grupo.Grado.Grados</td>
                 <td>@grupo.Grupos</td>
                 <td>
-                    <a asp-action="ActualizarGrupo" asp-route-id="@grupo.IdGrupo">Actualizar</a>
-                    <a asp-action="EliminarGrupo" asp-route-id="@grupo.IdGrupo" onclick="return confirm('¿Estás seguro de que deseas eliminar este grupo?');">Eliminar</a>
+                    <a asp-action="ActualizarGrupo" asp-route-id="@grupo.IdGrupo" class="btn btn-link">Actualizar</a>
+
+                    <form asp-action="EliminarGrupo" asp-route-id="@grupo.IdGrupo" method="post" style="display:inline-block" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este grupo?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link text-danger p-0 m-0 align-baseline">Eliminar</button>
+                    </form>
                 </td>
             </tr>
+
         }
     </tbody>
 </table>

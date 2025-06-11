@@ -1,0 +1,44 @@
+﻿@model BirdSing.Models.Alumno
+@{
+    ViewData["Title"] = "Cooperativa Tutor";
+}
+
+<h2>Cooperativa - @Model.NombreAlumno</h2>
+
+@if (TempData["mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["mensaje"]</div>
+}
+
+<h4>Saldo actual: <span style="color:@(Model.Saldo < 0 ? "red" : "green")">$@Model.Saldo</span></h4>
+
+<form asp-action="RecargarSaldo" method="post">
+    <input type="hidden" name="idAlumno" value="@Model.MatriculaAlumno" />
+    <div class="form-group">
+        <label>Monto a recargar:</label>
+        <input type="number" step="0.01" name="monto" required class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Recargar</button>
+</form>
+
+<hr />
+<h4>Historial de movimientos</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var compra in Model.ComprasTutor!.OrderByDescending(c => c.Fecha))
+        {
+            <tr>
+                <td>@compra.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@compra.Tipo</td>
+                <td>$@compra.Monto</td>
+            </tr>
+        }
+    </tbody>
+</table>

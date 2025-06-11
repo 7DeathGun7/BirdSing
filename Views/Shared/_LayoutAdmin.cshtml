@@ -1,12 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrador</title>
-
-    <link rel="stylesheet" href="~/css/LayoutADMIN.css">
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Panel Administrador</title>
+    <link rel="stylesheet" href="~/css/LayoutADMIN.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -15,78 +14,78 @@
         <div class="sidebar visible" id="sidebar">
 
             <h2>Menú</h2>
-            <ul>
-                <li><a asp-controller="PanelAdmin" asp-action="Index">Inicio</a></li>
-                <!-- Sección de Tutores -->
-                <li class="dropdown">
-                    <a href="#">Tutores</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
-                        <li><a asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="PanelAdmin" asp-action="Index">Inicio</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuTutores')">Tutores ▸</a>
+                    <ul id="submenuTutores" class="submenu" style="display: none; padding-left: 15px;">                        
+                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="RegistroTutor">Registrar Tutor</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Tutores" asp-action="ListaTutores">Lista de Tutores</a></li>
                     </ul>
                 </li>
 
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuDocentes')">Docentes ▸</a>
+                    <ul id="submenuDocentes" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li
+                        <li><a class="nav-link text-white" asp-controller="Docentes" asp-action="ListaDocentes">Lista de Docentes</a></li>
+                    </ul>
+                </li>
 
-                <!-- Sección de Docentes -->
-                <li class="dropdown">
-                    <a href="#">Docentes</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Docentes" asp-action="ListaDocentes">Lista de Docentes</a></li>
-                        <li><a asp-controller="Docentes" asp-action="RegistroDocente">Registrar Docente</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuGrupos')">Grados y Grupos ▸</a>
+                    <ul id="submenuGrupos" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo">Registrar Grado y Grupo</a></li>
+                        <li><a class="nav-link text-white" asp-controller="GradoGrupo" asp-action="ListaGradoGrupo">Lista Grado y Grupo</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Grados -->
-                <li class="dropdown">
-                    <a href="#">Grados</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Grados" asp-action="ListaGrados">Lista de Grados</a></li>
-                        <li><a asp-controller="Grados" asp-action="RegistroGrado">Registrar Grado</a></li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuMaterias')">Materias ▸</a>
+                    <ul id="submenuMaterias" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Grupos -->
-                <li class="dropdown">
-                    <a href="#">Grupos</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Grupos" asp-action="ListaGrupos">Lista de Grupos</a></li>
-                        <li><a asp-controller="Grupos" asp-action="RegistroGrupo">Registrar Grupo</a></li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAsignaciones')">Asignaciones Docentes ▸</a>
+                    <ul id="submenuAsignaciones" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Registro">Registrar Asignación</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AsignacionDocente" asp-action="Lista">Lista de Asignaciones</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Materias -->
-                <li class="dropdown">
-                    <a href="#">Materias</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Materias" asp-action="ListaMaterias">Lista de Materias</a></li>
-                        <li><a asp-controller="Materias" asp-action="RegistroMateria">Registrar Materia</a></li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumnos')">Alumnos ▸</a>
+                    <ul id="submenuAlumnos" class="submenu" style="display: none; padding-left: 15px;">
+                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
+                        <li><a class="nav-link text-white" asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>                    
                     </ul>
                 </li>
-                <!-- Sección de Materias Docentes -->
-                <li class="dropdown">
-                    <a href="#">Materias Docentes</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="MateriasDocentes" asp-action="ListaMateriasDocentes">Lista de Materias Docentes</a></li>
-                        <li><a asp-controller="MateriasDocentes" asp-action="RegistroMateriaDocente">Registrar Materia Docente</a></li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white" onclick="toggleSubmenu('submenuAlumTutores')">Alumnos Tutores ▸</a>
+                    <ul id="submenuAlumTutores" class="submenu" style="display: none; padding-left: 15px;">                    
+                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno–Tutor</a></li>
+                        <li><a class="nav-link text-white" asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista Alumnos–Tutores</a></li>
                     </ul>
                 </li>
-                <!-- Sección de Alumnos -->
-                <li class="dropdown">
-                    <a href="#">Alumnos</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="Alumnos" asp-action="ListaAlumnos">Lista de Alumnos</a></li>
-                        <li><a asp-controller="Alumnos" asp-action="RegistroAlumno">Registrar Alumno</a></li>
-                    </ul>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="Coperativa" asp-action="ListaCoperativa">Coperativa</a>
                 </li>
-                <!-- Sección de Alumnos Tutores -->
-                <li class="dropdown">
-                    <a href="#">Alumnos Tutores</a>
-                    <ul class="dropdown-content">
-                        <li><a asp-controller="AlumnosTutores" asp-action="ListaAlumnosTutores">Lista de Alumnos Tutores</a></li>
-                        <li><a asp-controller="AlumnosTutores" asp-action="RegistroAlumnoTutor">Registrar Alumno Tutor</a></li>
-                    </ul>
+
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-white" asp-controller="Account" asp-action="Logout">Cerrar sesión</a>
                 </li>
-                <!-- Cerrar sesión -->
-                <li><a asp-controller="Account" asp-action="Logout" class="logout">Cerrar sesión</a></li>
             </ul>
         </div>
+
+        <button class="menu-toggle2" onclick="toggleSidebar()">☰</button>
 
         <button class="menu-toggle2" onclick="toggleSidebar()">☰</button>
 
@@ -105,8 +104,26 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="~/js/JavaADMIN.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.js-searchable').select2({
+                width: '100%',
+                placeholder: 'Seleccione…',
+                allowClear: true
+            });
+        });
+
+        function toggleSubmenu(id) {
+            const el = document.getElementById(id);
+            el.style.display = el.style.display === "none" ? "block" : "none";
+        }
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+
+

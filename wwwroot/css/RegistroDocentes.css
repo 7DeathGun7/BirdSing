@@ -12,21 +12,20 @@
 
     .formulario-docente h3 {
         color: #2c3e50;
-        margin-top: 1.5rem;
+        margin-top: 2rem;
         margin-bottom: 1rem;
         border-bottom: 1px solid #ccc;
         padding-bottom: 0.5rem;
     }
 
-    .formulario-docente .form-group,
-    .formulario-docente div {
-        margin-bottom: 1rem;
+    .formulario-docente .form-group {
+        margin-bottom: 1.5rem;
     }
 
     .formulario-docente label {
         display: block;
         font-weight: bold;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.4rem;
         color: #2c3e50;
     }
 
@@ -40,24 +39,65 @@
         font-size: 1rem;
     }
 
+    .formulario-docente .input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .formulario-docente .input-group input {
+            flex: 1;
+        }
+
+    .formulario-docente .btn-outline-secondary {
+        padding: 0.5rem 0.75rem;
+        font-size: 1.1rem;
+        border-radius: 4px;
+        background: #ecf0f1;
+        border: 1px solid #bdc3c7;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .formulario-docente .btn-outline-secondary:hover {
+            background-color: #dfe6e9;
+        }
+
     .formulario-docente .text-danger {
         color: #e74c3c;
         font-size: 0.9rem;
+        margin-top: 0.2rem;
+        display: block;
+    }
+
+    .formulario-docente button[type="submit"],
+    .formulario-docente .btn-secondary {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
     }
 
     .formulario-docente button[type="submit"] {
         background-color: #2c3e50;
         color: white;
-        padding: 0.7rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
         transition: background-color 0.2s ease-in-out;
     }
 
         .formulario-docente button[type="submit"]:hover {
             background-color: #34495e;
+        }
+
+    .formulario-docente .btn-secondary {
+        background-color: #bdc3c7;
+        color: #2c3e50;
+        margin-left: 0.5rem;
+    }
+
+        .formulario-docente .btn-secondary:hover {
+            background-color: #95a5a6;
         }
 
 /* Para que el contenido no quede debajo del sidebar */

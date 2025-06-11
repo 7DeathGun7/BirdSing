@@ -1,0 +1,124 @@
+/* ===== Estilos para el Formulario de Registro de Tutor ===== */
+
+body {
+    background-color: #ecf0f1;
+    font-family: Arial, sans-serif;
+}
+
+h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.formulario-tutor {
+    background-color: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 800px;
+}
+
+    .formulario-tutor div {
+        margin-bottom: 1.5rem;
+    }
+
+    .formulario-tutor label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #34495e;
+    }
+
+    .formulario-tutor input[type="text"],
+    .formulario-tutor input[type="email"],
+    .formulario-tutor input[type="password"],
+    .formulario-tutor input[type="tel"],
+    .formulario-tutor input[type="search"],
+    .formulario-tutor input[type="number"],
+    .formulario-tutor input[type="date"],
+    .formulario-tutor input:not([type="submit"]),
+    .formulario-tutor .form-control {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
+
+        .formulario-tutor input:focus,
+        .formulario-tutor .form-control:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
+#map {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    height: 300px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Grupo de botones */
+.formulario-tutor .button-group-tutor {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+/* Botones uniformes */
+.formulario-tutor button[type="submit"],
+.formulario-tutor .btn-secondary {
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.formulario-tutor button[type="submit"] {
+    background-color: #2c3e50;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .formulario-tutor button[type="submit"]:hover {
+        background-color: #34495e;
+    }
+
+.formulario-tutor .btn-secondary {
+    background-color: #bdc3c7;
+    color: #2c3e50;
+    margin-left: 0.5rem;
+}
+
+    .formulario-tutor .btn-secondary:hover {
+        background-color: #95a5a6;
+    }
+
+/* Validaciones */
+.text-danger {
+    font-size: 0.9rem;
+    color: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .formulario-tutor {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+        .formulario-tutor .button-group-tutor {
+            flex-direction: column;
+        }
+
+        .formulario-tutor .btn {
+            width: 100%;
+        }
+}

@@ -41,6 +41,8 @@ namespace BirdSing.Models
 
         [StringLength(50)]
         public string? TipoAviso { get; set; }
+
+        public bool Activo { get; set; } = true;
     }
 
 }

@@ -1,0 +1,106 @@
+﻿/* ===== Estilos para el formulario de Actualización de Alumno ===== */
+
+form.formulario-actualizacion-alumno {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    max-width: 700px;
+    font-family: Arial, sans-serif;
+}
+
+    form.formulario-actualizacion-alumno h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        font-weight: bold;
+    }
+
+    form.formulario-actualizacion-alumno div {
+        margin-bottom: 1rem;
+    }
+
+    form.formulario-actualizacion-alumno label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+        color: #2c3e50;
+    }
+
+    form.formulario-actualizacion-alumno input,
+    form.formulario-actualizacion-alumno select {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    form.formulario-actualizacion-alumno .text-danger {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    form.formulario-actualizacion-alumno button[type="submit"],
+    form.formulario-actualizacion-alumno a.btn-secondary {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    form.formulario-actualizacion-alumno button[type="submit"] {
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+        form.formulario-actualizacion-alumno button[type="submit"]:hover {
+            background-color: #219150;
+        }
+
+    form.formulario-actualizacion-alumno a.btn-secondary {
+        background-color: #bdc3c7;
+        color: #2c3e50;
+        margin-left: 1rem;
+    }
+
+        form.formulario-actualizacion-alumno a.btn-secondary:hover {
+            background-color: #95a5a6;
+        }
+
+/* Para evitar que el contenido se oculte detrás del sidebar */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    form.formulario-actualizacion-alumno {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+        form.formulario-actualizacion-alumno button[type="submit"],
+        form.formulario-actualizacion-alumno a.btn-secondary {
+            display: block;
+            width: 100%;
+            margin: 0 0 0.5rem 0;
+        }
+}

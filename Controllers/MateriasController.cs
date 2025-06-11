@@ -12,6 +12,7 @@ namespace BirdSing.Controllers
     public class MateriasController : Controller
     {
         private readonly ApplicationDbContext _context;
+
         public MateriasController(ApplicationDbContext context)
         {
             _context = context;
@@ -20,7 +21,6 @@ namespace BirdSing.Controllers
         // GET: /Materias/ListaMaterias
         public IActionResult ListaMaterias()
         {
-            // Incluimos el Grado para poder mostrar su nombre en la vista
             var materias = _context.Materias
                 .Include(m => m.Grado)
                 .ToList();
@@ -28,7 +28,6 @@ namespace BirdSing.Controllers
         }
 
         // GET: /Materias/RegistroMateria
-        [HttpGet]
         public IActionResult RegistroMateria()
         {
             CargarGradosEnViewBag();
@@ -36,12 +35,24 @@ namespace BirdSing.Controllers
         }
 
         // POST: /Materias/RegistroMateria
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public IActionResult RegistroMateria(Materia model)
         {
             if (!ModelState.IsValid)
             {
+                CargarGradosEnViewBag();
+                return View(model);
+            }
+
+            // Validación: no permitir nombre repetido en el mismo grado
+            bool existe = _context.Materias.Any(m =>
+                m.NombreMateria == model.NombreMateria &&
+                m.IdGrado == model.IdGrado &&
+                m.Activo);
+
+            if (existe)
+            {
+                ModelState.AddModelError("NombreMateria", "Esta materia ya existe para el grado seleccionado.");
                 CargarGradosEnViewBag();
                 return View(model);
             }
@@ -51,24 +62,40 @@ namespace BirdSing.Controllers
             return RedirectToAction(nameof(ListaMaterias));
         }
 
+
         // GET: /Materias/ActualizarMateria/5
-        [HttpGet]
         public IActionResult ActualizarMateria(int id)
         {
-            var materia = _context.Materias.Find(id);
-            if (materia == null) return NotFound();
+            var materia = _context.Materias
+                .Include(m => m.Grado)
+                .FirstOrDefault(m => m.IdMateria == id);
+            if (materia == null)
+                return NotFound();
 
             CargarGradosEnViewBag();
             return View(materia);
         }
 
         // POST: /Materias/ActualizarMateria
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public IActionResult ActualizarMateria(Materia model)
         {
             if (!ModelState.IsValid)
             {
+                CargarGradosEnViewBag();
+                return View(model);
+            }
+
+            //  Validación: no permitir duplicados al actualizar
+            bool duplicado = _context.Materias.Any(m =>
+                m.IdMateria != model.IdMateria &&
+                m.NombreMateria == model.NombreMateria &&
+                m.IdGrado == model.IdGrado &&
+                m.Activo);
+
+            if (duplicado)
+            {
+                ModelState.AddModelError("NombreMateria", "Ya existe otra materia con ese nombre para el grado seleccionado.");
                 CargarGradosEnViewBag();
                 return View(model);
             }
@@ -79,27 +106,54 @@ namespace BirdSing.Controllers
         }
 
         // GET: /Materias/EliminarMateria/5
-        public IActionResult EliminarMateria(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarMateria(int id)
         {
-            var materia = _context.Materias.Find(id);
-            if (materia != null)
-            {
-                _context.Materias.Remove(materia);
-                _context.SaveChanges();
-            }
+            var materia = await _context.Materias.FindAsync(id);
+            if (materia == null) return NotFound();
+
+            materia.Activo = false;
+
+            // Elimina asociaciones
+            var md = _context.MateriasDocentes.Where(x => x.IdMateria == id);
+            var gm = _context.GrupoMaterias.Where(x => x.IdMateria == id);
+            var avisos = _context.Avisos.Where(a => a.IdMateria == id);
+
+            foreach (var aviso in avisos) aviso.Activo = false;
+
+            _context.MateriasDocentes.RemoveRange(md);
+            _context.GrupoMaterias.RemoveRange(gm);
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListaMaterias));
         }
 
-        // Helper privado para poblar el dropdown de grados
+
+        // Helper privado para poblar el dropdown de Grados
         private void CargarGradosEnViewBag()
         {
-            ViewBag.Grados = _context.Grados
-                .Select(g => new SelectListItem
+            var grados = _context.Grados.ToList();
+            ViewBag.Grados = grados
+                .Select(g => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
                 {
                     Value = g.IdGrado.ToString(),
                     Text = g.Grados
                 })
                 .ToList();
+        }
+        [HttpGet]
+        public IActionResult ObtenerPorGrado(int idGrado)
+        {
+            var materias = _context.Materias
+                .Where(m => m.IdGrado == idGrado && m.Activo)
+                .Select(m => new SelectListItem
+                {
+                    Value = m.IdMateria.ToString(),
+                    Text = m.NombreMateria
+                }).ToList();
+
+            return Json(materias);
         }
     }
 }

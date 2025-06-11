@@ -4,12 +4,18 @@
     ViewData["Title"] = "Registrar Materia";
 }
 
+<link rel="stylesheet" href="~/css/RegistrarMateria.css" />
+
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="RegistroMateria" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* Sólo mostramos el summary si el ModelState NO es válido *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
 
     <div class="mb-3">
         <label asp-for="IdGrado" class="form-label">Grado</label>

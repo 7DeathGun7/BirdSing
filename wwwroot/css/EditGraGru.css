@@ -1,0 +1,107 @@
+﻿/* ===== Estilos para la vista de edición de grado y grupos ===== */
+
+.editar-grado-grupos {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(44, 62, 80, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+    .editar-grado-grupos h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+
+    .editar-grado-grupos .form-group label,
+    .editar-grado-grupos h4 {
+        color: #34495e;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+
+    .editar-grado-grupos input.form-control {
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-top: 0.5rem;
+    }
+
+        .editar-grado-grupos input.form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+    .editar-grado-grupos .form-row {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+        .editar-grado-grupos .form-row input[type="text"] {
+            flex: 1;
+        }
+
+    .editar-grado-grupos .btn-danger {
+        background-color: #e74c3c;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+    }
+
+        .editar-grado-grupos .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+    .editar-grado-grupos .btn-primary {
+        background-color: #3498db;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .editar-grado-grupos .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+    .editar-grado-grupos .btn-secondary {
+        background-color: #7f8c8d;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+        margin-left: 1rem;
+    }
+
+        .editar-grado-grupos .btn-secondary:hover {
+            background-color: #5d6d70;
+        }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .editar-grado-grupos .form-row {
+        flex-direction: column;
+    }
+
+    .editar-grado-grupos .btn-danger {
+        width: 100%;
+    }
+
+    .editar-grado-grupos .btn-secondary,
+    .editar-grado-grupos .btn-primary {
+        width: 100%;
+        margin: 0.5rem 0 0 0;
+    }
+}

@@ -1,63 +1,63 @@
-using BirdSing.Data;
+﻿using BirdSing.Data;
+using BirdSing.Models;
+using BirdSing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configurar DbContext con SQL Server
+// 1) DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.CommandTimeout(180)
+    )
+);
 
-// 2. Configurar Authentication + Cookie
+// 2) Cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.Cookie.Name = "BirdSingAuth";
-        options.Cookie.HttpOnly = true;
-        options.ExpireTimeSpan = TimeSpan.FromHours(4);
-        options.SlidingExpiration = true;
-
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// 3. (Opcional) Configurar Authorization policies por nombre de rol
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Administrador"));
-    options.AddPolicy("DocenteOnly", policy => policy.RequireRole("Docente"));
-    options.AddPolicy("TutorOnly", policy => policy.RequireRole("Tutor"));
-});
+// 3) Configuración de Twilio
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+builder.Services.AddTransient<ITwilioService, TwilioService>();
 
-// 4. Agregar MVC
+// 4) MVC + Sesiones
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// 5. Migraciones y seed al arranque
+// 5) Migraciones automáticas + seed
 using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    ctx.Database.Migrate();             // Aplica migraciones pendientes
-    DbInitializer.Initialize(ctx);      // Siembra roles y usuario Admin
+    ctx.Database.Migrate();
+    DbInitializer.Initialize(ctx);
 }
 
-// 6. Middleware de manejo de errores y seguridad
+// 6) Pipeline estándar
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 7. Ruta por defecto
+// ✅ Agregado para soportar sesiones
+app.UseSession();
+
+// 7) Routing MVC
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

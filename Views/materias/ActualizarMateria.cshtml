@@ -4,11 +4,19 @@
     ViewData["Title"] = "Actualizar Materia";
 }
 
+<link rel="stylesheet" href="~/css/ActualizarMaterias.css" />
+
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="ActualizarMateria" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+    {
+        <div class="alert alert-danger">
+            @ViewData.ModelState[""].Errors.First().ErrorMessage
+        </div>
+    }
+
 
     <!-- Campo oculto con el Id para que el binder lo reciba -->
     <input asp-for="IdMateria" type="hidden" />

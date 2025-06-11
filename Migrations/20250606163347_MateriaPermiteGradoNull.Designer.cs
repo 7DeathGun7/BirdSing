@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdSing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250407214247_UpdateDatabaseSchema")]
-    partial class UpdateDatabaseSchema
+    [Migration("20250606163347_MateriaPermiteGradoNull")]
+    partial class MateriaPermiteGradoNull
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,9 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatriculaAlumno"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ApellidoMaterno")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -43,6 +46,9 @@ namespace BirdSing.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("CuentaPausada")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Curp")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -50,10 +56,13 @@ namespace BirdSing.Migrations
                     b.Property<DateTime?>("FechaNacimiento")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdGrado")
+                    b.Property<int?>("IdGrado")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdGrupo")
+                    b.Property<int?>("IdGrupo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdUsuario")
                         .HasColumnType("int");
 
                     b.Property<string>("NombreAlumno")
@@ -61,11 +70,16 @@ namespace BirdSing.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<decimal>("Saldo")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("MatriculaAlumno");
 
                     b.HasIndex("IdGrado");
 
                     b.HasIndex("IdGrupo");
+
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Alumnos");
                 });
@@ -80,6 +94,12 @@ namespace BirdSing.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("AlumnoMatriculaAlumno")
+                        .HasColumnType("int");
+
                     b.Property<string>("Parentesco")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -87,9 +107,46 @@ namespace BirdSing.Migrations
 
                     b.HasKey("MatriculaAlumno", "IdTutor");
 
+                    b.HasIndex("AlumnoMatriculaAlumno");
+
                     b.HasIndex("IdTutor");
 
                     b.ToTable("AlumnosTutores");
+                });
+
+            modelBuilder.Entity("BirdSing.Models.AsignacionDocente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IdDocente")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdGrado")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdGrupo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdMateria")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdGrupo");
+
+                    b.HasIndex("IdMateria");
+
+                    b.HasIndex("IdDocente", "IdGrupo", "IdMateria")
+                        .IsUnique();
+
+                    b.ToTable("AsignacionDocentes");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Aviso", b =>
@@ -100,11 +157,8 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AlumnoMatriculaAlumno")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DocenteIdDocente")
-                        .HasColumnType("int");
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
@@ -124,9 +178,6 @@ namespace BirdSing.Migrations
                     b.Property<bool>("Leido")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MateriaIdMateria")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MatriculaAlumno")
                         .HasColumnType("int");
 
@@ -142,14 +193,7 @@ namespace BirdSing.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("TutorIdTutor")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AlumnoMatriculaAlumno");
-
-                    b.HasIndex("DocenteIdDocente");
 
                     b.HasIndex("IdDocente");
 
@@ -159,11 +203,7 @@ namespace BirdSing.Migrations
 
                     b.HasIndex("IdTutor");
 
-                    b.HasIndex("MateriaIdMateria");
-
                     b.HasIndex("MatriculaAlumno");
-
-                    b.HasIndex("TutorIdTutor");
 
                     b.ToTable("Avisos");
                 });
@@ -175,6 +215,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDocente"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("IdUsuario")
                         .HasColumnType("int");
@@ -190,6 +233,37 @@ namespace BirdSing.Migrations
                     b.ToTable("Docentes");
                 });
 
+            modelBuilder.Entity("BirdSing.Models.DocenteGrupo", b =>
+                {
+                    b.Property<int>("IdDocente")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("IdGrado")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("IdGrupo")
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("GrupoIdGrupo")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdDocente", "IdGrado", "IdGrupo");
+
+                    b.HasIndex("GrupoIdGrupo");
+
+                    b.HasIndex("IdGrado");
+
+                    b.HasIndex("IdGrupo");
+
+                    b.ToTable("DocentesGrupos");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Grado", b =>
                 {
                     b.Property<int>("IdGrado")
@@ -197,6 +271,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrado"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Grados")
                         .HasMaxLength(50)
@@ -215,6 +292,9 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupo"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Grupos")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -229,6 +309,26 @@ namespace BirdSing.Migrations
                     b.ToTable("Grupos");
                 });
 
+            modelBuilder.Entity("BirdSing.Models.GrupoMateria", b =>
+                {
+                    b.Property<int>("IdGrupo")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("IdMateria")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.HasKey("IdGrupo", "IdMateria");
+
+                    b.HasIndex("IdMateria");
+
+                    b.ToTable("GrupoMaterias");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Materia", b =>
                 {
                     b.Property<int>("IdMateria")
@@ -237,7 +337,10 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMateria"));
 
-                    b.Property<int>("IdGrado")
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("IdGrado")
                         .HasColumnType("int");
 
                     b.Property<string>("NombreMateria")
@@ -259,6 +362,9 @@ namespace BirdSing.Migrations
 
                     b.Property<int>("IdMateria")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -299,7 +405,15 @@ namespace BirdSing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTutor"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Coordenadas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Direccion")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -307,8 +421,8 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Telefono")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdTutor");
 
@@ -324,6 +438,9 @@ namespace BirdSing.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ApellidoMaterno")
                         .IsRequired()
@@ -360,27 +477,64 @@ namespace BirdSing.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("CompraTutor", b =>
+                {
+                    b.Property<int>("IdCompraTutor")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompraTutor"));
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdAlumno")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdCompraTutor");
+
+                    b.HasIndex("IdAlumno");
+
+                    b.ToTable("CompraTutores");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Alumno", b =>
                 {
                     b.HasOne("BirdSing.Models.Grado", "Grado")
                         .WithMany()
                         .HasForeignKey("IdGrado")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BirdSing.Models.Grupo", "Grupo")
                         .WithMany("Alumnos")
                         .HasForeignKey("IdGrupo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BirdSing.Models.Usuario", "Usuario")
+                        .WithMany("Alumnos")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Grado");
 
                     b.Navigation("Grupo");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("BirdSing.Models.AlumnoTutor", b =>
                 {
+                    b.HasOne("BirdSing.Models.Alumno", null)
+                        .WithMany("Tutores")
+                        .HasForeignKey("AlumnoMatriculaAlumno");
+
                     b.HasOne("BirdSing.Models.Tutor", "Tutor")
                         .WithMany("AlumnosTutores")
                         .HasForeignKey("IdTutor")
@@ -398,52 +552,63 @@ namespace BirdSing.Migrations
                     b.Navigation("Tutor");
                 });
 
-            modelBuilder.Entity("BirdSing.Models.Aviso", b =>
+            modelBuilder.Entity("BirdSing.Models.AsignacionDocente", b =>
                 {
-                    b.HasOne("BirdSing.Models.Alumno", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("AlumnoMatriculaAlumno");
-
-                    b.HasOne("BirdSing.Models.Docente", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("DocenteIdDocente");
-
                     b.HasOne("BirdSing.Models.Docente", "Docente")
-                        .WithMany()
+                        .WithMany("Asignaciones")
                         .HasForeignKey("IdDocente")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Grupo", "Grupo")
-                        .WithMany()
+                        .WithMany("Asignaciones")
                         .HasForeignKey("IdGrupo")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Materia", "Materia")
-                        .WithMany()
+                        .WithMany("Asignaciones")
+                        .HasForeignKey("IdMateria")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Docente");
+
+                    b.Navigation("Grupo");
+
+                    b.Navigation("Materia");
+                });
+
+            modelBuilder.Entity("BirdSing.Models.Aviso", b =>
+                {
+                    b.HasOne("BirdSing.Models.Docente", "Docente")
+                        .WithMany("Avisos")
+                        .HasForeignKey("IdDocente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BirdSing.Models.Grupo", "Grupo")
+                        .WithMany("Avisos")
+                        .HasForeignKey("IdGrupo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BirdSing.Models.Materia", "Materia")
+                        .WithMany("Avisos")
                         .HasForeignKey("IdMateria")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BirdSing.Models.Tutor", "Tutor")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("IdTutor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BirdSing.Models.Materia", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("MateriaIdMateria");
-
                     b.HasOne("BirdSing.Models.Alumno", "Alumno")
-                        .WithMany()
+                        .WithMany("Avisos")
                         .HasForeignKey("MatriculaAlumno")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("BirdSing.Models.Tutor", null)
-                        .WithMany("Avisos")
-                        .HasForeignKey("TutorIdTutor");
 
                     b.Navigation("Alumno");
 
@@ -467,10 +632,41 @@ namespace BirdSing.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("BirdSing.Models.DocenteGrupo", b =>
+                {
+                    b.HasOne("BirdSing.Models.Grupo", null)
+                        .WithMany("DocentesGrupos")
+                        .HasForeignKey("GrupoIdGrupo");
+
+                    b.HasOne("BirdSing.Models.Docente", "Docente")
+                        .WithMany("GrupoAsignados")
+                        .HasForeignKey("IdDocente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BirdSing.Models.Grado", "Grado")
+                        .WithMany()
+                        .HasForeignKey("IdGrado")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BirdSing.Models.Grupo", "Grupo")
+                        .WithMany()
+                        .HasForeignKey("IdGrupo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Docente");
+
+                    b.Navigation("Grado");
+
+                    b.Navigation("Grupo");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Grupo", b =>
                 {
                     b.HasOne("BirdSing.Models.Grado", "Grado")
-                        .WithMany()
+                        .WithMany("Grupos")
                         .HasForeignKey("IdGrado")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -478,13 +674,31 @@ namespace BirdSing.Migrations
                     b.Navigation("Grado");
                 });
 
+            modelBuilder.Entity("BirdSing.Models.GrupoMateria", b =>
+                {
+                    b.HasOne("BirdSing.Models.Grupo", "Grupo")
+                        .WithMany("GrupoMaterias")
+                        .HasForeignKey("IdGrupo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BirdSing.Models.Materia", "Materia")
+                        .WithMany("GrupoMaterias")
+                        .HasForeignKey("IdMateria")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Grupo");
+
+                    b.Navigation("Materia");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Materia", b =>
                 {
                     b.HasOne("BirdSing.Models.Grado", "Grado")
                         .WithMany()
                         .HasForeignKey("IdGrado")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Grado");
                 });
@@ -530,28 +744,64 @@ namespace BirdSing.Migrations
                     b.Navigation("Rol");
                 });
 
+            modelBuilder.Entity("CompraTutor", b =>
+                {
+                    b.HasOne("BirdSing.Models.Alumno", "Alumno")
+                        .WithMany("ComprasTutor")
+                        .HasForeignKey("IdAlumno")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Alumno");
+                });
+
             modelBuilder.Entity("BirdSing.Models.Alumno", b =>
                 {
                     b.Navigation("AlumnosTutores");
 
                     b.Navigation("Avisos");
+
+                    b.Navigation("ComprasTutor");
+
+                    b.Navigation("Tutores");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Docente", b =>
                 {
+                    b.Navigation("Asignaciones");
+
                     b.Navigation("Avisos");
 
+                    b.Navigation("GrupoAsignados");
+
                     b.Navigation("MateriasDocentes");
+                });
+
+            modelBuilder.Entity("BirdSing.Models.Grado", b =>
+                {
+                    b.Navigation("Grupos");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Grupo", b =>
                 {
                     b.Navigation("Alumnos");
+
+                    b.Navigation("Asignaciones");
+
+                    b.Navigation("Avisos");
+
+                    b.Navigation("DocentesGrupos");
+
+                    b.Navigation("GrupoMaterias");
                 });
 
             modelBuilder.Entity("BirdSing.Models.Materia", b =>
                 {
+                    b.Navigation("Asignaciones");
+
                     b.Navigation("Avisos");
+
+                    b.Navigation("GrupoMaterias");
 
                     b.Navigation("MateriasDocentes");
                 });
@@ -561,6 +811,11 @@ namespace BirdSing.Migrations
                     b.Navigation("AlumnosTutores");
 
                     b.Navigation("Avisos");
+                });
+
+            modelBuilder.Entity("BirdSing.Models.Usuario", b =>
+                {
+                    b.Navigation("Alumnos");
                 });
 #pragma warning restore 612, 618
         }

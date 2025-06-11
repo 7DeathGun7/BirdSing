@@ -1,0 +1,107 @@
+﻿/* ===== Estilos para la tabla de alumnos en el panel admin ===== */
+
+.tabla-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+    .tabla-alumnos th,
+    .tabla-alumnos td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .tabla-alumnos thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .tabla-alumnos tbody tr:hover {
+        background-color: #ecf0f1;
+    }
+
+    /* Apply common button styles from your registration form button */
+    .tabla-alumnos .btn { /* Target all Bootstrap buttons within the table */
+        padding: 0.7rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        border: none; /* Remove default Bootstrap border */
+        cursor: pointer;
+        color: white; /* Default text color for all these buttons */
+        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    }
+
+    /* Specific colors for buttons within the table */
+    .tabla-alumnos .btn-primary {
+        background-color: #27ae60; /* Green for "Actualizar" */
+    }
+
+        .tabla-alumnos .btn-primary:hover {
+            background-color: #219150;
+        }
+
+    .tabla-alumnos .btn-danger {
+        background-color: #e74c3c; /* Red for "Eliminar" */
+    }
+
+        .tabla-alumnos .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+/* Styles for the "Registrar Nuevo Alumno" button (outside the table) */
+/* It gets the same styling as the primary/success buttons in the table */
+.btn-success {
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem; /* This margin is appropriate for a standalone button */
+    background-color: #27ae60;
+    color: white;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+    .btn-success:hover {
+        background-color: #219150;
+    }
+
+/* Ajustes generales para el contenido principal */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .tabla-alumnos {
+        font-size: 0.9rem;
+    }
+
+        /* Make buttons full width and stack them on small screens */
+        .tabla-alumnos .btn {
+            width: 100%;
+            margin-left: 0 !important; /* Override Bootstrap's ms-1 to stack buttons */
+            margin-top: 0.5rem; /* Add spacing between stacked buttons */
+            display: block; /* Ensure they stack */
+        }
+
+    /* Adjust the new student button to be full width on small screens too */
+    .btn-success {
+        width: 100%;
+        /* margin-top already defined at 1rem for larger screens, keep it */
+    }
+}

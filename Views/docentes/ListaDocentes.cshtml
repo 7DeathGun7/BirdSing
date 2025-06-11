@@ -4,11 +4,12 @@
     Layout = "_LayoutAdmin";
 }
 
-<link rel="stylesheet" href="~/css/ListaDocentes.css">
+<link rel="stylesheet" href="~/css/ListaDocentes.css" />
 
 <h2>Lista de Docentes</h2>
 
-<table class="table">
+<table class="tabla-docentes">
+
     <thead>
         <tr>
             <th>Nombre del Usuario</th>
@@ -36,3 +37,9 @@
         }
     </tbody>
 </table>
+
+<div class="contenedor-boton-registrar">
+    <a asp-controller="Docentes" asp-action="RegistroDocente" class="btn btn-success">
+        + Registrar Nuevo Docente
+    </a>
+</div>

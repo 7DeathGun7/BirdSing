@@ -1,57 +1,159 @@
 ﻿@model BirdSing.Models.ModelosViews.UsuarioTutorViewModel
-
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Registrar Tutor";
 }
 
-<link rel="stylesheet" href="~/css/RegistroTutor.css">
+<link rel="stylesheet" href="~/css/RegistroT.css" />
 
-<h2>Registrar Tutor</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="RegistroTutor" method="post" class="formulario-tutor">
-
     <h3>Datos del Usuario</h3>
-    <div>
-        <label asp-for="Usuario.NombreUsuario"></label>
-        <input asp-for="Usuario.NombreUsuario" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.NombreUsuario" class="control-label">Nombre de Usuario</label>
+        <input asp-for="Usuario.NombreUsuario" class="form-control @(ViewData.ModelState["Usuario.NombreUsuario"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: jose123" />
         <span asp-validation-for="Usuario.NombreUsuario" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoPaterno"></label>
-        <input asp-for="Usuario.ApellidoPaterno" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoPaterno" class="control-label">Apellido Paterno</label>
+        <input asp-for="Usuario.ApellidoPaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoPaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: Martínez" />
         <span asp-validation-for="Usuario.ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.ApellidoMaterno"></label>
-        <input asp-for="Usuario.ApellidoMaterno" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.ApellidoMaterno" class="control-label">Apellido Materno</label>
+        <input asp-for="Usuario.ApellidoMaterno" class="form-control @(ViewData.ModelState["Usuario.ApellidoMaterno"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: López" />
         <span asp-validation-for="Usuario.ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.Email"></label>
-        <input asp-for="Usuario.Email" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.Email" class="control-label">Correo electrónico</label>
+        <input asp-for="Usuario.Email" class="form-control @(ViewData.ModelState["Usuario.Email"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: ejemplo@gmail.com" />
         <span asp-validation-for="Usuario.Email" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Usuario.Password"></label>
-        <input asp-for="Usuario.Password" type="password" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Usuario.Password" class="control-label"></label>
+        <div class="input-group">
+            <input asp-for="Usuario.Password"
+                   class="form-control @(ViewData.ModelState["Usuario.Password"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                   id="passwordInput"
+                   type="password" />
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">👁</button>
+        </div>
         <span asp-validation-for="Usuario.Password" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Usuario.IdRol">Rol</label>
-        <select asp-for="Usuario.IdRol" class="form-control" asp-items="ViewBag.Roles"></select>
-    </div>
+
     <h3>Datos del Tutor</h3>
-    <div>
-        <label asp-for="Tutor.Telefono"></label>
-        <input asp-for="Tutor.Telefono" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Tutor.Telefono" class="control-label">Teléfono</label>
+        <input asp-for="Tutor.Telefono" type="tel" class="form-control @(ViewData.ModelState["Tutor.Telefono"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ej: 9831234567" maxlength="10" pattern="\d{10}" />
         <span asp-validation-for="Tutor.Telefono" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Tutor.Direccion"></label>
-        <input asp-for="Tutor.Direccion" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Tutor.Direccion" class="form-label">Dirección</label>
+        <input asp-for="Tutor.Direccion" class="form-control @(ViewData.ModelState["Tutor.Direccion"]?.Errors.Count > 0 ? "is-invalid" : "")" id="direccionInput"
+               placeholder="Ej: Calle Sergio Butrón Casas, Chetumal, Quintana Roo, México" />
         <span asp-validation-for="Tutor.Direccion" class="text-danger"></span>
     </div>
-    <div>
+    <input id="cordenadasInput" name="Tutor.Coordenadas" type="hidden" />
+
+
+    <div id="map" style="height: 400px;" class="mb-3"></div>
+
+    <div class="mt-4">
         <button type="submit">Registrar</button>
+    <a asp-action="ListaTutores" class="btn-secondary">Cancelar</a>
     </div>
+
 </form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById("passwordInput");
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        const mapaCentro = [18.5145, -88.2996];
+        const map = L.map('map').setView(mapaCentro, 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const marker = L.marker(mapaCentro, { draggable: true }).addTo(map);
+
+        const direccionInput = document.getElementById("direccionInput");
+        const cordenadasInput = document.getElementById("cordenadasInput");
+
+        function actualizarCoordenadas(lat, lng) {
+            cordenadasInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+        }
+
+        if (direccionInput.value.length > 5) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccionInput.value)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 17);
+                        marker.setLatLng([lat, lon]);
+                        actualizarCoordenadas(lat, lon);
+                    }
+                });
+        }
+
+        direccionInput.addEventListener("input", function () {
+            const query = this.value;
+            if (query.length < 3) return;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 17);
+                        marker.setLatLng([lat, lon]);
+                        direccionInput.value = data[0].display_name;
+                        actualizarCoordenadas(lat, lon);
+                    }
+                });
+        });
+
+        map.on("click", function (e) {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng([lat, lng]);
+            actualizarCoordenadas(lat, lng);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
+                });
+        });
+
+        marker.on("dragend", function () {
+            const { lat, lng } = marker.getLatLng();
+            actualizarCoordenadas(lat, lng);
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    direccionInput.value = data.display_name ?? `Lat: ${lat}, Lng: ${lng}`;
+                });
+        });
+    </script>
+}

@@ -41,34 +41,84 @@ namespace BirdSing.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RegistroDocente(UsuarioDocenteViewModel model)
         {
+            // Evita errores de validación si el rol viene oculto
+            ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.IdRol));
+
+            // Validar duplicación de correo
+            if (_context.Usuarios.Any(u => u.Email == model.Usuario.Email))
+            {
+                ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado.");
+            }
+
+            // Validar duplicación de matrícula
+            if (_context.Docentes.Any(d => d.MatriculaSEP == model.Docente.MatriculaSEP))
+                ModelState.AddModelError("Docente.MatriculaSEP", "Esta matrícula ya está registrada.");
+            
+
             if (ModelState.IsValid)
             {
                 using var tx = _context.Database.BeginTransaction();
                 try
                 {
-                    // 1) Hash y guardar Usuario
+                    // Asignar rol Docente
+                    var rolDocente = _context.Roles.FirstOrDefault(r => r.Nombre == "Docente");
+                    if (rolDocente == null)
+                    {
+                        ModelState.AddModelError("", "No se encontró el rol Docente.");
+                        CargarSoloRolDocente();
+                        return View(model);
+                    }
+                    model.Usuario.IdRol = rolDocente.IdRol;
+                    // Guardar Usuario con contraseña hasheada
                     model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
                     _context.Usuarios.Add(model.Usuario);
                     _context.SaveChanges();
 
-                    // 2) Vincular y guardar Docente
+                    // 🔍 Verificar si se generó el Id
+                    if (model.Usuario.IdUsuario == 0)
+                    {
+                        tx.Rollback();
+                        ModelState.AddModelError("", "No se pudo generar el Id del Usuario.");
+                        return View(model);
+                    }
+
+                    // Diagnóstico: revisar si se guardó el Usuario
+                    Console.WriteLine("✅ Usuario guardado con Id: " + model.Usuario.IdUsuario);
+
+                    // Guardar Docente vinculado
                     model.Docente.IdUsuario = model.Usuario.IdUsuario;
+                    Console.WriteLine("➡️  Se asignará al Docente el ID de usuario: " + model.Docente.IdUsuario);
                     _context.Docentes.Add(model.Docente);
                     _context.SaveChanges();
+
+                    Console.WriteLine("✅ Docente guardado correctamente.");
+
 
                     tx.Commit();
                     return RedirectToAction(nameof(ListaDocentes));
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     tx.Rollback();
                     ModelState.AddModelError("", "Error al registrar Docente: " + ex.Message);
                 }
             }
 
+            // DEBUG: Mostrar errores del modelo en consola
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Error en '{key}': {error.ErrorMessage}");
+                }
+            }
+
             CargarSoloRolDocente();
             return View(model);
         }
+
+
 
         // GET: /Docentes/ActualizarDocente/5
         [HttpGet]
@@ -100,6 +150,17 @@ namespace BirdSing.Controllers
             // No incluimos contraseña en el formulario de edición:
             ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.Password));
 
+            bool correoDuplicado = _context.Usuarios
+       .Any(u => u.Email == model.Usuario.Email && u.IdUsuario != model.Usuario.IdUsuario);
+            if (correoDuplicado)
+                ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado por otro usuario.");
+
+            // Validar duplicación de matrícula (por otro docente)
+            bool matriculaDuplicada = _context.Docentes
+                .Any(d => d.MatriculaSEP == model.Docente.MatriculaSEP && d.IdDocente != model.Docente.IdDocente);
+            if (matriculaDuplicada)
+                ModelState.AddModelError("Docente.MatriculaSEP", "Esta matrícula ya está registrada por otro docente.");
+
             if (ModelState.IsValid)
             {
                 var usuarioExistente = _context.Usuarios.Find(model.Usuario.IdUsuario);
@@ -128,17 +189,24 @@ namespace BirdSing.Controllers
         }
 
         // GET: /Docentes/EliminarDocente/5
-        public IActionResult EliminarDocente(int id)
+        public async Task<IActionResult> EliminarDocente(int id)
         {
             var docente = _context.Docentes
                 .Include(d => d.Usuario)
                 .FirstOrDefault(d => d.IdDocente == id);
+
             if (docente != null)
             {
-                _context.Docentes.Remove(docente);
-                _context.Usuarios.Remove(docente.Usuario);
-                _context.SaveChanges();
+                docente.Activo = false;
+                docente.Usuario!.Activo = false;
+
+                var avisos = _context.Avisos.Where(a => a.IdDocente == docente.IdDocente);
+                foreach (var aviso in avisos)
+                    aviso.Activo = false;
+
+                await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(ListaDocentes));
         }
 

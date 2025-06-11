@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BirdSing.Models;
 
 namespace BirdSing.Models
 {
@@ -8,6 +9,11 @@ namespace BirdSing.Models
     {
         [Key]
         public int MatriculaAlumno { get; set; }
+
+        // -> NUEVO: FK a Usuario
+        [ForeignKey("Usuario")]
+        public int? IdUsuario { get; set; }
+        public Usuario? Usuario { get; set; } = null!;
 
         [Required]
         [StringLength(100)]
@@ -27,15 +33,27 @@ namespace BirdSing.Models
         public string? Curp { get; set; }
 
         [ForeignKey("Grado")]
-        public int IdGrado { get; set; }
+        public int? IdGrado { get; set; }
         public Grado? Grado { get; set; }
 
         [ForeignKey("Grupo")]
-        public int IdGrupo { get; set; }
+        public int? IdGrupo { get; set; }
         public Grupo? Grupo { get; set; }
+
+
+        //Coperativa
+
+        public decimal Saldo { get; set; } = 0;
+
+        public bool CuentaPausada { get; set; } = false;
+
+
+        public bool Activo { get; set; } = true;
 
         public ICollection<AlumnoTutor> AlumnosTutores { get; set; } = new List<AlumnoTutor>();
         public ICollection<Aviso> Avisos { get; set; } = new List<Aviso>();
-    }
+        public ICollection<CompraTutor>? ComprasTutor { get; set; }
+        public ICollection<AlumnoTutor>? Tutores { get; set; }
 
+    }
 }

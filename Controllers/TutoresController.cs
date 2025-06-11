@@ -40,37 +40,39 @@ namespace BirdSing.Controllers
         // POST: Tutores/RegistroTutor
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RegistroTutor(UsuarioTutorViewModel model)
+        public async Task<IActionResult> RegistroTutor(UsuarioTutorViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                using IDbContextTransaction tx = _context.Database.BeginTransaction();
-                try
-                {
-                    // 1) Hashear y guardar el usuario
-                    model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
-                    _context.Usuarios.Add(model.Usuario);
-                    _context.SaveChanges();
-
-                    // 2) Crear tutor vinculado al usuario recién creado
-                    model.Tutor.IdUsuario = model.Usuario.IdUsuario;
-                    _context.Tutores.Add(model.Tutor);
-                    _context.SaveChanges();
-
-                    tx.Commit();
-                    return RedirectToAction(nameof(ListaTutores));
-                }
-                catch (System.Exception ex)
-                {
-                    tx.Rollback();
-                    ModelState.AddModelError(string.Empty, "Error al registrar Tutor: " + ex.Message);
-                }
+                return View(model); // Mostrar errores
             }
 
-            // Si algo falla, recargamos el dropdown y volvemos a la vista
-            CargarSoloRolTutor();
-            return View(model);
+            // Validación de correo (opcional)
+            if (_context.Usuarios.Any(u => u.Email == model.Usuario.Email))
+            {
+                ModelState.AddModelError("Usuario.Email", "El correo ya está registrado.");
+                return View(model);
+            }
+
+            // Hashear contraseña
+            model.Usuario.Password = BCrypt.Net.BCrypt.HashPassword(model.Usuario.Password);
+            model.Usuario.IdRol = 3; // Forzar Rol Tutor
+
+            _context.Usuarios.Add(model.Usuario);
+            await _context.SaveChangesAsync();
+
+            // Obtener ID del usuario insertado
+            int idUsuario = model.Usuario.IdUsuario;
+
+            model.Tutor.IdUsuario = idUsuario;
+            _context.Tutores.Add(model.Tutor);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Tutor ({model.Usuario.Email}) agregado correctamente.";
+            return RedirectToAction("ListaTutores");
+
         }
+
 
         // GET: Tutores/ActualizarTutor/5
         public IActionResult ActualizarTutor(int id)
@@ -98,11 +100,23 @@ namespace BirdSing.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ActualizarTutor(UsuarioTutorViewModel model)
         {
-            // La contraseña no se edita aquí, quitamos su validación
+            // Ignorar la validación de contraseña porque no se edita aquí
             ModelState.Remove(nameof(model.Usuario) + "." + nameof(model.Usuario.Password));
 
             if (ModelState.IsValid)
             {
+                // Verificar si el correo ya está usado por otro usuario
+                var emailDuplicado = _context.Usuarios
+                    .Any(u => u.Email == model.Usuario.Email && u.IdUsuario != model.Usuario.IdUsuario);
+
+                if (emailDuplicado)
+                {
+                    ModelState.AddModelError("Usuario.Email", "Este correo ya está registrado por otro tutor.");
+                    CargarSoloRolTutor();
+                    return View(model);
+                }
+
+                // Obtener los registros existentes
                 var tutorExistente = _context.Tutores.Find(model.Tutor.IdTutor);
                 var usuarioExistente = _context.Usuarios.Find(model.Usuario.IdUsuario);
 
@@ -119,18 +133,20 @@ namespace BirdSing.Controllers
                 // Actualizar datos del tutor
                 tutorExistente.Telefono = model.Tutor.Telefono;
                 tutorExistente.Direccion = model.Tutor.Direccion;
+                tutorExistente.Coordenadas = model.Tutor.Coordenadas;
 
                 _context.SaveChanges();
                 return RedirectToAction(nameof(ListaTutores));
             }
 
-            // Si hay errores, recargamos el dropdown y regresamos a la vista
+            // Si hay errores, recargar dropdown de rol
             CargarSoloRolTutor();
             return View(model);
         }
 
+
         // GET: Tutores/EliminarTutor/5
-        public IActionResult EliminarTutor(int id)
+        public async Task<IActionResult> EliminarTutor(int id)
         {
             var tutor = _context.Tutores
                 .Include(t => t.Usuario)
@@ -138,13 +154,14 @@ namespace BirdSing.Controllers
 
             if (tutor != null)
             {
-                _context.Tutores.Remove(tutor);
-                _context.Usuarios.Remove(tutor.Usuario);
-                _context.SaveChanges();
+                tutor.Activo = false;
+                tutor.Usuario.Activo = false;
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(ListaTutores));
         }
+
 
         // Helper: solo cargamos el rol "Tutor" en la lista desplegable
         private void CargarSoloRolTutor()

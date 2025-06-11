@@ -1,0 +1,109 @@
+﻿@model BirdSing.Models.AsignacionDocente
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Asignar Docente a Materia y Grupo";
+}
+
+<link rel="stylesheet" href="~/css/asignacion-docente.css" />
+
+<h2 class="text-center">Asignar Docente a Materia y Grupo</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Registro" method="post" class="formulario-asignacion" onsubmit="return mostrarConfirmacion()">
+
+    <div class="form-group">
+        <label asp-for="IdDocente">Docente</label>
+        <select asp-for="IdDocente" class="form-control" asp-items="ViewBag.Docentes">
+            <option value="">Seleccione un docente</option>
+        </select>
+        <span asp-validation-for="IdDocente" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdGrado">Grado</label>
+        <select asp-for="IdGrado" class="form-control" asp-items="ViewBag.Grados" id="gradoSelect">
+            <option value="">Seleccione un grado</option>
+        </select>
+        <span asp-validation-for="IdGrado" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdGrupo">Grupo</label>
+        <select asp-for="IdGrupo" class="form-control" id="grupoSelect" disabled>
+            <option value="">Seleccione un grupo</option>
+        </select>
+        <span asp-validation-for="IdGrupo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdMateria">Materia</label>
+        <select asp-for="IdMateria" class="form-control" id="materiaSelect" disabled>
+            <option value="">Seleccione una materia</option>
+        </select>
+        <span asp-validation-for="IdMateria" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Lista" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#gradoSelect').change(function () {
+                var idGrado = $(this).val();
+
+                if (!idGrado) {
+                    $('#grupoSelect').html('<option value="">Seleccione un grupo</option>').prop('disabled', true);
+                    $('#materiaSelect').html('<option value="">Seleccione una materia</option>').prop('disabled', true);
+                    return;
+                }
+
+                $.getJSON('/AsignacionDocente/ObtenerGruposPorGrado', { idGrado: idGrado }, function (grupos) {
+                    var grupoSelect = $('#grupoSelect');
+                    grupoSelect.empty().append('<option value="">Seleccione un grupo</option>');
+                    $.each(grupos, function (i, item) {
+                        grupoSelect.append('<option value="' + item.value + '">' + item.text + '</option>');
+                    });
+                    grupoSelect.prop('disabled', false);
+                });
+
+                $.getJSON('/AsignacionDocente/ObtenerMateriasPorGrado', { idGrado: idGrado }, function (materias) {
+                    var materiaSelect = $('#materiaSelect');
+                    materiaSelect.empty().append('<option value="">Seleccione una materia</option>');
+                    $.each(materias, function (i, item) {
+                        materiaSelect.append('<option value="' + item.value + '">' + item.text + '</option>');
+                    });
+                    materiaSelect.prop('disabled', false);
+                });
+            });
+        });
+
+        function mostrarConfirmacion() {
+            var docente = $("#IdDocente option:selected").text();
+            var grado = $("#gradoSelect option:selected").text();
+            var grupo = $("#grupoSelect option:selected").text();
+            var materia = $("#materiaSelect option:selected").text();
+
+          
+            return true;
+        }
+    </script>
+}
+
+

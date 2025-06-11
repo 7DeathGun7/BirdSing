@@ -46,6 +46,17 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
+            // Validación: no permitir duplicados por grado y nombre
+            bool grupoDuplicado = _context.Grupos
+                .Any(g => g.IdGrado == vm.IdGrado && g.Grupos == vm.NombreGrupo && g.Activo);
+
+            if (grupoDuplicado)
+            {
+                ModelState.AddModelError("NombreGrupo", "Ya existe un grupo con ese nombre para el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(vm);
+            }
+
             var grupo = new Grupo
             {
                 IdGrado = vm.IdGrado,
@@ -86,6 +97,17 @@ namespace BirdSing.Controllers
                 return View(vm);
             }
 
+            // Verifica si hay otro grupo con el mismo nombre en el mismo grado (excluyendo el actual)
+            bool grupoDuplicado = _context.Grupos
+                .Any(g => g.IdGrupo != vm.IdGrupo && g.IdGrado == vm.IdGrado && g.Grupos == vm.NombreGrupo && g.Activo);
+
+            if (grupoDuplicado)
+            {
+                ModelState.AddModelError("NombreGrupo", "Ya existe un grupo con ese nombre en el grado seleccionado.");
+                CargarGradosEnViewBag();
+                return View(vm);
+            }
+
             var entidad = _context.Grupos.Find(vm.IdGrupo);
             if (entidad == null) return NotFound();
 
@@ -96,17 +118,52 @@ namespace BirdSing.Controllers
             return RedirectToAction(nameof(ListaGrupos));
         }
 
-        // GET: Grupos/EliminarGrupo/5
-        public IActionResult EliminarGrupo(int id)
+
+        [HttpPost]
+        public async Task<IActionResult> EliminarGrupo(int id)
         {
-            var entidad = _context.Grupos.Find(id);
-            if (entidad != null)
+            var grupo = await _context.Grupos
+                .Include(g => g.GrupoMaterias)
+                .Include(g => g.DocentesGrupos)
+                .Include(g => g.Alumnos)
+                    .ThenInclude(a => a.AlumnosTutores)
+                .FirstOrDefaultAsync(g => g.IdGrupo == id);
+
+            if (grupo == null)
+                return NotFound();
+
+            // 1) Inactivar GrupoMaterias
+            foreach (var gm in grupo.GrupoMaterias)
+                gm.Activo = false;
+
+            // 2) Inactivar DocentesGrupos
+            foreach (var dg in grupo.DocentesGrupos)
+                dg.Activo = false;
+
+            // 3) Inactivar Alumnos y sus relaciones
+            foreach (var alumno in grupo.Alumnos)
             {
-                _context.Grupos.Remove(entidad);
-                _context.SaveChanges();
+                alumno.Activo = false;
+                if (alumno.Usuario != null)
+                    alumno.Usuario.Activo = false;
+
+                foreach (var at in alumno.AlumnosTutores)
+                    at.Activo = false;
+
+                // También puedes inactivar avisos del alumno si lo deseas:
+                var avisos = _context.Avisos
+                    .Where(a => a.MatriculaAlumno == alumno.MatriculaAlumno);
+                foreach (var aviso in avisos)
+                    aviso.Activo = false;
             }
+
+            // 4) Inactivar el grupo
+            grupo.Activo = false;
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ListaGrupos));
         }
+
 
         // Helper privado para poblar el dropdown de grados
         private void CargarGradosEnViewBag()
@@ -119,5 +176,20 @@ namespace BirdSing.Controllers
                 })
                 .ToList();
         }
+
+        [HttpGet]
+        public IActionResult PorGrado(int id)
+        {
+            var grupos = _context.Grupos
+                .Where(g => g.IdGrado == id)
+                .Select(g => new SelectListItem
+                {
+                    Value = g.IdGrupo.ToString(),
+                    Text = g.Grupos
+                }).ToList();
+
+            return Json(grupos);
+        }
+
     }
 }

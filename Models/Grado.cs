@@ -9,6 +9,11 @@ namespace BirdSing.Models
 
         [StringLength(50)]
         public string? Grados { get; set; }
+
+        public bool Activo { get; set; } = true;
+
+        public ICollection<Grupo> Grupos { get; set; } = new List<Grupo>();
+
     }
 
 }

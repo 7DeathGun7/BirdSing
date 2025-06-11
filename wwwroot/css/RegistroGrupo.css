@@ -1,0 +1,95 @@
+﻿body {
+    background-color: #f4f6f8;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+form {
+    background-color: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+}
+
+    form .mb-3 {
+        margin-bottom: 1.5rem;
+    }
+
+    form label {
+        font-weight: bold;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    form .form-control,
+    form .form-select {
+        width: 100%;
+        padding: 0.6rem;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+        form .form-control:focus,
+        form .form-select:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+    form .text-danger {
+        font-size: 0.9rem;
+        color: #e74c3c;
+    }
+
+    /* Botones */
+    form button[type="submit"] {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+        form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+    form .btn-secondary {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        margin-left: 0.5rem;
+    }
+
+/* Validación summary */
+.alert-danger {
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    form {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+        form button,
+        form .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+}

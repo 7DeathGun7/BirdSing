@@ -9,7 +9,11 @@
 
 <form asp-action="ActualizarGrupo" method="post" class="mt-4 needs-validation" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    @* Sólo mostramos el summary si realmente hay errores *@
+        @if (!ViewData.ModelState.IsValid)
+         {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+       }
 
     <!-- Campo oculto para el Id de la entidad -->
     <input asp-for="IdGrupo" type="hidden" />

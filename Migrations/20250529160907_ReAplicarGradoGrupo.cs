@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BirdSing.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDatabaseSchema : Migration
+    public partial class ReAplicarGradoGrupo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,8 @@ namespace BirdSing.Migrations
                 {
                     IdGrado = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Grados = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    Grados = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,7 +46,8 @@ namespace BirdSing.Migrations
                     IdGrupo = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdGrado = table.Column<int>(type: "int", nullable: false),
-                    Grupos = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    Grupos = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,7 +67,8 @@ namespace BirdSing.Migrations
                     IdMateria = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdGrado = table.Column<int>(type: "int", nullable: false),
-                    NombreMateria = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    NombreMateria = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,7 +92,8 @@ namespace BirdSing.Migrations
                     ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,18 +107,45 @@ namespace BirdSing.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GrupoMaterias",
+                columns: table => new
+                {
+                    IdGrupo = table.Column<int>(type: "int", nullable: false),
+                    IdMateria = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GrupoMaterias", x => new { x.IdGrupo, x.IdMateria });
+                    table.ForeignKey(
+                        name: "FK_GrupoMaterias_Grupos_IdGrupo",
+                        column: x => x.IdGrupo,
+                        principalTable: "Grupos",
+                        principalColumn: "IdGrupo",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GrupoMaterias_Materias_IdMateria",
+                        column: x => x.IdMateria,
+                        principalTable: "Materias",
+                        principalColumn: "IdMateria",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Alumnos",
                 columns: table => new
                 {
                     MatriculaAlumno = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    IdUsuario = table.Column<int>(type: "int", nullable: true),
                     NombreAlumno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Curp = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     IdGrado = table.Column<int>(type: "int", nullable: false),
-                    IdGrupo = table.Column<int>(type: "int", nullable: false)
+                    IdGrupo = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,12 +155,18 @@ namespace BirdSing.Migrations
                         column: x => x.IdGrado,
                         principalTable: "Grados",
                         principalColumn: "IdGrado",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Alumnos_Grupos_IdGrupo",
                         column: x => x.IdGrupo,
                         principalTable: "Grupos",
                         principalColumn: "IdGrupo",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Alumnos_Usuarios_IdUsuario",
+                        column: x => x.IdUsuario,
+                        principalTable: "Usuarios",
+                        principalColumn: "IdUsuario",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -140,7 +177,8 @@ namespace BirdSing.Migrations
                     IdDocente = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdUsuario = table.Column<int>(type: "int", nullable: false),
-                    MatriculaSEP = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
+                    MatriculaSEP = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -160,8 +198,10 @@ namespace BirdSing.Migrations
                     IdTutor = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdUsuario = table.Column<int>(type: "int", nullable: false),
-                    Telefono = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Direccion = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Direccion = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Coordenadas = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -175,12 +215,85 @@ namespace BirdSing.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AsignacionDocentes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdDocente = table.Column<int>(type: "int", nullable: false),
+                    IdMateria = table.Column<int>(type: "int", nullable: false),
+                    IdGrupo = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AsignacionDocentes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Docentes_IdDocente",
+                        column: x => x.IdDocente,
+                        principalTable: "Docentes",
+                        principalColumn: "IdDocente",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Grupos_IdGrupo",
+                        column: x => x.IdGrupo,
+                        principalTable: "Grupos",
+                        principalColumn: "IdGrupo",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AsignacionDocentes_Materias_IdMateria",
+                        column: x => x.IdMateria,
+                        principalTable: "Materias",
+                        principalColumn: "IdMateria",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DocentesGrupos",
+                columns: table => new
+                {
+                    IdDocente = table.Column<int>(type: "int", nullable: false),
+                    IdGrado = table.Column<int>(type: "int", nullable: false),
+                    IdGrupo = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    GrupoIdGrupo = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocentesGrupos", x => new { x.IdDocente, x.IdGrado, x.IdGrupo });
+                    table.ForeignKey(
+                        name: "FK_DocentesGrupos_Docentes_IdDocente",
+                        column: x => x.IdDocente,
+                        principalTable: "Docentes",
+                        principalColumn: "IdDocente",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DocentesGrupos_Grados_IdGrado",
+                        column: x => x.IdGrado,
+                        principalTable: "Grados",
+                        principalColumn: "IdGrado",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DocentesGrupos_Grupos_GrupoIdGrupo",
+                        column: x => x.GrupoIdGrupo,
+                        principalTable: "Grupos",
+                        principalColumn: "IdGrupo");
+                    table.ForeignKey(
+                        name: "FK_DocentesGrupos_Grupos_IdGrupo",
+                        column: x => x.IdGrupo,
+                        principalTable: "Grupos",
+                        principalColumn: "IdGrupo",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MateriasDocentes",
                 columns: table => new
                 {
                     IdDocente = table.Column<int>(type: "int", nullable: false),
                     IdMateria = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -205,7 +318,8 @@ namespace BirdSing.Migrations
                 {
                     MatriculaAlumno = table.Column<int>(type: "int", nullable: false),
                     IdTutor = table.Column<int>(type: "int", nullable: false),
-                    Parentesco = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Parentesco = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -240,30 +354,17 @@ namespace BirdSing.Migrations
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Leido = table.Column<bool>(type: "bit", nullable: false),
                     TipoAviso = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    AlumnoMatriculaAlumno = table.Column<int>(type: "int", nullable: true),
-                    DocenteIdDocente = table.Column<int>(type: "int", nullable: true),
-                    MateriaIdMateria = table.Column<int>(type: "int", nullable: true),
-                    TutorIdTutor = table.Column<int>(type: "int", nullable: true)
+                    Activo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Avisos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Avisos_Alumnos_AlumnoMatriculaAlumno",
-                        column: x => x.AlumnoMatriculaAlumno,
-                        principalTable: "Alumnos",
-                        principalColumn: "MatriculaAlumno");
                     table.ForeignKey(
                         name: "FK_Avisos_Alumnos_MatriculaAlumno",
                         column: x => x.MatriculaAlumno,
                         principalTable: "Alumnos",
                         principalColumn: "MatriculaAlumno",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Avisos_Docentes_DocenteIdDocente",
-                        column: x => x.DocenteIdDocente,
-                        principalTable: "Docentes",
-                        principalColumn: "IdDocente");
                     table.ForeignKey(
                         name: "FK_Avisos_Docentes_IdDocente",
                         column: x => x.IdDocente,
@@ -283,21 +384,11 @@ namespace BirdSing.Migrations
                         principalColumn: "IdMateria",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Avisos_Materias_MateriaIdMateria",
-                        column: x => x.MateriaIdMateria,
-                        principalTable: "Materias",
-                        principalColumn: "IdMateria");
-                    table.ForeignKey(
                         name: "FK_Avisos_Tutores_IdTutor",
                         column: x => x.IdTutor,
                         principalTable: "Tutores",
                         principalColumn: "IdTutor",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Avisos_Tutores_TutorIdTutor",
-                        column: x => x.TutorIdTutor,
-                        principalTable: "Tutores",
-                        principalColumn: "IdTutor");
                 });
 
             migrationBuilder.CreateIndex(
@@ -311,19 +402,29 @@ namespace BirdSing.Migrations
                 column: "IdGrupo");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Alumnos_IdUsuario",
+                table: "Alumnos",
+                column: "IdUsuario");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AlumnosTutores_IdTutor",
                 table: "AlumnosTutores",
                 column: "IdTutor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Avisos_AlumnoMatriculaAlumno",
-                table: "Avisos",
-                column: "AlumnoMatriculaAlumno");
+                name: "IX_AsignacionDocentes_IdDocente",
+                table: "AsignacionDocentes",
+                column: "IdDocente");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Avisos_DocenteIdDocente",
-                table: "Avisos",
-                column: "DocenteIdDocente");
+                name: "IX_AsignacionDocentes_IdGrupo",
+                table: "AsignacionDocentes",
+                column: "IdGrupo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AsignacionDocentes_IdMateria",
+                table: "AsignacionDocentes",
+                column: "IdMateria");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Avisos_IdDocente",
@@ -346,24 +447,34 @@ namespace BirdSing.Migrations
                 column: "IdTutor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Avisos_MateriaIdMateria",
-                table: "Avisos",
-                column: "MateriaIdMateria");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Avisos_MatriculaAlumno",
                 table: "Avisos",
                 column: "MatriculaAlumno");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Avisos_TutorIdTutor",
-                table: "Avisos",
-                column: "TutorIdTutor");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Docentes_IdUsuario",
                 table: "Docentes",
                 column: "IdUsuario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocentesGrupos_GrupoIdGrupo",
+                table: "DocentesGrupos",
+                column: "GrupoIdGrupo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocentesGrupos_IdGrado",
+                table: "DocentesGrupos",
+                column: "IdGrado");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocentesGrupos_IdGrupo",
+                table: "DocentesGrupos",
+                column: "IdGrupo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GrupoMaterias_IdMateria",
+                table: "GrupoMaterias",
+                column: "IdMateria");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Grupos_IdGrado",
@@ -398,7 +509,16 @@ namespace BirdSing.Migrations
                 name: "AlumnosTutores");
 
             migrationBuilder.DropTable(
+                name: "AsignacionDocentes");
+
+            migrationBuilder.DropTable(
                 name: "Avisos");
+
+            migrationBuilder.DropTable(
+                name: "DocentesGrupos");
+
+            migrationBuilder.DropTable(
+                name: "GrupoMaterias");
 
             migrationBuilder.DropTable(
                 name: "MateriasDocentes");

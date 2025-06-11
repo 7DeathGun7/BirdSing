@@ -1,0 +1,64 @@
+﻿/* ===== Estilos para la vista Bienvenido Docente ===== */
+
+.bienvenida-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+    .bienvenida-container h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .bienvenida-container h2 {
+        font-size: 1.8rem;
+        color: #2980b9;
+        font-weight: 600;
+    }
+
+    .bienvenida-container p.lead {
+        font-size: 1.2rem;
+        color: #555;
+        margin-top: 1rem;
+    }
+
+    .bienvenida-container ul {
+        margin-top: 1.2rem;
+        list-style: none;
+        padding-left: 0;
+    }
+
+        .bienvenida-container ul li {
+            background: #ecf0f1;
+            margin: 0.5rem 0;
+            padding: 0.75rem 1.2rem;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+            .bienvenida-container ul li:hover {
+                background-color: #d0e6f7;
+            }
+
+            .bienvenida-container ul li a {
+                text-decoration: none;
+                font-weight: 500;
+                color: #2c3e50;
+                display: block;
+            }
+
+                .bienvenida-container ul li a:hover {
+                    color: #1f618d;
+                }
+
+.alert-success {
+    margin-top: 1.5rem;
+    border-radius: 6px;
+}

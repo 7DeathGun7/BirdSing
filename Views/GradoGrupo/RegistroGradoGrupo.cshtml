@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Registrar Grado y Grupo";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var grados = ViewBag.Grados as List<BirdSing.Models.Grado>;
+}
+
+<link rel="stylesheet" href="~/css/RegisGraGru.css" />
+
+<h2 class="text-center">Registrar Grado y Grupo</h2>
+<div class="registro-grado-grupo mt-4">
+    <div class="col-md-6">
+        <h4 class="text-center">Grado</h4>
+        <form asp-action="RegistrarGrado" method="post">
+            <input type="text" name="nombreGrado" class="form-control mb-2" placeholder="Nombre del grado" required />
+            <button type="submit" class="btn btn-primary">Guardar Grado</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h4 class="text-center">Grupo</h4>
+        <form asp-action="RegistrarGrupo" method="post">
+            <select name="idGrado" class="form-control mb-2" required>
+                <option value="">Seleccione un grado</option>
+                @foreach (var grado in grados)
+                {
+                    <option value="@grado.IdGrado">@grado.Grados</option>
+                }
+            </select>
+            <input type="text" name="nombreGrupo" class="form-control mb-2" placeholder="Nombre del grupo" required />
+            <button type="submit" class="btn btn-success">Guardar Grupo</button>
+
+        </form>
+       
+    </div>
+    <a asp-action="ListaGradoGrupo" class="btn btn-secondary ml-2">Cancelar</a>
+</div>

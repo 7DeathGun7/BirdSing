@@ -1,0 +1,61 @@
+﻿@model BirdSing.Models.AlumnoTutor
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Editar Asignación Alumno–Tutor";
+}
+
+<link rel="stylesheet" href="~/css/ActualizarAlumnoTutor.css" asp-append-version="true" />
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ActualizarAlumnoTutor" method="post" class="mt-4 needs-validation formulario-actualizacion-alumno-tutor" novalidate>
+    @Html.AntiForgeryToken()
+    @* ✅ Solo mostrar alerta roja si hay errores reales *@
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <input asp-for="MatriculaAlumno" type="hidden" />
+    <input asp-for="IdTutor" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="MatriculaAlumno" class="form-label">Alumno</label>
+        <select asp-for="MatriculaAlumno"
+                asp-items="ViewBag.Alumnos"
+                class="form-select js-searchable">
+        </select>
+        <span asp-validation-for="MatriculaAlumno" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdTutor" class="form-label">Tutor</label>
+        <select asp-for="IdTutor"
+                asp-items="ViewBag.Tutores"
+                class="form-select js-searchable">
+        </select>
+        <span asp-validation-for="IdTutor" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parentesco" class="form-label">Parentesco</label>
+        <input asp-for="Parentesco" class="form-control" />
+        <span asp-validation-for="Parentesco" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="ListaAlumnosTutores" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

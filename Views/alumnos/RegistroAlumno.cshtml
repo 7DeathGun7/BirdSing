@@ -4,45 +4,83 @@
     Layout = "_LayoutAdmin";
 }
 
+<link rel="stylesheet" href="~/css/AlumnoRe.css" asp-append-version="true" />
+
 <h2>Registrar Alumno</h2>
 
-<form asp-action="RegistroAlumno" method="post">
-    <div>
+<form asp-action="RegistroAlumno" method="post" class="formulario-registro-alumno">
+    <div class="form-group">
         <label asp-for="NombreAlumno"></label>
-        <input asp-for="NombreAlumno" />
+        <input asp-for="NombreAlumno" class="form-control" />
         <span asp-validation-for="NombreAlumno" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="ApellidoPaterno"></label>
-        <input asp-for="ApellidoPaterno" />
+        <input asp-for="ApellidoPaterno" class="form-control" />
         <span asp-validation-for="ApellidoPaterno" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="ApellidoMaterno"></label>
-        <input asp-for="ApellidoMaterno" />
+        <input asp-for="ApellidoMaterno" class="form-control" />
         <span asp-validation-for="ApellidoMaterno" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="FechaNacimiento"></label>
-        <input asp-for="FechaNacimiento" type="date" />
+        <input asp-for="FechaNacimiento" type="date" class="form-control" />
         <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="Curp"></label>
-        <input asp-for="Curp" />
+        <input asp-for="Curp" class="form-control" />
         <span asp-validation-for="Curp" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="IdGrado"></label>
-        <select asp-for="IdGrado" asp-items="ViewBag.Grados"></select>
+        <select asp-for="IdGrado" asp-items="ViewBag.Grados" class="form-control" id="IdGrado">
+            <option value="">-- Selecciona Grado --</option>
+        </select>
         <span asp-validation-for="IdGrado" class="text-danger"></span>
     </div>
-    <div>
+
+    <div class="form-group">
         <label asp-for="IdGrupo"></label>
-        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos"></select>
+        <select asp-for="IdGrupo" asp-items="ViewBag.Grupos" class="form-control" id="IdGrupo">
+            <option value="">-- Selecciona Grupo --</option>
+        </select>
         <span asp-validation-for="IdGrupo" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Registrar</button>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Registrar</button>
+        <a asp-action="ListaAlumnos" class="btn btn-secondary ms-2">Cancelar</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#IdGrado').change(function () {
+                var gradoId = $(this).val();
+                var grupoSelect = $('#IdGrupo');
+
+                grupoSelect.empty().append($('<option>').val('').text('-- Selecciona Grupo --'));
+
+                if (gradoId) {
+                    $.getJSON('/Alumnos/GetGruposPorGrado', { idGrado: gradoId }, function (data) {
+                        $.each(data, function (index, item) {
+                            grupoSelect.append($('<option>', {
+                                value: item.idGrupo,
+                                text: item.grupos
+                            }));
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

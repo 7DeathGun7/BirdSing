@@ -4,11 +4,19 @@
     Layout = "_LayoutAdmin";
 }
 
-<link rel="stylesheet" href="~/css/ListaT.css">
+<link rel="stylesheet" href="~/css/ListaT.css" />
 
 <h2>Lista de Tutores</h2>
 
-<table class="table">
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table class="tabla-tutores">
     <thead>
         <tr>
             <th>Nombre del Usuario</th>
@@ -38,3 +46,10 @@
         }
     </tbody>
 </table>
+
+<div class="contenedor-boton-registrar">
+    <a asp-controller="Tutores" asp-action="RegistroTutor" class="btn btn-success">
+        + Registrar Nuevo Tutor
+    </a>
+</div>
+

@@ -1,0 +1,84 @@
+﻿/* ===== Estilos para la vista Mis Alumnos ===== */
+
+.filtros-alumnos {
+    background: #ffffff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    max-width: 1000px;
+    font-family: Arial, sans-serif;
+}
+
+    .filtros-alumnos label {
+        font-weight: bold;
+        color: #34495e;
+        margin-bottom: 0.3rem;
+    }
+
+    .filtros-alumnos select {
+        padding: 0.6rem;
+        font-size: 1rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+    }
+
+    .filtros-alumnos button {
+        background-color: #2980b9;
+        color: white;
+        padding: 0.6rem 1.4rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .filtros-alumnos button:hover {
+            background-color: #2471a3;
+        }
+
+.table-alumnos {
+    margin: 2rem auto;
+    max-width: 1000px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.05);
+}
+
+    .table-alumnos thead {
+        background-color: #34495e;
+        color: white;
+    }
+
+    .table-alumnos th,
+    .table-alumnos td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .table-alumnos tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filtros-alumnos {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .table-alumnos {
+        margin: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .filtros-alumnos .row > div {
+        margin-bottom: 1rem;
+    }
+
+    .filtros-alumnos button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}

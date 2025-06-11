@@ -1,0 +1,41 @@
+﻿@model CambiarContrasenaViewModel
+@{
+    Layout = "_LayoutTutor";
+    ViewData["Title"] = "Cambiar Contraseña";
+}
+
+<link rel="stylesheet" href="~/css/CambiarContrasena.css" asp-append-version="true" />
+
+<div class="alert alert-info">
+   
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CambiarContrasena" method="post" class="form-cambiar-contrasena">
+
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="ContrasenaActual" class="form-label"></label>
+        <input asp-for="ContrasenaActual" class="form-control" type="password" />
+        <span asp-validation-for="ContrasenaActual" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NuevaContrasena" class="form-label"></label>
+        <input asp-for="NuevaContrasena" class="form-control" type="password" />
+        <span asp-validation-for="NuevaContrasena" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ConfirmarContrasena" class="form-label"></label>
+        <input asp-for="ConfirmarContrasena" class="form-control" type="password" />
+        <span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
