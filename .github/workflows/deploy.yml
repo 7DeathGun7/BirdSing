@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # ajusta si usas otra versión
+          dotnet-version: '8.0.x'  # usa tu SDK 8.0.405
 
       - name: Restore dependencies
         run: dotnet restore
@@ -25,11 +25,11 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish --configuration Release --output ./publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: BirdSing        # <-- Asegúrate de que coincide con el nombre de tu Web App
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE2 }}
+          app-name: BirdSing  
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./publish
