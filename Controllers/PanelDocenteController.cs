@@ -159,7 +159,7 @@ namespace BirdSing.Controllers
             _context.Avisos.AddRange(avisos);
             await _context.SaveChangesAsync();
 
-            var urlAviso = Url.Action(nameof(MisAvisos), "PanelDocente", null, Request.Scheme);
+            var urlAviso = "https://birdsing-bqcgdra0g7fscdd5.centralus-01.azurewebsites.net/PanelDocente/MisAvisos";
             var metodoEnvio = Request.Form["MetodoEnvio"].ToString(); // "WhatsApp" o "SMS"
 
             foreach (var at in alumno.AlumnosTutores)

@@ -25,7 +25,7 @@ namespace BirdSing.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -35,12 +35,12 @@ namespace BirdSing.Controllers
                     ModelState.AddModelError("", "Correo o contraseña incorrectos.");
                     return View(model);
                 }
-                // Verificar si usa contraseña por defecto
+
                 bool requiereCambio = false;
 
-                if (usuario.IdRol == 2 && BCrypt.Net.BCrypt.Verify("Docen73", usuario.Password)) // Docente
+                if (usuario.IdRol == 2 && BCrypt.Net.BCrypt.Verify("Docen73", usuario.Password))
                     requiereCambio = true;
-                if (usuario.IdRol == 3 && BCrypt.Net.BCrypt.Verify("Tu7o4", usuario.Password)) // Tutor
+                if (usuario.IdRol == 3 && BCrypt.Net.BCrypt.Verify("Tu7o4", usuario.Password))
                     requiereCambio = true;
 
                 if (requiereCambio)
@@ -50,28 +50,34 @@ namespace BirdSing.Controllers
                     return RedirectToAction("ForzarCambioContrasena");
                 }
 
-                // <-- Aquí agregamos el NameIdentifier claim con el IdUsuario
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
-                    new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                    new Claim(ClaimTypes.Email, usuario.Email),
-                    new Claim(ClaimTypes.Role, usuario.IdRol.ToString())
-                };
+        {
+            new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
+            new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+            new Claim(ClaimTypes.Email, usuario.Email),
+            new Claim(ClaimTypes.Role, usuario.IdRol.ToString())
+        };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
                 var authProps = new AuthenticationProperties { IsPersistent = true };
 
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
 
-                switch (usuario.IdRol)
+                // ✅ Redirigir si existe ReturnUrl
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    case 1: return RedirectToAction("Index", "PanelAdmin");
-                    case 2: return RedirectToAction("Index", "PanelDocente");
-                    case 3: return RedirectToAction("Index", "PanelTutor");
-                    default: return RedirectToAction("Login");
+                    return Redirect(returnUrl);
                 }
+
+                // Redirección por rol
+                return usuario.IdRol switch
+                {
+                    1 => RedirectToAction("Index", "PanelAdmin"),
+                    2 => RedirectToAction("Index", "PanelDocente"),
+                    3 => RedirectToAction("Index", "PanelTutor"),
+                    _ => RedirectToAction("Login")
+                };
             }
 
             return View(model);
