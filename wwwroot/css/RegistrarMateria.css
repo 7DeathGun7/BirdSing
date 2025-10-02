@@ -37,8 +37,10 @@ form {
         font-size: 1rem;
         border: 1px solid #bdc3c7;
         border-radius: 4px;
+        box-sizing: border-box; /* Muy importante */
         transition: border-color 0.3s, box-shadow 0.3s;
     }
+
 
         form .form-control:focus,
         form .form-select:focus {
@@ -73,7 +75,7 @@ form {
         }
 
     form .btn-secondary {
-        background-color: #6c757d;
+        background-color: #e74c3c;
         color: white;
         border: none;
         padding: 0.6rem 1.2rem;

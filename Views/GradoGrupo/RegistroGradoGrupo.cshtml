@@ -7,17 +7,21 @@
 <link rel="stylesheet" href="~/css/RegisGraGru.css" />
 
 <h2 class="text-center">Registrar Grado y Grupo</h2>
+
 <div class="registro-grado-grupo mt-4">
-    <div class="col-md-6">
+    <!-- Formulario Grado -->
+    <div class="form-seccion">
         <h4 class="text-center">Grado</h4>
-        <form asp-action="RegistrarGrado" method="post">
+        <form asp-action="RegistrarGrado" method="post" class="formulario">
             <input type="text" name="nombreGrado" class="form-control mb-2" placeholder="Nombre del grado" required />
-            <button type="submit" class="btn btn-primary">Guardar Grado</button>
+            <button type="submit" class="btn btn-primary btn-accion">Guardar Grado</button>
         </form>
     </div>
-    <div class="col-md-6">
+
+    <!-- Formulario Grupo -->
+    <div class="form-seccion">
         <h4 class="text-center">Grupo</h4>
-        <form asp-action="RegistrarGrupo" method="post">
+        <form asp-action="RegistrarGrupo" method="post" class="formulario">
             <select name="idGrado" class="form-control mb-2" required>
                 <option value="">Seleccione un grado</option>
                 @foreach (var grado in grados)
@@ -26,10 +30,12 @@
                 }
             </select>
             <input type="text" name="nombreGrupo" class="form-control mb-2" placeholder="Nombre del grupo" required />
-            <button type="submit" class="btn btn-success">Guardar Grupo</button>
-
+            <button type="submit" class="btn btn-success btn-accion">Guardar Grupo</button>
         </form>
-       
     </div>
-    <a asp-action="ListaGradoGrupo" class="btn btn-secondary ml-2">Cancelar</a>
+
+    <!-- Botón Cancelar -->
+    <div class="form-seccion d-flex align-items-center justify-content-center">
+        <a asp-action="ListaGradoGrupo" class="btn btn-secondary btn-accion">Cancelar</a>
+    </div>
 </div>

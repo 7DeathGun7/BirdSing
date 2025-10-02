@@ -84,15 +84,18 @@
         }
 
     .form-crear-aviso .btn-link {
-        color: #2c3e50;
-        text-decoration: none;
-        margin-left: 1rem;
-        font-weight: bold;
-        transition: color 0.2s ease-in-out;
+        background-color: #e74c3c;
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease-in-out;
+        margin-top: 1rem;
     }
 
         .form-crear-aviso .btn-link:hover {
-            color: #7f8c8d;
+            
             text-decoration: underline;
         }
 
