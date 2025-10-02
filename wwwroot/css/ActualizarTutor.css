@@ -44,7 +44,6 @@ form {
         font-size: 0.9rem;
     }
 
-    /* Botón principal (Guardar/Actualizar) */
     form button[type="submit"] {
         background-color: #27ae60;
         color: white;
@@ -54,29 +53,10 @@ form {
         font-size: 1rem;
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
-        margin-right: 0.5rem; /* espacio para el botón cancelar */
     }
 
         form button[type="submit"]:hover {
             background-color: #219150;
-        }
-
-    /* Botón Cancelar */
-    form .btn-cancel {
-        background-color: #e74c3c;
-        color: white;
-        padding: 0.7rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-        text-decoration: none; /* por si se usa como <a> */
-        display: inline-block;
-    }
-
-        form .btn-cancel:hover {
-            background-color: #c0392b;
         }
 
 /* Para que el contenido no se esconda detrás del sidebar */

@@ -53,29 +53,10 @@ form {
         font-size: 1rem;
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
-        margin-right: 0.5rem; /* espacio para el botón cancelar */
     }
 
         form button[type="submit"]:hover {
             background-color: #219150;
-        }
-
-    /* Botón Cancelar */
-    form .btnn-cancel {
-        background-color: #e74c3c;
-        color: white;
-        padding: 0.7rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-        text-decoration: none; /* por si se usa como <a> */
-        display: inline-block;
-    }
-
-        form .btnn-cancel:hover {
-            background-color: #c0392b;
         }
 
 /* Para que el contenido no se esconda detrás del sidebar */

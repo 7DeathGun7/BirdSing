@@ -4,7 +4,7 @@
     ViewData["Title"] = "Asignaciones de Docentes";
 }
 
-<link rel="stylesheet" href="~/css/listaAD.css" />
+<link rel="stylesheet" href="~/css/lista-ad.css" />
 
 
 <h2>@ViewData["Title"]</h2>
@@ -27,9 +27,9 @@
                 <td>@item.Materia.NombreMateria</td>
                 <td>@item.Grupo.Grupos</td>
                 <td>
-                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-warning btn-sm">✏️ Editar</a>
                     <form asp-action="Eliminar" asp-route-id="@item.Id" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">Eliminar</button>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">🗑 Eliminar</button>
                     </form>
                 </td>
             </tr>
@@ -37,6 +37,6 @@
     </tbody>
 </table>
 
-<div class="contenedor-boton-registrar">
-    <a asp-action="Registro" class="btn-success">+ Nueva Asignación</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Registro" class="btn-success">➕ Nueva Asignación</a>
 </div>

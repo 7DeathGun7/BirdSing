@@ -4,48 +4,44 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/ListaGG.css" />
+<link rel="stylesheet" href="~/css/ListaGraGru.css" />
 
-<div class="content">
-    <h2 class="text-center">Grados y Grupos</h2>
-
-    <table class="tabla-grados">
-        <thead>
+<h2 class="text-center">Grados y Grupos</h2>
+<table class="tabla-grados">
+    <thead>
+        <tr>
+            <th>Grado</th>
+            <th>Grupos</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grado in Model)
+        {
             <tr>
-                <th>Grado</th>
-                <th>Grupos</th>
-                <th>Acciones</th>
+                <td>@grado.Grados</td>
+                <td>
+                    <ul class="mb-0">
+                        @foreach (var grupo in grado.Grupos)
+                        {
+                            <li>@grupo.Grupos</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <a asp-action="EditarGradoGrupo" asp-route-id="@grado.IdGrado" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="EliminarGrado" asp-route-id="@grado.IdGrado" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var grado in Model)
-            {
-                <tr>
-                    <td>@grado.Grados</td>
-                    <td>
-                        <ul class="lista-grupos">
-                            @foreach (var grupo in grado.Grupos)
-                            {
-                                <li>@grupo.Grupos</li>
-                            }
-                        </ul>
-                    </td>
-                    <td>
-                        <a asp-action="EditarGradoGrupo" asp-route-id="@grado.IdGrado"
-                           class="btn btn-sm btn-warning">Editar</a>
+        }
+    </tbody>
+</table>
 
-                        <form asp-action="EliminarGrado" asp-route-id="@grado.IdGrado" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div class="contenedor-boton-registrar">
-        <a asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo" class="btn btn-success">
-            + Registrar Grado y Grupo
-        </a>
-    </div>
+<div class="contenedor-boton-registrar">
+    <a asp-controller="GradoGrupo" asp-action="RegistroGradoGrupo" class="btn btn-success">
+        + Registrar Grado y Grupo
+    </a>
 </div>
+

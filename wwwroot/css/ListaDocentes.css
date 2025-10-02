@@ -118,24 +118,18 @@
         transform: translateY(0);
     }
 
-/* Botones de acción: Actualizar y Eliminar como links */
-.tabla-acciones .btn-link {
-    background: none;
-    border: none;
-    color: #3498db;
+/* Botones de acción: Actualizar y Eliminar */
+.tabla-docentes .btn-warning,
+.tabla-docentes .btn-danger {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+    color: white;
     text-decoration: none;
-    margin-right: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.2s ease-in-out;
+    margin-right: 0.5rem;
+    font-weight: normal;
 }
-
-    .tabla-acciones .btn-link:hover {
-        color: #21618c; /* un azul más oscuro en hover */
-        text-decoration: underline;
-    }
-
-
 
 .tabla-docentes .btn-warning {
     background-color: #f1c40f;

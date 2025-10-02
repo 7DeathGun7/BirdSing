@@ -1,0 +1,122 @@
+﻿/* ===== Estilos para la tabla de Grados y Grupos ===== */
+
+.tabla-grados {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+    .tabla-grados th,
+    .tabla-grados td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+        vertical-align: top;
+    }
+
+    .tabla-grados thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .tabla-grados tbody tr:hover {
+        background-color: #ecf0f1;
+    }
+
+    .tabla-grados ul {
+        padding-left: 1.2rem;
+        margin: 0;
+    }
+
+    .tabla-grados li {
+        list-style-type: disc;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Botones dentro de tabla */
+    .tabla-grados .btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .tabla-grados .btn-warning {
+        background-color: #f1c40f;
+        color: #2c3e50;
+        border: none;
+    }
+
+        .tabla-grados .btn-warning:hover {
+            background-color: #f39c12;
+        }
+
+    .tabla-grados .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+    }
+
+        .tabla-grados .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+/* Ajuste del contenedor y título */
+.content {
+    padding: 2rem;
+    background-color: #ecf0f1;
+    min-height: 100vh;
+}
+
+h2.text-center {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+/* Contenedor para centrar o alinear el botón */
+.contenedor-boton-registrar {
+    display: flex;
+    justify-content: center; /* Cambia a "flex-end" si lo quieres alineado a la derecha */
+    margin-top: 2rem;
+}
+
+/* Botón "Registrar Grado y Grupo" */
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    border: none;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-success:hover {
+        background-color: #1e8449;
+        transform: translateY(-2px);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+    }
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contenedor-boton-registrar {
+        justify-content: center;
+    }
+
+    .btn-success {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        padding: 0.65rem 1rem;
+    }
+}
